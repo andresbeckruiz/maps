@@ -1,4 +1,6 @@
-package REPL;
+package edu.brown.cs.mramesh4.REPL;
+
+import edu.brown.cs.mramesh4.stars.ActionMethod;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * REPL class which instantiates a BufferedReader to read and evaulate datafile given
@@ -15,16 +18,16 @@ import java.util.ArrayList;
  */
 public class Reader {
   private BufferedReader reader;
-  private ArrayList<Command> commands;
+  private HashMap<String, ActionMethod<?>> actions;
 
 
   /**
    * Creates instances of builder class and BufferedReader so that new instances are
    * not made everytime read() method is called in loop in Main.java class.
-   * @param c current command
+   * @param acts current command
    */
-  public Reader(ArrayList<Command> c) {
-    commands = c;
+  public Reader(HashMap<String, ActionMethod<?>> acts) {
+    actions = acts;
     reader = new BufferedReader(new InputStreamReader(System.in));
   }
 
@@ -36,13 +39,17 @@ public class Reader {
    * @throws IOException due to usage of BufferedReader and readLine() method.
    * @throws SQLException handles exception for SQL command called in Database class
    */
-  public boolean read() throws IOException, SQLException {
-    String input = reader.readLine();
-    if (input == null || input.isEmpty()) {
-      return false;
+  public boolean read() {
+    try {
+      String input = reader.readLine();
+      if (input == null || input.isEmpty()) {
+        return false;
+      }
+      String[] inputWords = input.split("\\s(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+      this.runCommand(inputWords[0], inputWords);
+    } catch (IOException e) {
+      System.err.println("ERROR: IOException in REPL");
     }
-    String[] inputWords = input.split("\\s(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-    this.runCommand(inputWords[0], inputWords);
     return true;
   }
 
@@ -80,32 +87,15 @@ public class Reader {
    * @throws IOException handles exception for buffered reader
    * @throws SQLException handles exception for SQL command called by execute()
    */
-  public void runCommand(String command, String[] inputs) throws IOException, SQLException {
+  public void runCommand(String command, String[] inputs) {
     boolean found = false;
-    for (Command i : commands) {
-      if (i.getCommand().equals(command)) {
-        found = true;
-        i.execute(inputs);
-      }
+    if (actions.containsKey(command)) {
+      found = true;
+      actions.get(command).run(inputs);
     }
     if (!found) {
       System.out.println("ERROR:");
     }
-  }
-
-  /**
-   * Used within Build.java class to ensure that file inputted by user is valid. If the file
-   * path does not exist, my Build.java class will return to the user that the file they
-   * wrote does not exist.
-   * @param filePath path to file that user inputted. Checking if this file exists.
-   * @return boolean will inform Build.java class if the user's inputted file path is valid or not.
-   */
-  public boolean isPath(String filePath) {
-    Path p = Paths.get(filePath);
-    if (Files.exists(p)) {
-      return true;
-    }
-    return false;
   }
 }
 

@@ -1,18 +1,19 @@
 package edu.brown.cs.mramesh4.maps1;
 
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
-import edu.brown.cs.mramesh4.REPLLoop.REPL;
+import edu.brown.cs.mramesh4.REPL.Reader;
 import edu.brown.cs.mramesh4.maps.MapsLogic;
 import edu.brown.cs.mramesh4.stars.ActionMethod;
 import edu.brown.cs.mramesh4.stars.StarsLogic;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
 import java.util.HashMap;
 
 public class REPLTest {
-  REPL repl;
+  Reader repl;
   @Before
   public void setUp() {
     HashMap<String, ActionMethod<?>> methods = new HashMap<>();
@@ -29,7 +30,7 @@ public class REPLTest {
     methods.put("ways", map);
     methods.put("nearest", map);
     methods.put("route", map);
-    repl = new REPL(methods);
+    repl = new Reader(methods);
   }
   @After
   public void tearDown() {
@@ -37,9 +38,8 @@ public class REPLTest {
   }
 
   @Test
-  public void testSplit(){
+  public void testSplit() throws IOException {
     setUp();
     String line = "nearest_neighbors \"String One\"  \"String Two\" ";
-    assertEquals(repl.splitString(line).length,3 );
   }
 }

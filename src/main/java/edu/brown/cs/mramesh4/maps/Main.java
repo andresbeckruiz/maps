@@ -7,7 +7,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import edu.brown.cs.mramesh4.REPLLoop.REPL;
+
+import edu.brown.cs.mramesh4.REPL.Reader;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 
 import edu.brown.cs.mramesh4.stars.ActionMethod;
@@ -81,8 +82,13 @@ public final class Main {
     methods.put("ways", map);
     methods.put("nearest", map);
     methods.put("route", map);
-    REPL repl = new REPL(methods);
-    repl.read();
+    boolean run = true;
+    Reader repl = new Reader(methods);
+    while (run) {
+      if (!repl.read()) {
+        run = false;
+      }
+    }
   }
 
   private static FreeMarkerEngine createEngine() {
