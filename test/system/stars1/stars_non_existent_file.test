@@ -1,0 +1,5 @@
+INPUT
+stars data/stars/four-hundred-star.csv
+OUTPUT
+ERROR:
+END

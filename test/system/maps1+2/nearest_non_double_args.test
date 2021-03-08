@@ -1,0 +1,7 @@
+INPUT
+map data/maps/smallMaps.sqlite3
+nearest "Not a" "double"
+OUTPUT
+map set to data/maps/smallMaps.sqlite3
+ERROR:
+END

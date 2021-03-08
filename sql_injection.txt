@@ -1,0 +1,20 @@
+1. What string did you use to clear the database. How did you figure out that this was the correct string to input?
+The string we put in to clear the database was "get name=6;DROP TABLE soldier;--".
+We figured out pretty easily from the xcd meme, we'd want to include the command
+DROP TABLE <tableName>;--. However, we also suspected that just including this
+would not work, and that we'd want to include a command that the database
+would recognize/allow at the beginning and then include the DROP TABLE soldier after.
+To figure out what to do with that, we knew pretty quickly that we could either
+get or add to the table, and since we could view the table, we used get <condition> = value and
+then followed that up with a semicolon, and our DROP TABLE command to get a working injection.
+When we used this command we got the error: ERROR: no such table: soldier (code 1)
+
+2. Keep playing with the database. What else were you able to get the app to do?
+We realized that with this method we could delete select data or modify data
+with the second command after the get name=6; We could use get <condition>; DELETE FROM
+and although it did not work, we believe if we formatted it correctly, we could use the
+get <condition; ADD <some value> in order to add values to the table.
+
+3.How might you ensure that SQL injections can’t occur on your own software?
+The best way would be to perform heavy input validation as well as using escape
+characters to prevent the harmful injection of SQL queries into your querying code;

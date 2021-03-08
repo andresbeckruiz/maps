@@ -1,0 +1,10 @@
+INPUT
+stars data/stars/ten-star.csv
+naive_neighbors 4 213 1 111
+OUTPUT
+Read 10 stars from data/stars/ten-star.csv
+1
+3
+2
+3759
+END

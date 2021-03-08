@@ -1,0 +1,7 @@
+INPUT
+stars data/stars/ten-star.csv
+radius 5 "So"l""
+OUTPUT
+Read 10 stars from data/stars/ten-star.csv
+ERROR:
+END

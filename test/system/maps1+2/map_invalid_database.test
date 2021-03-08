@@ -1,0 +1,5 @@
+INPUT
+map data/maps/newmaps.sqlite3
+OUTPUT
+ERROR:
+END

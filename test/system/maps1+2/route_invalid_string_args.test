@@ -1,0 +1,7 @@
+INPUT
+map data/maps/smallMaps.sqlite3
+route "Chihiro Ave" 42 43 "Avenue"
+OUTPUT
+map set to data/maps/smallMaps.sqlite3
+ERROR:
+END

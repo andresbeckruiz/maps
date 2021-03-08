@@ -1,0 +1,7 @@
+INPUT
+stars data/stars/three-star.csv
+neighbors 2 "Lonely" 0 0
+OUTPUT
+Read 3 stars from data/stars/three-star.csv
+ERROR:
+END

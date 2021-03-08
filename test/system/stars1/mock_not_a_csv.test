@@ -1,0 +1,5 @@
+INPUT
+mock data/stars/not_a_csv.csv
+OUTPUT
+ERROR:
+END

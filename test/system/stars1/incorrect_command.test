@@ -1,0 +1,5 @@
+INPUT
+tars data/stars/ten-star.csv data/stars/ten-star-two.csv
+OUTPUT
+ERROR:
+END

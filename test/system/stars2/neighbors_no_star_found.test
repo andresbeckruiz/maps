@@ -1,0 +1,7 @@
+INPUT
+stars data/stars/one-star.csv
+neighbors 1 "Shelly"
+OUTPUT
+Read 1 stars from data/stars/one-star.csv
+ERROR:
+END
