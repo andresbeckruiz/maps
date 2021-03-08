@@ -30,7 +30,7 @@ import com.google.common.collect.ImmutableMap;
 
 
 /**
- * The Main class of our project. This is where execution begins.
+ * The Main class of our project. This is where the execution begins.
  *
  */
 public final class Main {
