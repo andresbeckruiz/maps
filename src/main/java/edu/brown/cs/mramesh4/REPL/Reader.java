@@ -36,8 +36,6 @@ public class Reader {
    * In this case, the method will return false, which will signal to my main class to end
    * the infinite loop.
    * @return boolean to signal if infinite loop should continue or not.
-   * @throws IOException due to usage of BufferedReader and readLine() method.
-   * @throws SQLException handles exception for SQL command called in Database class
    */
   public boolean read() {
     try {
@@ -84,8 +82,6 @@ public class Reader {
    * From Delora's REPL, sets command using command interface.
    * @param command current command inputted by user
    * @param inputs total string array from terminal input
-   * @throws IOException handles exception for buffered reader
-   * @throws SQLException handles exception for SQL command called by execute()
    */
   public void runCommand(String command, String[] inputs) {
     boolean found = false;

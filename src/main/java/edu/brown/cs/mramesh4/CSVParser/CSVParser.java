@@ -1,6 +1,5 @@
 package edu.brown.cs.mramesh4.CSVParser;
 import edu.brown.cs.mramesh4.stars.IllegalArgumentException;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

@@ -67,8 +67,6 @@ public final class Main {
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
     }
-
-
     MockPersonMethod m = new MockPersonMethod();
     MapsLogic map = new MapsLogic();
     HashMap<String, ActionMethod<?>> methods = new HashMap<>();
