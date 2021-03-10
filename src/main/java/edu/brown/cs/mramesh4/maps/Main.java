@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,16 +18,14 @@ import edu.brown.cs.mramesh4.stars.StarsLogic;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import spark.ExceptionHandler;
-import spark.ModelAndView;
-import spark.QueryParamsMap;
-import spark.Request;
-import spark.Response;
-import spark.Spark;
-import spark.TemplateViewRoute;
+import spark.*;
 import spark.template.freemarker.FreeMarkerEngine;
 import freemarker.template.Configuration;
 import com.google.common.collect.ImmutableMap;
+import org.json.JSONObject;
+import com.google.gson.Gson;
+
+
 
 
 
@@ -51,6 +50,7 @@ public final class Main {
 
   private String[] args;
   private static StarsLogic db;
+  private static final Gson GSON = new Gson();
 
   private Main(String[] args) {
     this.args = args;
@@ -105,14 +105,30 @@ public final class Main {
   private void runSparkServer(int port) {
     Spark.port(port);
     Spark.externalStaticFileLocation("src/main/resources/static");
-    Spark.exception(Exception.class, new ExceptionPrinter());
+    Spark.options("/*", (request, response) -> {
+      String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+      if (accessControlRequestHeaders != null) {
+        response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+      }
 
+      String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+
+      if (accessControlRequestMethod != null) {
+        response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+      }
+
+      return "OK";
+    });
+    Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
+
+    Spark.exception(Exception.class, new ExceptionPrinter());
     FreeMarkerEngine freeMarker = createEngine();
 
     // Setup Spark Routes
     Spark.get("/stars", new FrontHandler(), freeMarker);
     Spark.post("/radius", new RadiusHandler(), freeMarker);
     Spark.post("/neighbors", new NeighborsHandler(), freeMarker);
+    Spark.post("/route", new RouteHandler());
   }
 
   /**
@@ -261,6 +277,22 @@ public final class Main {
       Map<String, Object> variables = ImmutableMap.of("title",
           "Stars: Query the database", "results", ret);
       return new ModelAndView(variables, "query.ftl");
+    }
+  }
+
+  /**
+   * Handles the neighbors call on the GUI.
+   */
+  private static class RouteHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+
+      JSONObject data = new JSONObject(request.body());
+      double sLat = data.getDouble("srclat");
+      sLat = sLat + 1.0;
+      Map<String, Double> variables = ImmutableMap.of("route", sLat);
+      return GSON.toJson(variables);
+
     }
   }
 
