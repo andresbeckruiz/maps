@@ -286,7 +286,7 @@ public final class Main {
   }
 
   /**
-   * Handles the neighbors call on the GUI.
+   * Handles route call on the GUI.
    */
   private static class RouteHandler implements Route {
     @Override
@@ -304,10 +304,10 @@ public final class Main {
   private static class WayHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-// request is what is from user
+      // request is what is from user
       JSONObject data = new JSONObject(request.body());
       double sLat = data.getDouble("srclat");
-      double sLon = data.getDouble("srclon"); //
+      double sLon = data.getDouble("srclon");
       double eLat = data.getDouble("destlat");
       double eLon = data.getDouble("destlon");
       // call ways method using these variables
