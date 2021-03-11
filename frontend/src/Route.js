@@ -12,7 +12,7 @@ function Route() {
     const [startLon, setStartLon] = useState(0);
     const [endLat, setEndLat] = useState(0);
     const [endLon, setEndLon] = useState(0);
-    const [way, setWay] = useState("");
+    const [route, setRoute] = useState("");
     /**
      * Makes an axios request.
      */
@@ -43,8 +43,9 @@ function Route() {
                 console.log(response.data);
                 //TODO: Go to the Main.java in the server from the stencil, and find what variable you should put here.
                 //Note: It is very important that you understand how this is set up and why it works!
-         //       let results = response.data["route"]
-                setWay(response.data["way"]);
+            //    let results = response.data["route"]
+                setRoute(response.data["way"]);
+                console.log(route);
             })
 
             .catch(function (error) {
@@ -60,7 +61,7 @@ function Route() {
             <TextBox label={"Destination latitude"} change={setEndLat} value={endLat}/>
             <TextBox label={"Destination longitude"} change={setEndLon} value={endLon}/>
             <AwesomeButton type="primary" onPress={requestRoute}>Submit</AwesomeButton>
-            <h2>Ways: {way}</h2>
+            <h2>Ways: {JSON.stringify(route)}</h2>
         </div>
     );
 }
