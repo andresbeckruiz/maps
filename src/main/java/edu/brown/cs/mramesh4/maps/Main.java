@@ -4,21 +4,24 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import edu.brown.cs.mramesh4.REPL.Reader;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
-
 import edu.brown.cs.mramesh4.stars.ActionMethod;
 import edu.brown.cs.mramesh4.stars.Star;
 import edu.brown.cs.mramesh4.stars.StarsLogic;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-
-import spark.*;
+import spark.ExceptionHandler;
+import spark.ModelAndView;
+import spark.QueryParamsMap;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.Spark;
+import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 import freemarker.template.Configuration;
 import com.google.common.collect.ImmutableMap;
@@ -129,6 +132,7 @@ public final class Main {
     Spark.post("/radius", new RadiusHandler(), freeMarker);
     Spark.post("/neighbors", new NeighborsHandler(), freeMarker);
     Spark.post("/route", new RouteHandler());
+    Spark.post("/way", new WayHandler());
   }
 
   /**
@@ -291,6 +295,29 @@ public final class Main {
       double sLat = data.getDouble("srclat");
       sLat = sLat + 1.0;
       Map<String, Double> variables = ImmutableMap.of("route", sLat);
+      return GSON.toJson(variables);
+
+    }
+  }
+
+  private static class WayHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+// request is what is from user
+      JSONObject data = new JSONObject(request.body());
+      double sLat = data.getDouble("srclat");
+      double sLon = data.getDouble("srclon"); //
+      double eLat = data.getDouble("destlat");
+      double eLon = data.getDouble("destlon");
+      // call ways method using these variables
+      // BUT we cannot return a list of ways back to frontend!
+      // we want to send back a dictionary of strings (way ID corresponds to start lat, )
+      // make dictionary
+      MapsLogic mapsLogic = new MapsLogic();
+      String[] command = {"ways", Double.toString(sLat), Double.toString(sLon),
+              Double.toString(eLat), Double.toString(eLon)};
+      HashMap<String, Object> map = mapsLogic.run(command);
+      Map<String, Object> variables = ImmutableMap.of("route", map);
       return GSON.toJson(variables);
 
     }

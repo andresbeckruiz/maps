@@ -29,7 +29,7 @@ public class StarsLogic implements ActionMethod<Star> {
    * @param coms String from the command line
    */
   @Override
-  public void run(String[] coms) {
+  public HashMap<String, Object> run(String[] coms) {
     //split the command by whitespace
     //String[] coms = cmd.split(" ");
     //assuming the length > 0
@@ -59,6 +59,7 @@ public class StarsLogic implements ActionMethod<Star> {
           break;
       }
     }
+    return null;
   }
 
   /**.

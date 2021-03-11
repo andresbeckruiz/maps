@@ -4,6 +4,7 @@ import edu.brown.cs.mramesh4.stars.ActionMethod;
 import edu.brown.cs.mramesh4.stars.IllegalArgumentException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**.
@@ -25,7 +26,7 @@ public class MockPersonMethod implements ActionMethod<String> {
    * @param coms representing a string command
    */
   @Override
-  public void run(String[] coms) {
+  public HashMap<String, Object> run(String[] coms) {
     ArrayList<String> ret = new ArrayList<String>();
     if (coms.length != 2) {
       System.err.println("ERROR: Invalid params");
@@ -36,6 +37,7 @@ public class MockPersonMethod implements ActionMethod<String> {
         System.err.println("ERROR: Please enter a valid command");
       }
     }
+    return null;
   }
   /**.
    * Takes the filename and loads into a CSV

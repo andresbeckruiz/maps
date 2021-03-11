@@ -1,5 +1,7 @@
 package edu.brown.cs.mramesh4.stars;
 
+import java.util.HashMap;
+
 /**.
  * This is a public interface of action methods
  * @param <T>:
@@ -12,5 +14,5 @@ public interface ActionMethod<T> {
    * Method to run a command.
    * @param command Command to run
    */
-  void run(String[] command);
+  HashMap<String, Object> run(String[] command);
 }

@@ -10,7 +10,6 @@ function App() {
         const toSend = {
             srclat : startLat,
         };
-
         let config = {
             headers: {
                 "Content-Type": "application/json",

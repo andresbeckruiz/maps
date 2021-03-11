@@ -29,6 +29,7 @@ public class MapsLogic implements ActionMethod<String> {
   private Graph<WayNodes, Way> graph = new Graph<>();
   private WayNodeCache wnc;
   private HashMap<String, WayNodes> wayNodeCache = new HashMap<>();
+  private HashMap<String, Object> frontendReturn = new HashMap<>();
 
   /**
    * In the constructor of MapsLogic, we initailize our list instance variable which holds
@@ -43,7 +44,7 @@ public class MapsLogic implements ActionMethod<String> {
    * @param coms String from the command line
    */
   @Override
-  public void run(String[] coms) {
+  public HashMap<String, Object> run(String[] coms) {
     //assuming the length > 0
     if (coms.length > 0) {
       //run regardless of uppercase and trimmed space
@@ -53,7 +54,8 @@ public class MapsLogic implements ActionMethod<String> {
           break;
         case "ways":
           this.ways(coms);
-          break;
+          return frontendReturn;
+          //break;
         case "nearest":
           this.nearest(coms);
           break;
@@ -65,6 +67,7 @@ public class MapsLogic implements ActionMethod<String> {
           break;
       }
     }
+    return frontendReturn;
   }
 
   /**
@@ -222,18 +225,46 @@ public class MapsLogic implements ActionMethod<String> {
         }
         PreparedStatement prep;
         //query the DB for all the ways within the boundaries
-        prep = conn.prepareStatement("SELECT * FROM node AS n JOIN way "
+//        prep = conn.prepareStatement("SELECT * FROM node AS n JOIN way "
+//                + "AS w WHERE ( (n.id = w.end) OR (n.id = w.start) ) AND (n.latitude >= ?) AND "
+//                + "(n.latitude <= ?) AND (n.longitude >= ?) AND (n.longitude <= ?) "
+//                + "GROUP BY way.start, way.end");
+
+        prep = conn.prepareStatement("SELECT w.id, w.start, w.end FROM node AS n JOIN way "
                 + "AS w WHERE ( (n.id = w.end) OR (n.id = w.start) ) AND (n.latitude >= ?) AND "
                 + "(n.latitude <= ?) AND (n.longitude >= ?) AND (n.longitude <= ?) "
                 + "ORDER BY w.id");
+
+        // group by -- or distinct
         prep.setDouble(1, latMin);
         prep.setDouble(2, latMax);
         prep.setDouble(3, lonMin);
         prep.setDouble(4, lonMax);
         ResultSet rs = prep.executeQuery();
         LinkedHashSet<String> toPrint = new LinkedHashSet<>();
+        HashMap<String, String> newValue;
         while (rs.next()) {
-          toPrint.add(rs.getString(4));
+          String wayId = rs.getString(1);
+          String startId = rs.getString(2);
+          String endId = rs.getString(3);
+          toPrint.add(wayId);
+          newValue = new HashMap<>();
+
+          PreparedStatement startPrep = conn.prepareStatement(
+                  "SELECT node.latitude, node.longitude FROM node JOIN way "
+                  + "WHERE node.id = ?");
+          startPrep.setString(1, startId);
+          ResultSet startRs = startPrep.executeQuery();
+          newValue.put("sLat", startRs.getString(1));
+          newValue.put("sLot", startRs.getString(2));
+          PreparedStatement endPrep = conn.prepareStatement(
+                  "SELECT node.latitude, node.longitude FROM node JOIN way "
+                  + "WHERE node.id = ?");
+          endPrep.setString(1, endId);
+          ResultSet endRs = endPrep.executeQuery();
+          newValue.put("eLat", endRs.getString(1));
+          newValue.put("eLot", endRs.getString(2));
+          frontendReturn.put(wayId, newValue);
         }
         rs.close();
         for (String print: toPrint) {
@@ -245,6 +276,7 @@ public class MapsLogic implements ActionMethod<String> {
         return;
       } catch (SQLException e) {
         System.err.println("ERROR: Error parsing your input");
+        e.printStackTrace();
         return;
       }
     }
@@ -500,6 +532,9 @@ public class MapsLogic implements ActionMethod<String> {
       return null;
     }
   }
+
+
+  // from bridget's maps:
 }
 
 
