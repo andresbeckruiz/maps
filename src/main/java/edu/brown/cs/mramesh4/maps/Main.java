@@ -53,6 +53,7 @@ public final class Main {
 
   private String[] args;
   private static StarsLogic db;
+  private static MapsLogic mapsLogic;
   private static final Gson GSON = new Gson();
 
   private Main(String[] args) {
@@ -71,7 +72,7 @@ public final class Main {
       runSparkServer((int) options.valueOf("port"));
     }
     MockPersonMethod m = new MockPersonMethod();
-    MapsLogic map = new MapsLogic();
+    mapsLogic = new MapsLogic();
     HashMap<String, ActionMethod<?>> methods = new HashMap<>();
     methods.put("stars", db);
     methods.put("naive_neighbors", db);
@@ -79,10 +80,10 @@ public final class Main {
     methods.put("mock", m);
     methods.put("neighbors", db);
     methods.put("radius", db);
-    methods.put("map", map);
-    methods.put("ways", map);
-    methods.put("nearest", map);
-    methods.put("route", map);
+    methods.put("map", mapsLogic);
+    methods.put("ways", mapsLogic);
+    methods.put("nearest", mapsLogic);
+    methods.put("route", mapsLogic);
     boolean run = true;
     Reader repl = new Reader(methods);
     while (run) {
@@ -313,7 +314,6 @@ public final class Main {
       // BUT we cannot return a list of ways back to frontend!
       // we want to send back a dictionary of strings (way ID corresponds to start lat, )
       // make dictionary
-      MapsLogic mapsLogic = new MapsLogic();
       String[] command = {"ways", Double.toString(sLat), Double.toString(sLon),
               Double.toString(eLat), Double.toString(eLon)};
       HashMap<String, Object> map = mapsLogic.run(command);
