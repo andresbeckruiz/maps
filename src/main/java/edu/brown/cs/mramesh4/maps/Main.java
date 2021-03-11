@@ -317,7 +317,7 @@ public final class Main {
       String[] command = {"ways", Double.toString(sLat), Double.toString(sLon),
               Double.toString(eLat), Double.toString(eLon)};
       HashMap<String, Object> map = mapsLogic.run(command);
-      Map<String, Object> variables = ImmutableMap.of("route", map);
+      Map<String, Object> variables = ImmutableMap.of("way", map);
       return GSON.toJson(variables);
 
     }
