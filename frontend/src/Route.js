@@ -5,6 +5,9 @@ import {AwesomeButton} from "react-awesome-button"
 import "react-awesome-button/dist/styles.css"
 import axios from "axios";
 
+// instantiate maps -- instantiate conpomnent
+this.maps = new Maps();
+
 
 function Route() {
     const [startLat, setStartLat] = useState(0); // returns a variable (0 here) into startLat
