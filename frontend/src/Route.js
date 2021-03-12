@@ -59,13 +59,13 @@ function Route() {
     return (
         <div>
             <h1> Maps! </h1>
-            <Maps/>
             <TextBox label={"Source latitude"} change={setStartLat} value={startLat}/>
             <TextBox label={"Source longitude"} change={setStartLon} value={startLon}/>
             <TextBox label={"Destination latitude"} change={setEndLat} value={endLat}/>
             <TextBox label={"Destination longitude"} change={setEndLon} value={endLon}/>
             <AwesomeButton type="primary" onPress={requestRoute}>Submit</AwesomeButton>
             <h2>Ways: {JSON.stringify(route)}</h2>
+            <Maps/>
         </div>
     );
 }
