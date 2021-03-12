@@ -1,4 +1,4 @@
-INPUT
+4INPUT
 map data/maps/smallMaps.sqlite3
 ways 42 -71.4005 41 -71.4003
 OUTPUT

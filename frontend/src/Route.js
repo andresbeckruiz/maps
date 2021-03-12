@@ -55,7 +55,7 @@ function Route() {
     }
     return (
         <div>
-            <h1> Ways </h1>
+            <h1> Maps! </h1>
             <TextBox label={"Source latitude"} change={setStartLat} value={startLat}/>
             <TextBox label={"Source longitude"} change={setStartLon} value={startLon}/>
             <TextBox label={"Destination latitude"} change={setEndLat} value={endLat}/>
