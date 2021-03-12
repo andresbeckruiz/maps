@@ -4,9 +4,9 @@ import React, {useState} from 'react';
 import {AwesomeButton} from "react-awesome-button"
 import "react-awesome-button/dist/styles.css"
 import axios from "axios";
+import Maps from "./Maps"
 
 // instantiate maps -- instantiate conpomnent
-this.maps = new Maps();
 
 
 function Route() {
@@ -59,6 +59,7 @@ function Route() {
     return (
         <div>
             <h1> Maps! </h1>
+            <Maps/>
             <TextBox label={"Source latitude"} change={setStartLat} value={startLat}/>
             <TextBox label={"Source longitude"} change={setStartLon} value={startLon}/>
             <TextBox label={"Destination latitude"} change={setEndLat} value={endLat}/>
