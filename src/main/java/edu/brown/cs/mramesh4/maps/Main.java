@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import edu.brown.cs.mramesh4.REPL.Reader;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 import edu.brown.cs.mramesh4.stars.ActionMethod;
@@ -134,6 +133,8 @@ public final class Main {
     Spark.post("/neighbors", new NeighborsHandler(), freeMarker);
     Spark.post("/route", new RouteHandler());
     Spark.post("/way", new WayHandler());
+
+    Spark.post("/map", new MapHandler());
   }
 
   /**
@@ -322,6 +323,26 @@ public final class Main {
 
     }
   }
+  private static class MapHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      JSONObject data = new JSONObject(request.body());
+//      double sLat = data.getDouble("srclat");
+//      double sLon = data.getDouble("srclon");
+//      double eLat = data.getDouble("destlat");
+//      double eLon = data.getDouble("destlon");
 
+      double topLeftX = 0;
+      double topLeftY = 0;
+      double bottomRightX = 200;
+      double bottomRightY = 500;
+      List<String> suggestions = new ArrayList<String>();
+      suggestions = Arrays.asList("0", "0", "100", "-400");
+      String[] coords = {"0", "0", "100", "-400"};
+      Map<String, Object> variables = ImmutableMap.of("map", suggestions);
+      return GSON.toJson(variables);
+
+    }
+  }
 
 }

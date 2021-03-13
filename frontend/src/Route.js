@@ -16,6 +16,8 @@ function Route() {
     const [endLat, setEndLat] = useState(0);
     const [endLon, setEndLon] = useState(0);
     const [route, setRoute] = useState("");
+    const [map, setMap] = useState(); // updated by drawWays function -- use props to get data
+    // ctx.beginPath
     /**
      * Makes an axios request.
      */
@@ -38,7 +40,7 @@ function Route() {
         //Install and import this!
         //TODO: Fill in 1) location for request 2) your data 3) configuration
         axios.post( /// this is thing I am sending to backend
-                "http://localhost:4567/way",
+                "http://localhost:4567/map",
                 toSend,
                 config
         )
@@ -47,7 +49,8 @@ function Route() {
                 //TODO: Go to the Main.java in the server from the stencil, and find what variable you should put here.
                 //Note: It is very important that you understand how this is set up and why it works!
             //    let results = response.data["route"]
-                setRoute(response.data["way"]);
+                setMap(response.data["map"]);
+            //    setRoute(response.data["way"]);
                 console.log(route);
             })
 
@@ -65,7 +68,7 @@ function Route() {
             <TextBox label={"Destination longitude"} change={setEndLon} value={endLon}/>
             <AwesomeButton type="primary" onPress={requestRoute}>Submit</AwesomeButton>
             <h2>Ways: {JSON.stringify(route)}</h2>
-            <Maps/>
+            <Maps map = {map}/>
         </div>
     );
 }
