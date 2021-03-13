@@ -2,7 +2,7 @@ function TextBox(props) {
     return (
         <div>
             <label>{props.label}</label>
-            <input type="number" onChange={(e) => {
+            <input type="text" onChange={(e) => {
                 props.change(e.target.value)
             }} value={props.value}/>
         </div>

@@ -133,7 +133,6 @@ public final class Main {
     Spark.post("/neighbors", new NeighborsHandler(), freeMarker);
     Spark.post("/route", new RouteHandler());
     Spark.post("/way", new WayHandler());
-
     Spark.post("/map", new MapHandler());
   }
 
@@ -337,7 +336,7 @@ public final class Main {
       double bottomRightX = 200;
       double bottomRightY = 500;
       List<String> suggestions = new ArrayList<String>();
-      suggestions = Arrays.asList("0", "0", "100", "-400");
+      suggestions = Arrays.asList("0", "0", "100", "300");
       String[] coords = {"0", "0", "100", "-400"};
       Map<String, Object> variables = ImmutableMap.of("map", suggestions);
       return GSON.toJson(variables);

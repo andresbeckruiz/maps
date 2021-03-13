@@ -54,8 +54,7 @@ public class MapsLogic implements ActionMethod<String> {
           break;
         case "ways":
           this.ways(coms);
-          return frontendReturn;
-          //break;
+          break;
         case "nearest":
           this.nearest(coms);
           break;
@@ -533,8 +532,6 @@ public class MapsLogic implements ActionMethod<String> {
     }
   }
 
-
-  // from bridget's maps:
 }
 
 

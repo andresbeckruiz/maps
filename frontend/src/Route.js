@@ -5,7 +5,7 @@ import {AwesomeButton} from "react-awesome-button"
 import "react-awesome-button/dist/styles.css"
 import axios from "axios";
 import Maps from "./Maps"
-
+import {useEffect} from "react";
 // instantiate maps -- instantiate conpomnent
 
 
@@ -15,9 +15,8 @@ function Route() {
     const [startLon, setStartLon] = useState(0);
     const [endLat, setEndLat] = useState(0);
     const [endLon, setEndLon] = useState(0);
-    const [route, setRoute] = useState("");
-    const [map, setMap] = useState(); // updated by drawWays function -- use props to get data
-    // ctx.beginPath
+    // const [route, setRoute] = useState("");
+    const [map, setMap] = useState(""); // updated by drawWays function -- use props to get data
     /**
      * Makes an axios request.
      */
@@ -51,7 +50,7 @@ function Route() {
             //    let results = response.data["route"]
                 setMap(response.data["map"]);
             //    setRoute(response.data["way"]);
-                console.log(route);
+                //console.log(route);
             })
 
             .catch(function (error) {
@@ -59,6 +58,16 @@ function Route() {
 
             });
     }
+    useEffect(
+        () => {
+            requestRoute()
+
+            //     canvas.addEventListener("mouseDown", (event) => {
+            //         const mouseX = event.pageX  // should scale these from pixels to coordinates
+            //         const mouseY = event.pageY
+            //     })
+        }, [requestRoute]
+    )
     return (
         <div>
             <h1> Maps! </h1>
@@ -67,9 +76,10 @@ function Route() {
             <TextBox label={"Destination latitude"} change={setEndLat} value={endLat}/>
             <TextBox label={"Destination longitude"} change={setEndLon} value={endLon}/>
             <AwesomeButton type="primary" onPress={requestRoute}>Submit</AwesomeButton>
-            <h2>Ways: {JSON.stringify(route)}</h2>
-            <Maps map = {map}/>
+            {/*<h2>Ways: {JSON.stringify(route)}</h2>*/}
+            <Maps map={map}/>
         </div>
     );
 }
+
 export default Route;

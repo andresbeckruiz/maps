@@ -10,27 +10,20 @@ function Maps(props) {
     const context = contextRef.current;
     const map = props.map;
 
-    const draw = context => { // I think this is where we start calling drawing functions and such
-        context.fillStyle = '#9515c3'
-        context.beginPath()
-        context.arc(0, 0, 20, 0, 2*Math.PI)
-        context.fill()
-
-      //  context.fillRect(0, 0, context.canvas.width, context.canvas.height)
-    }
+    // const draw = context => { // I think this is where we start calling drawing functions and such
+    //     context.fillStyle = '#9515c3'
+    //     context.beginPath()
+    //     context.arc(0, 0, 20, 0, 2*Math.PI)
+    //     context.fill()
+    //
+    //   //  context.fillRect(0, 0, context.canvas.width, context.canvas.height)
+    // }
 
     const drawWays = context => {
-      //  context.stroke();
         context.fillStyle = "black"
         context.beginPath()
-        context.moveTo(0, 0);
-        context.lineTo(200, 400);
-        context.stroke();
-      //  context.drawLine()
-     //   context.fill()
-        context.beginPath()
-        context.moveTo(0, 0);
-        context.lineTo(map, map);
+        context.moveTo(parseInt(map[0]), parseInt(map[1]));
+        context.lineTo(parseInt(map[2]), parseInt(map[3]));
         context.stroke();
     }
 
