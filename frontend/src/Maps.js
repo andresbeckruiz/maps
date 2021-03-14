@@ -10,16 +10,8 @@ function Maps(props) {
     const context = contextRef.current;
     const map = props.map;
 
-    // const draw = context => { // I think this is where we start calling drawing functions and such
-    //     context.fillStyle = '#9515c3'
-    //     context.beginPath()
-    //     context.arc(0, 0, 20, 0, 2*Math.PI)
-    //     context.fill()
-    //
-    //   //  context.fillRect(0, 0, context.canvas.width, context.canvas.height)
-    // }
-
     const drawWays = context => {
+        // look up for each for javascript
         context.fillStyle = "black"
         context.beginPath()
         context.moveTo(parseInt(map[0]), parseInt(map[1]));
@@ -31,10 +23,7 @@ function Maps(props) {
          () => {
              const canvas = canvasRef.current
              const context = canvas.getContext('2d')
-
-       //      draw(context)
              drawWays(context)
-
         //     canvas.addEventListener("mouseDown", (event) => {
         //         const mouseX = event.pageX  // should scale these from pixels to coordinates
         //         const mouseY = event.pageY
@@ -50,4 +39,3 @@ function Maps(props) {
     export default Maps;
 // add more event listeners for
 // have strictly drawing function in here, etc.
-// this should be able to access canvasRef and contextRef

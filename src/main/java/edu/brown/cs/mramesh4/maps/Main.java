@@ -338,6 +338,7 @@ public final class Main {
       List<String> suggestions = new ArrayList<String>();
       suggestions = Arrays.asList("0", "0", "100", "300");
       String[] coords = {"0", "0", "100", "-400"};
+      // send list of way objects
       Map<String, Object> variables = ImmutableMap.of("map", suggestions);
       return GSON.toJson(variables);
 
