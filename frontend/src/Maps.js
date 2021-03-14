@@ -13,10 +13,18 @@ function Maps(props) {
     const drawWays = context => {
         // look up for each for javascript
         context.fillStyle = "black"
-        context.beginPath()
-        context.moveTo(parseInt(map[0]), parseInt(map[1]));
-        context.lineTo(parseInt(map[2]), parseInt(map[3]));
-        context.stroke();
+        // context.beginPath()
+        // context.moveTo(parseInt(map[0]), parseInt(map[1]));
+        // context.lineTo(parseInt(map[2]), parseInt(map[3]));
+        // context.stroke();
+        for (let i=0; i<4; i++) {
+            let curr = map[i].value;
+            context.fillStyle = "black"
+            context.beginPath()
+            context.moveTo(parseInt(curr[0]), parseInt(curr[1]));
+            context.lineTo(parseInt(curr[2]), parseInt(curr[3]));
+            context.stroke();
+        }
     }
 
     useEffect(

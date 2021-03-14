@@ -241,28 +241,35 @@ public class MapsLogic implements ActionMethod<String> {
         prep.setDouble(4, lonMax);
         ResultSet rs = prep.executeQuery();
         LinkedHashSet<String> toPrint = new LinkedHashSet<>();
-        HashMap<String, String> newValue;
+        //HashMap<String, String> newValue;
         while (rs.next()) {
           String wayId = rs.getString(1);
           String startId = rs.getString(2);
           String endId = rs.getString(3);
           toPrint.add(wayId);
-          newValue = new HashMap<>();
+        //  newValue = new HashMap<>();
+          String[] newValue = {};
 
           PreparedStatement startPrep = conn.prepareStatement(
                   "SELECT node.latitude, node.longitude FROM node JOIN way "
                   + "WHERE node.id = ?");
           startPrep.setString(1, startId);
           ResultSet startRs = startPrep.executeQuery();
-          newValue.put("sLat", startRs.getString(1));
-          newValue.put("sLot", startRs.getString(2));
+
+        //  newValue.add("sLat", startRs.getString(1));
+          newValue[0] = startRs.getString(1);
+        //  newValue.put("sLot", startRs.getString(2));
+          newValue[1] = startRs.getString(2);
+
           PreparedStatement endPrep = conn.prepareStatement(
                   "SELECT node.latitude, node.longitude FROM node JOIN way "
                   + "WHERE node.id = ?");
           endPrep.setString(1, endId);
           ResultSet endRs = endPrep.executeQuery();
-          newValue.put("eLat", endRs.getString(1));
-          newValue.put("eLot", endRs.getString(2));
+          // newValue.put("eLat", endRs.getString(1));
+          newValue[2] = endRs.getString(1);
+          //newValue.put("eLot", endRs.getString(2));
+          newValue[3] = endRs.getString(2);
           frontendReturn.put(wayId, newValue);
         }
         rs.close();

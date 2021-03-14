@@ -326,20 +326,18 @@ public final class Main {
     @Override
     public Object handle(Request request, Response response) throws Exception {
       JSONObject data = new JSONObject(request.body());
-//      double sLat = data.getDouble("srclat");
-//      double sLon = data.getDouble("srclon");
-//      double eLat = data.getDouble("destlat");
-//      double eLon = data.getDouble("destlon");
 
       double topLeftX = 0;
       double topLeftY = 0;
       double bottomRightX = 200;
       double bottomRightY = 500;
-      List<String> suggestions = new ArrayList<String>();
-      suggestions = Arrays.asList("0", "0", "100", "300");
-      String[] coords = {"0", "0", "100", "-400"};
-      // send list of way objects
-      Map<String, Object> variables = ImmutableMap.of("map", suggestions);
+
+      List<String> suggestions = Arrays.asList("0", "0", "800", "500");
+      // Map<String, Object> variables = ImmutableMap.of("map", suggestions);
+
+      String[] command = {"ways", "42", "-72", "41.8", "-71.3"};
+      HashMap<String, Object> map = mapsLogic.run(command);
+      Map<String, Object> variables = ImmutableMap.of("map", map);
       return GSON.toJson(variables);
 
     }

@@ -50,7 +50,6 @@ function Route() {
             //    let results = response.data["route"]
                 setMap(response.data["map"]);
             //    setRoute(response.data["way"]);
-                //console.log(route);
             })
 
             .catch(function (error) {
