@@ -332,14 +332,15 @@ public final class Main {
       double bottomRightX = 200;
       double bottomRightY = 500;
 
-      List<String> suggestions = Arrays.asList("0", "0", "800", "500");
+      // List<String> suggestions = Arrays.asList("0", "0", "800", "500");
       // Map<String, Object> variables = ImmutableMap.of("map", suggestions);
 
-      String[] command = {"ways", "42", "-72", "41.8", "-71.3"};
-      HashMap<String, Object> map = mapsLogic.run(command);
+      String[] mapCommand = {"map", "data/maps/smallMaps.sqlite3"};
+      mapsLogic.run(mapCommand);
+      String[] wayCommand = {"ways", "42", "-72", "41.8", "-71.3"};
+      HashMap<String, Object> map = mapsLogic.run(wayCommand);
       Map<String, Object> variables = ImmutableMap.of("map", map);
       return GSON.toJson(variables);
-
     }
   }
 

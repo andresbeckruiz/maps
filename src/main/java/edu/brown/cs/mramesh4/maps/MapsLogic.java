@@ -46,15 +46,17 @@ public class MapsLogic implements ActionMethod<String> {
   @Override
   public HashMap<String, Object> run(String[] coms) {
     //assuming the length > 0
+  //  frontendReturn = null;
     if (coms.length > 0) {
       //run regardless of uppercase and trimmed space
       switch (coms[0]) {
         case "map":
           this.map(coms);
-          break;
+          return new HashMap<>();
+         // break;
         case "ways":
           this.ways(coms);
-          break;
+          return frontendReturn;
         case "nearest":
           this.nearest(coms);
           break;
@@ -223,17 +225,10 @@ public class MapsLogic implements ActionMethod<String> {
           return;
         }
         PreparedStatement prep;
-        //query the DB for all the ways within the boundaries
-//        prep = conn.prepareStatement("SELECT * FROM node AS n JOIN way "
-//                + "AS w WHERE ( (n.id = w.end) OR (n.id = w.start) ) AND (n.latitude >= ?) AND "
-//                + "(n.latitude <= ?) AND (n.longitude >= ?) AND (n.longitude <= ?) "
-//                + "GROUP BY way.start, way.end");
-
         prep = conn.prepareStatement("SELECT w.id, w.start, w.end FROM node AS n JOIN way "
                 + "AS w WHERE ( (n.id = w.end) OR (n.id = w.start) ) AND (n.latitude >= ?) AND "
                 + "(n.latitude <= ?) AND (n.longitude >= ?) AND (n.longitude <= ?) "
                 + "ORDER BY w.id");
-
         // group by -- or distinct
         prep.setDouble(1, latMin);
         prep.setDouble(2, latMax);
@@ -248,7 +243,7 @@ public class MapsLogic implements ActionMethod<String> {
           String endId = rs.getString(3);
           toPrint.add(wayId);
         //  newValue = new HashMap<>();
-          String[] newValue = {};
+          String[] newValue = new String[4];
 
           PreparedStatement startPrep = conn.prepareStatement(
                   "SELECT node.latitude, node.longitude FROM node JOIN way "
