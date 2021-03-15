@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import edu.brown.cs.mramesh4.REPL.Reader;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 import edu.brown.cs.mramesh4.stars.ActionMethod;
@@ -26,10 +27,6 @@ import freemarker.template.Configuration;
 import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
 import com.google.gson.Gson;
-
-
-
-
 
 /**
  * The Main class of our project. This is where the execution begins.
@@ -134,6 +131,7 @@ public final class Main {
     Spark.post("/route", new RouteHandler());
     Spark.post("/way", new WayHandler());
     Spark.post("/map", new MapHandler());
+    Spark.post("/shortestRoute", new ShortestRouteHandler());
   }
 
   /**
@@ -326,12 +324,6 @@ public final class Main {
     @Override
     public Object handle(Request request, Response response) throws Exception {
       JSONObject data = new JSONObject(request.body());
-
-      double topLeftX = 0;
-      double topLeftY = 0;
-      double bottomRightX = 200;
-      double bottomRightY = 500;
-
       // List<String> suggestions = Arrays.asList("0", "0", "800", "500");
       // Map<String, Object> variables = ImmutableMap.of("map", suggestions);
 
@@ -341,6 +333,26 @@ public final class Main {
       HashMap<String, Object> map = mapsLogic.run(wayCommand);
       Map<String, Object> variables = ImmutableMap.of("map", map);
       return GSON.toJson(variables);
+    }
+  }
+
+  private static class ShortestRouteHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      // request is what is from user
+      JSONObject data = new JSONObject(request.body());
+      double x = data.getDouble("mx");
+      double y = data.getDouble("my");
+      System.out.println(x);
+      System.out.println(y);
+      String[] command = {};
+//      String[] command = {"route", Double.toString(latOne), Double.toString(4),
+//          Double.toString(4), Double.toString(4)};
+   //   HashMap<String, Object> map = mapsLogic.run(command);
+      Map<String, Object> variables = ImmutableMap.of("shortestRoute", command);
+    //  System.out.println(latOne);
+      return GSON.toJson(variables);
+
     }
   }
 
