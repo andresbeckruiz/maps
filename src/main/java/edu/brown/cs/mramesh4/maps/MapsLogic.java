@@ -29,7 +29,7 @@ public class MapsLogic implements ActionMethod<String> {
   private Graph<WayNodes, Way> graph = new Graph<>();
   private WayNodeCache wnc;
   private HashMap<String, WayNodes> wayNodeCache = new HashMap<>();
-  private HashMap<String, Object> frontendReturn = new HashMap<>();
+  private HashMap<String, Object> frontendReturn;
 
   /**
    * In the constructor of MapsLogic, we initailize our list instance variable which holds
@@ -46,7 +46,7 @@ public class MapsLogic implements ActionMethod<String> {
   @Override
   public HashMap<String, Object> run(String[] coms) {
     //assuming the length > 0
-  //  frontendReturn = null;
+    frontendReturn = new HashMap<>();
     if (coms.length > 0) {
       //run regardless of uppercase and trimmed space
       switch (coms[0]) {

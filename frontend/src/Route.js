@@ -78,12 +78,12 @@ function Route() {
     useEffect(
         () => {
             requestRoute()
-            requestMap()
+            //requestMap()
             //     canvas.addEventListener("mouseDown", (event) => {
             //         const mouseX = event.pageX  // should scale these from pixels to coordinates
             //         const mouseY = event.pageY
             //     })
-        }, [requestRoute, requestMap]
+        }, [requestRoute]
     )
 
     return (

@@ -10,38 +10,33 @@ function Maps(props) {
     const canvasMap = props.map;
     const canvasWidth = 800;
     const canvasHeight = 500;
-    const minBoundLon = 42;
-    const minBoundLat = -72;
-    const maxBoundLon = 41.8;
-    const maxBoundLat = -71.3;
+    const minBoundLat = 42;
+    const minBoundLon = -72;
+    const maxBoundLat = 41.8;
+    const maxBoundLon = -71.3;
 
-    const drawWays = context => {
+    const drawWays = (context) => {
         context.fillStyle = "black"
-        console.log("hi")
         Object.keys(canvasMap).forEach((id) => {
-            console.log("ug")
             const curr = canvasMap[id]
             context.fillStyle = "black"
             context.beginPath()
             // context.moveTo(parseInt(curr[0]), parseInt(curr[1]));
             // context.lineTo(parseInt(curr[2]), parseInt(curr[3]));
-            console.log(parseInt(curr[1]));
-            console.log("SUPPPPPP");
-         //   context.lineTo(parseInt(curr[2]), parseInt(curr[3]));
-            context.moveTo(calcLatPixels(parseInt(curr[0])), calcLonPixels(parseInt(curr[1])));
-            context.lineTo(calcLatPixels(parseInt(curr[2])), calcLonPixels(parseInt(curr[3])));
+            context.moveTo(calcLatPixels(curr[0]), calcLonPixels(curr[1]));
+            context.lineTo(calcLatPixels(curr[2]), calcLonPixels(curr[3]));
             context.stroke();
         })
     }
     function calcLatPixels(lat) {
         const x = canvasWidth * ((lat - minBoundLat) / (maxBoundLat - minBoundLat))
-        console.log(x);
+    //    console.log(x + " x");
         return x;
     }
 
     function calcLonPixels(lon) {
         const y = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
-        console.log(y);
+    //    console.log(y + " y");
         return y;
     }
 
