@@ -335,9 +335,9 @@ public final class Main {
       // List<String> suggestions = Arrays.asList("0", "0", "800", "500");
       // Map<String, Object> variables = ImmutableMap.of("map", suggestions);
 
-      String[] mapCommand = {"map", "data/maps/smallMaps.sqlite3"};
+      String[] mapCommand = {"map", "data/maps/maps.sqlite3"};
       mapsLogic.run(mapCommand);
-      String[] wayCommand = {"ways", "42", "-72", "41.8", "-71.3"};
+      String[] wayCommand = {"ways", "41.82953", "-71.40729", "41.82433", "-71.39572"};
       HashMap<String, Object> map = mapsLogic.run(wayCommand);
       Map<String, Object> variables = ImmutableMap.of("map", map);
       return GSON.toJson(variables);

@@ -52,11 +52,10 @@ public class MapsLogic implements ActionMethod<String> {
       switch (coms[0]) {
         case "map":
           this.map(coms);
-          return new HashMap<>();
-         // break;
+          break;
         case "ways":
           this.ways(coms);
-          return frontendReturn;
+          break;
         case "nearest":
           this.nearest(coms);
           break;
@@ -250,12 +249,10 @@ public class MapsLogic implements ActionMethod<String> {
                   + "WHERE node.id = ?");
           startPrep.setString(1, startId);
           ResultSet startRs = startPrep.executeQuery();
-
         //  newValue.add("sLat", startRs.getString(1));
           newValue[0] = startRs.getString(1);
         //  newValue.put("sLot", startRs.getString(2));
           newValue[1] = startRs.getString(2);
-
           PreparedStatement endPrep = conn.prepareStatement(
                   "SELECT node.latitude, node.longitude FROM node JOIN way "
                   + "WHERE node.id = ?");

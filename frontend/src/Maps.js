@@ -8,36 +8,34 @@ function Maps(props) {
     const canvas = canvasRef.current;
     const context = contextRef.current;
     const canvasMap = props.map;
-    const canvasWidth = 800;
+    const canvasWidth = 500;
     const canvasHeight = 500;
-    const minBoundLat = 42;
-    const minBoundLon = -72;
-    const maxBoundLat = 41.8;
-    const maxBoundLon = -71.3;
+    const minBoundLat = 41.82953;
+    const minBoundLon = -71.40729;
+    const maxBoundLat = 41.82433;
+    const maxBoundLon = -71.39572;
 
     const drawWays = (context) => {
         context.fillStyle = "black"
         context.beginPath()
-        let q = 0;
         Object.keys(canvasMap).forEach((id) => {
             const curr = canvasMap[id]
             context.fillStyle = "black"
-            context.moveTo(calcLatPixels(curr[0]), calcLonPixels(curr[1]));
-        //    context.moveTo(q, q);
-            context.lineTo(calcLatPixels(curr[2]), calcLonPixels(curr[3]));
-            q += 100;
+            context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
+            context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
         })
         context.stroke();
     }
-    function calcLatPixels(lat) {
-        const x = canvasWidth * ((lat - minBoundLat) / (maxBoundLat - minBoundLat))
-        console.log(x + " x");
+
+    function calcLonPixels(lon) {
+        const x = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
+        //console.log(y + " y");
         return x;
     }
 
-    function calcLonPixels(lon) {
-        const y = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
-        console.log(y + " y");
+    function calcLatPixels(lat) {
+        const y = canvasWidth * ((lat - minBoundLat) / (maxBoundLat - minBoundLat))
+        //console.log(x + " x");
         return y;
     }
 
@@ -53,7 +51,7 @@ function Maps(props) {
         }, [drawWays]
     )
     return <div>
-        <canvas ref = {canvasRef} style = {{border:"2px solid black"}} width = "800" height="500" />
+        <canvas ref = {canvasRef} style = {{border:"2px solid black"}} width = "500" height="500" />
     </div>
 
 }
