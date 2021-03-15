@@ -17,26 +17,27 @@ function Maps(props) {
 
     const drawWays = (context) => {
         context.fillStyle = "black"
+        context.beginPath()
+        let q = 0;
         Object.keys(canvasMap).forEach((id) => {
             const curr = canvasMap[id]
             context.fillStyle = "black"
-            context.beginPath()
-            // context.moveTo(parseInt(curr[0]), parseInt(curr[1]));
-            // context.lineTo(parseInt(curr[2]), parseInt(curr[3]));
             context.moveTo(calcLatPixels(curr[0]), calcLonPixels(curr[1]));
+        //    context.moveTo(q, q);
             context.lineTo(calcLatPixels(curr[2]), calcLonPixels(curr[3]));
-            context.stroke();
+            q += 100;
         })
+        context.stroke();
     }
     function calcLatPixels(lat) {
         const x = canvasWidth * ((lat - minBoundLat) / (maxBoundLat - minBoundLat))
-    //    console.log(x + " x");
+        console.log(x + " x");
         return x;
     }
 
     function calcLonPixels(lon) {
         const y = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
-    //    console.log(y + " y");
+        console.log(y + " y");
         return y;
     }
 
