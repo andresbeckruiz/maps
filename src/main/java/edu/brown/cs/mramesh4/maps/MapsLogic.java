@@ -478,7 +478,7 @@ public class MapsLogic implements ActionMethod<String> {
       frontEndInfo[3] = Double.toString(currWay.getTo().getLong());
       //need to check ways that are type "route" and color them red!
       frontEndInfo[4] = "route";
-      frontendReturn.put(currWay.getId(),frontEndInfo);
+      frontendReturn.put(currWay.getId(), frontEndInfo);
       route.add(currWay);
       currNode = currWay.getFrom();
     }

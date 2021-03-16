@@ -327,8 +327,6 @@ public final class Main {
     @Override
     public Object handle(Request request, Response response) throws Exception {
       JSONObject data = new JSONObject(request.body());
-      // List<String> suggestions = Arrays.asList("0", "0", "800", "500");
-      // Map<String, Object> variables = ImmutableMap.of("map", suggestions);
       String[] wayCommand = {"ways", "41.82953", "-71.40729", "41.82433", "-71.39572"};
       HashMap<String, Object> map = mapsLogic.run(wayCommand);
       Map<String, Object> variables = ImmutableMap.of("map", map);
@@ -350,7 +348,7 @@ public final class Main {
           Double.toString(endLon), Double.toString(endLat)};
       HashMap<String, Object> map = mapsLogic.run(command);
       Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
-     // System.out.println();
+      System.out.println(map.size() + " size");
       return GSON.toJson(variables);
     }
   }
