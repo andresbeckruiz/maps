@@ -50,7 +50,6 @@ function Route() {
 
     const requestMap = () => {
         const toSend = {
-            //TODO: Pass in the values for the data. Follow the format the route expects!
         };
         let config = {
             headers: {
@@ -72,79 +71,19 @@ function Route() {
             });
     }
 
-    /**
-    const requestShortestRoute = () => {
-        const toSend = {
-            //TODO: Pass in the values for the data. Follow the format the route expects!
-            mouseX : mouseX,
-        };
-        let config = {
-            headers: {
-                "Content-Type": "application/json",
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        //TODO: Fill in 1) location for request 2) your data 3) configuration
-        axios.post( /// this is thing I am sending to backend
-            "http://localhost:4567/map",
-            toSend,
-            config
-        )
-            .then(response => {
-                setMap(response.data["map"]);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }
-
-    useEffect(
-    () => {
-        map.addEventListener("mouseDown", (event) => {
-        ///    mouseX : event.pageX
-            setMouseX(event.pageX)
-        //    mouseY : event.pageY
-            setMouseY(event.pageY)
-            // const mouseX = mouseX
-        //    const mouseY = mouseY
-            const toSend = {
-                mX : mouseX,
-                mY : mouseX,
-            }
-           // const mouseY = event.pageY
-            let config = {
-                headers: {
-                    "Content-Type": "application/json",
-                    'Access-Control-Allow-Origin': '*',
-                }
-            }
-            axios.post( /// this is thing I am sending to backend
-                "http://localhost:4567/shortestRoute",
-                toSend,
-                config
-            )
-            .then(response => {
-                setShortestRoute(response.data["shortestRoute"]);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-        })
-    },
-    )
-*/
     return (
         <div>
             <h1> Maps! </h1>
+            <h2></h2>
+            <AwesomeButton type="primary" onPress={requestMap}>Show Ways</AwesomeButton>
+            <h2></h2>
+            {/*<h2>Ways: {JSON.stringify(route)}</h2>*/}
+            <Maps map={map}/>
             <TextBox label={"Source latitude"} change={setStartLat} value={startLat}/>
             <TextBox label={"Source longitude"} change={setStartLon} value={startLon}/>
             <TextBox label={"Destination latitude"} change={setEndLat} value={endLat}/>
             <TextBox label={"Destination longitude"} change={setEndLon} value={endLon}/>
             <AwesomeButton type="primary" onPress={requestRoute}>Submit</AwesomeButton>
-            <h2></h2>
-            <AwesomeButton type="primary" onPress={requestMap}>Show Ways</AwesomeButton>
-            {/*<h2>Ways: {JSON.stringify(route)}</h2>*/}
-            <Maps map={map}/>
         </div>
     );
 }

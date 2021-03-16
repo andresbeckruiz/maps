@@ -2,6 +2,8 @@ import './App.css';
 import {useEffect, useRef} from "react";
 import {useState} from "react";
 import axios from "axios";
+import TextBox from "./TextBox";
+import {AwesomeButton} from "react-awesome-button";
 
 
 function Maps(props) {
@@ -10,8 +12,7 @@ function Maps(props) {
     let canvas = canvasRef.current;
     let context = contextRef.current;
 
-    const clickRef = useRef();
-    let firstClick = clickRef.current
+    let firstClick = 0
 
     const canvasMap = props.map;
     const canvasWidth = 500;
@@ -37,6 +38,14 @@ function Maps(props) {
         context.stroke();
     }
 
+    useEffect(() => {
+        canvas = canvasRef.current
+        contextRef.current = canvas.getContext('2d')
+        context = contextRef.current
+        drawWays(context)
+    }, [drawWays]
+    )
+
     function calcLonPixels(lon) {
         const x = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
         return x;
@@ -47,69 +56,83 @@ function Maps(props) {
         return y;
     }
 
+    // converting to lon/lat
+    // use bottom lat, top lat
+    // get pixel top bottom -- canvas.getBoundingClientRect
+    // offsetX and offsetY (see lab)
+
+    function calcLonCoord(canvas, xClick) {
+      let x = xClick - canvas.offsetLeft;
+      return ((x*(maxBoundLon - minBoundLon))/canvasHeight) - minBoundLon
+    }
+
+    function calcLatCoord(canvas, yClick) {
+        let y= yClick - canvas.offsetTop;
+        return ((y*(maxBoundLat - minBoundLat))/canvasHeight) - minBoundLat
+    }
+
+    const requestShortestRoute  = () => {
+        const toSend = {
+            mx : firstMouseX,
+            my : firstMouseY,
+            mx2 : secondMouseX,
+            my2 : secondMouseY,
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.post(
+            "http://localhost:4567/shortestRoute",
+            toSend,
+            config
+        )
+            .then(response => {
+                setShortestRoute(response.data["shortestRoute"]);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
     useEffect(() => {
         canvas = canvasRef.current
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
-
-        drawWays(context)
         canvas.addEventListener("mousedown", (event) => {
-        console.log(event.pageX + "  x")
-        console.log(event.pageY + "  y")
-        setFirstMouseX(event.pageX)
-        setFirstMouseY(event.pageY)
-            /*
-            console.log(typeof firstClick)
-            if (typeof firstClick == 'undefined') {
-                firstClick = 0
-                console.log("went to undefined if")
-            } else if (firstClick == 0) {
-                console.log(firstClick + " on x")
-                setFirstMouseX(event.pageX)
-                setFirstMouseY(event.pageY)
+            console.log(event.pageX + "  x")
+            console.log(event.pageY + "  y")
+          //  setFirstMouseX(event.pageX)
+           // setFirstMouseY(event.pageY)
+                // make a variable outside of useEffect
+            let x = calcLonCoord(canvas, event.pageX)
+            let y = calcLatCoord(canvas, event.pageY)
+
+            if (firstClick == 0) {
+                console.log(firstClick + " on first")
+                setFirstMouseX(x)
+                setFirstMouseY(y)
                 firstClick = 1
             } else if (firstClick == 1) {
-                console.log(firstClick + "  on y")
-                setSecondMouseX(event.pageX)
-                setSecondMouseY(event.pageY)
+                console.log(firstClick + "  on second")
+                setSecondMouseX(x)
+                setSecondMouseY(y)
                 firstClick = 0
             }
-*/
-
-            const toSend = {
-                mx : firstMouseX,
-                my : firstMouseY,
-            };
-            let config = {
-                headers: {
-                    "Content-Type": "application/json",
-                    'Access-Control-Allow-Origin': '*',
-                }
-            }
-            axios.post(
-                "http://localhost:4567/shortestRoute",
-                toSend,
-                config
-            )
-                .then(response => {
-                   // console.log(response.data);
-                    //TODO: Go to the Main.java in the server from the stencil, and find what variable you should put here.
-                    //Note: It is very important that you understand how this is set up and why it works!
-                    setShortestRoute(response.data["shortestRoute"]);
-                })
-
-                .catch(function (error) {
-                    console.log(error);
-
-                });
         })
-    }, [drawWays]
+    }, []
     )
 
     return <div>
+        <AwesomeButton type="primary" onPress={requestShortestRoute}>Show Route</AwesomeButton>
+        <h3></h3>
+        <TextBox label={"Start Latitude: "} change={setFirstMouseX} value={firstMouseX}/>
+        <TextBox label={"Start Longitude: "} change={setFirstMouseY} value={firstMouseY}/>
+        <TextBox label={"End Latitude: "} change={setSecondMouseX} value={secondMouseX}/>
+        <TextBox label={"End Longitude: "} change={setSecondMouseY} value={secondMouseY}/>
         <canvas ref = {canvasRef} style = {{border:"2px solid black"}} width = "500" height="500" />
-        <h3> First Coordinate: ({JSON.stringify(firstMouseX)},{JSON.stringify(firstMouseY)})</h3>
-        <h3> Second Coordinate: ({JSON.stringify(secondMouseX)},{JSON.stringify(secondMouseY)})</h3>
     </div>
 
 }
