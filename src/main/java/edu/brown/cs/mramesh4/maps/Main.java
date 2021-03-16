@@ -64,9 +64,6 @@ public final class Main {
     parser.accepts("port").withRequiredArg().ofType(Integer.class)
     .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
-    if (options.has("gui")) {
-      runSparkServer((int) options.valueOf("port"));
-    }
     MockPersonMethod m = new MockPersonMethod();
     mapsLogic = new MapsLogic();
     HashMap<String, ActionMethod<?>> methods = new HashMap<>();
@@ -80,6 +77,12 @@ public final class Main {
     methods.put("ways", mapsLogic);
     methods.put("nearest", mapsLogic);
     methods.put("route", mapsLogic);
+    //loads our Brown map initially
+    String[] mapCommand = {"map", "data/maps/maps.sqlite3"};
+    mapsLogic.run(mapCommand);
+    if (options.has("gui")) {
+      runSparkServer((int) options.valueOf("port"));
+    }
     boolean run = true;
     Reader repl = new Reader(methods);
     while (run) {
@@ -326,9 +329,6 @@ public final class Main {
       JSONObject data = new JSONObject(request.body());
       // List<String> suggestions = Arrays.asList("0", "0", "800", "500");
       // Map<String, Object> variables = ImmutableMap.of("map", suggestions);
-
-      String[] mapCommand = {"map", "data/maps/maps.sqlite3"};
-      mapsLogic.run(mapCommand);
       String[] wayCommand = {"ways", "41.82953", "-71.40729", "41.82433", "-71.39572"};
       HashMap<String, Object> map = mapsLogic.run(wayCommand);
       Map<String, Object> variables = ImmutableMap.of("map", map);

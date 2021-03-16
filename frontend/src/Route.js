@@ -1,6 +1,6 @@
 import TextBox from "./TextBox";
 import './App.css';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {AwesomeButton} from "react-awesome-button"
 import "react-awesome-button/dist/styles.css"
 import axios from "axios";
@@ -70,12 +70,16 @@ function Route() {
                 console.log(error);
             });
     }
+    //allows the map to be loaded in when page loads
+    useEffect(() => {
+        requestMap()
+    },[])
 
     return (
         <div>
             <h1> Maps! </h1>
             <h2></h2>
-            <AwesomeButton type="primary" onPress={requestMap}>Show Ways</AwesomeButton>
+            <AwesomeButton type="primary" onPress={requestMap}>Load Map </AwesomeButton>
             <h2></h2>
             {/*<h2>Ways: {JSON.stringify(route)}</h2>*/}
             <Maps map={map}/>

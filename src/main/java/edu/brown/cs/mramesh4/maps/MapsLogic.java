@@ -224,10 +224,55 @@ public class MapsLogic implements ActionMethod<String> {
           return;
         }
         PreparedStatement prep;
-        prep = conn.prepareStatement("SELECT w.id, w.start, w.end FROM node AS n JOIN way "
-                + "AS w WHERE ( (n.id = w.end) OR (n.id = w.start) ) AND (n.latitude >= ?) AND "
-                + "(n.latitude <= ?) AND (n.longitude >= ?) AND (n.longitude <= ?) "
-                + "ORDER BY w.id");
+//        prep = conn.prepareStatement("SELECT w.id, w.start, w.end FROM node AS n JOIN way "
+//                + "AS w WHERE ( (n.id = w.end) OR (n.id = w.start) ) AND (n.latitude >= ?) AND "
+//                + "(n.latitude <= ?) AND (n.longitude >= ?) AND (n.longitude <= ?) "
+//                + "ORDER BY w.id");
+//        // group by -- or distinct
+//        prep.setDouble(1, latMin);
+//        prep.setDouble(2, latMax);
+//        prep.setDouble(3, lonMin);
+//        prep.setDouble(4, lonMax);
+//        ResultSet rs = prep.executeQuery();
+//        LinkedHashSet<String> toPrint = new LinkedHashSet<>();
+//        //HashMap<String, String> newValue;
+//        while (rs.next()) {
+//          String wayId = rs.getString(1);
+//          String startId = rs.getString(2);
+//          String endId = rs.getString(3);
+//          toPrint.add(wayId);
+//        //  newValue = new HashMap<>();
+//          String[] newValue = new String[4];
+//
+//          PreparedStatement startPrep = conn.prepareStatement(
+//                  "SELECT node.latitude, node.longitude FROM node JOIN way "
+//                  + "WHERE node.id = ?");
+//          startPrep.setString(1, startId);
+//          ResultSet startRs = startPrep.executeQuery();
+//        //  newValue.add("sLat", startRs.getString(1));
+//          newValue[0] = startRs.getString(1);
+//        //  newValue.put("sLot", startRs.getString(2));
+//          newValue[1] = startRs.getString(2);
+//          PreparedStatement endPrep = conn.prepareStatement(
+//                  "SELECT node.latitude, node.longitude FROM node JOIN way "
+//                  + "WHERE node.id = ?");
+//          endPrep.setString(1, endId);
+//          ResultSet endRs = endPrep.executeQuery();
+//          // newValue.put("eLat", endRs.getString(1));
+//          newValue[2] = endRs.getString(1);
+//          //newValue.put("eLot", endRs.getString(2));
+//          newValue[3] = endRs.getString(2);
+//          frontendReturn.put(wayId, newValue);
+//        }
+//        rs.close();
+        prep = conn.prepareStatement("WITH startN AS (SELECT id AS startId, latitude AS "
+                + "startLat, longitude AS startLong FROM node), endN AS (SELECT id AS "
+                + "endId, latitude AS endLat, longitude AS endLong FROM node), "
+                + "relativeN AS (SELECT id as nodeId FROM node WHERE CAST(latitude AS DOUBLE)"
+                + "BETWEEN ? AND ? AND CAST(longitude AS DOUBLE) BETWEEN ? and ?),"
+                + "resultingWays AS (SELECT * FROM way WHERE start IN relativeN OR end IN "
+                + "relativeN) SELECT * FROM resultingWays AS rw JOIN startN AS sn ON "
+                + "rw.start == sn.startId JOIN endN AS en ON rw.end == en.endId ");
         // group by -- or distinct
         prep.setDouble(1, latMin);
         prep.setDouble(2, latMax);
@@ -238,31 +283,14 @@ public class MapsLogic implements ActionMethod<String> {
         //HashMap<String, String> newValue;
         while (rs.next()) {
           String wayId = rs.getString(1);
-          String startId = rs.getString(2);
-          String endId = rs.getString(3);
           toPrint.add(wayId);
-        //  newValue = new HashMap<>();
-          String[] newValue = new String[4];
-
-          PreparedStatement startPrep = conn.prepareStatement(
-                  "SELECT node.latitude, node.longitude FROM node JOIN way "
-                  + "WHERE node.id = ?");
-          startPrep.setString(1, startId);
-          ResultSet startRs = startPrep.executeQuery();
-        //  newValue.add("sLat", startRs.getString(1));
-          newValue[0] = startRs.getString(1);
-        //  newValue.put("sLot", startRs.getString(2));
-          newValue[1] = startRs.getString(2);
-          PreparedStatement endPrep = conn.prepareStatement(
-                  "SELECT node.latitude, node.longitude FROM node JOIN way "
-                  + "WHERE node.id = ?");
-          endPrep.setString(1, endId);
-          ResultSet endRs = endPrep.executeQuery();
-          // newValue.put("eLat", endRs.getString(1));
-          newValue[2] = endRs.getString(1);
-          //newValue.put("eLot", endRs.getString(2));
-          newValue[3] = endRs.getString(2);
-          frontendReturn.put(wayId, newValue);
+          String[] frontEndInfo = new String[5];
+          frontEndInfo[0] = rs.getString(7);
+          frontEndInfo[1] = rs.getString(8);
+          frontEndInfo[2] = rs.getString(10);
+          frontEndInfo[3] = rs.getString(11);
+          frontEndInfo[4] = rs.getString(3);
+          frontendReturn.put(wayId, frontEndInfo);
         }
         rs.close();
         for (String print: toPrint) {
@@ -294,7 +322,7 @@ public class MapsLogic implements ActionMethod<String> {
       System.err.println("ERROR: Please load a maps db into the REPL");
       return null;
     } else if (coms.length != 3) {
-      System.err.println("ERROR: Incorrect number or args provided for ways command");
+      System.err.println("ERROR: Incorrect number or args provided for nearest command");
       return null;
     } else {
       try {
@@ -442,7 +470,15 @@ public class MapsLogic implements ActionMethod<String> {
     WayNodes currNode = end;
     //looping through the route, adding ways to list
     while (currNode.getId() != start.getId()) {
+      String[] frontEndInfo = new String[5];
       Way currWay = currNode.getFrom();
+      frontEndInfo[0] = Double.toString(currWay.getFrom().getLat());
+      frontEndInfo[1] = Double.toString(currWay.getFrom().getLong());
+      frontEndInfo[2] = Double.toString(currWay.getTo().getLat());
+      frontEndInfo[3] = Double.toString(currWay.getTo().getLong());
+      //need to check ways that are type "route" and color them red!
+      frontEndInfo[4] = "route";
+      frontendReturn.put(currWay.getId(),frontEndInfo);
       route.add(currWay);
       currNode = currWay.getFrom();
     }

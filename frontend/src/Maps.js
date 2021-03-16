@@ -15,6 +15,7 @@ function Maps(props) {
     const canvasMap = props.map;
     const canvasWidth = 500;
     const canvasHeight = 500;
+    //gonna have to make these state variables
     const minBoundLat = 41.82953;
     const minBoundLon = -71.40729;
     const maxBoundLat = 41.82433;
@@ -30,14 +31,15 @@ function Maps(props) {
             console.log("circle")
             console.log(this.x)
             console.log(this.y)
-            this.context.beginPath();
-            this.context.fillStyle = "#be1212"
-            this.context.arc(this.x, this.y, 10, 0, Math.PI * 4, true);
-            this.context.stroke();
+            context.beginPath();
+            context.lineWidth = 5;
+            context.strokeStyle = "#be1212";
+            context.arc(this.x, this.y, 10, 0, Math.PI * 4, true);
+            context.stroke();
         }
-        clear() {
-            this.canvas.remove();
-        }
+        // clear() {
+        //     this.canvas.remove();
+        // }
     }
 
     let firstCircle = new Circle();
@@ -45,14 +47,25 @@ function Maps(props) {
 
 
     const drawWays = (context) => {
-        context.fillStyle = "#000000"
-        context.beginPath()
+        // context.fillStyle = "#000000"
+        context.lineWidth = 1;
         Object.keys(canvasMap).forEach((id) => {
             const curr = canvasMap[id]
-            context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
-            context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
+            if (curr[4] == 'unclassified' || curr[4] == ''){
+                context.beginPath()
+                context.strokeStyle = "#000000"
+                context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
+                context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
+                context.stroke();
+            }
+            else {
+                context.beginPath()
+                context.strokeStyle = "#008000"
+                context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
+                context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
+                context.stroke();
+            }
         })
-        context.stroke();
     }
 
     useEffect(() => {
@@ -105,6 +118,11 @@ function Maps(props) {
         )
             .then(response => {
                 setShortestRoute(response.data["shortestRoute"]);
+                Object.keys(shortestRoute).forEach((id) => {
+                    let curr = shortestRoute[id]
+                    console.log("Hello????")
+                    console.log(curr[0])
+                })
             })
             .catch(function (error) {
                 console.log(error);
@@ -121,20 +139,20 @@ function Maps(props) {
             let x = calcLonCoord(canvas, event.pageX)
             let y = calcLatCoord(canvas, event.pageY)
             if (firstClick == 0) {
-                // firstCircle.clear()
-                // firstCircle.context = context
-                // firstCircle.x = event.pageX - canvas.offsetLeft;
-                // firstCircle.y = event.pageY - canvas.offsetTop;
-                // firstCircle.draw()
+                //firstCircle.clear()
+                firstCircle.context = context
+                firstCircle.x = event.pageX - canvas.offsetLeft;
+                firstCircle.y = event.pageY - canvas.offsetTop;
+                firstCircle.draw()
                 setFirstMouseX(x)
                 setFirstMouseY(y)
                 firstClick = 1
             } else if (firstClick == 1) {
-               // let secondCircle = new Circle();
-                // secondCircle.context = context
-                // secondCircle.x = event.pageX - canvas.offsetLeft;
-                // secondCircle.y = event.pageY - canvas.offsetTop;
-                // secondCircle.draw()
+                let secondCircle = new Circle();
+                secondCircle.context = context
+                secondCircle.x = event.pageX - canvas.offsetLeft;
+                secondCircle.y = event.pageY - canvas.offsetTop;
+                secondCircle.draw()
                 setSecondMouseX(x)
                 setSecondMouseY(y)
                 firstClick = 0
