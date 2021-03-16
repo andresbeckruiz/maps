@@ -343,12 +343,10 @@ public final class Main {
       double startLat = data.getDouble("startLat");
       double endLon = data.getDouble("endLon");
       double endLat = data.getDouble("endLat");
-
       String[] command = {"route", Double.toString(startLon), Double.toString(startLat),
           Double.toString(endLon), Double.toString(endLat)};
       HashMap<String, Object> map = mapsLogic.run(command);
       Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
-      System.out.println(map.size() + " size");
       return GSON.toJson(variables);
     }
   }
