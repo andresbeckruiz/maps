@@ -341,18 +341,17 @@ public final class Main {
     public Object handle(Request request, Response response) throws Exception {
       // request is what is from user
       JSONObject data = new JSONObject(request.body());
-      double x = data.getDouble("mx");
-      double y = data.getDouble("my");
-      System.out.println(x);
-      System.out.println(y);
-      String[] command = {};
-//      String[] command = {"route", Double.toString(latOne), Double.toString(4),
-//          Double.toString(4), Double.toString(4)};
-   //   HashMap<String, Object> map = mapsLogic.run(command);
-      Map<String, Object> variables = ImmutableMap.of("shortestRoute", command);
-    //  System.out.println(latOne);
-      return GSON.toJson(variables);
+      double startLon = data.getDouble("startLon");
+      double startLat = data.getDouble("startLat");
+      double endLon = data.getDouble("endLon");
+      double endLat = data.getDouble("endLat");
 
+      String[] command = {"route", Double.toString(startLon), Double.toString(startLat),
+          Double.toString(endLon), Double.toString(endLat)};
+      HashMap<String, Object> map = mapsLogic.run(command);
+      Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
+     // System.out.println();
+      return GSON.toJson(variables);
     }
   }
 

@@ -72,11 +72,15 @@ function Maps(props) {
     }
 
     const requestShortestRoute  = () => {
+        console.log(firstMouseY + " startLon")
+        console.log(firstMouseX + " startLat")
+        console.log(secondMouseY + " endLon")
+        console.log(secondMouseX + " endLon")
         const toSend = {
-            mx : firstMouseX,
-            my : firstMouseY,
-            mx2 : secondMouseX,
-            my2 : secondMouseY,
+            startLon : firstMouseY,
+            startLat : firstMouseX,
+            endLon : secondMouseY,
+            endLat : secondMouseX,
         };
         let config = {
             headers: {
@@ -128,10 +132,10 @@ function Maps(props) {
     return <div>
         <AwesomeButton type="primary" onPress={requestShortestRoute}>Show Route</AwesomeButton>
         <h3></h3>
-        <TextBox label={"Start Latitude: "} change={setFirstMouseX} value={firstMouseX}/>
         <TextBox label={"Start Longitude: "} change={setFirstMouseY} value={firstMouseY}/>
-        <TextBox label={"End Latitude: "} change={setSecondMouseX} value={secondMouseX}/>
+        <TextBox label={"Start Latitude: "} change={setFirstMouseX} value={firstMouseX}/>
         <TextBox label={"End Longitude: "} change={setSecondMouseY} value={secondMouseY}/>
+        <TextBox label={"End Latitude: "} change={setSecondMouseX} value={secondMouseX}/>
         <canvas ref = {canvasRef} style = {{border:"2px solid black"}} width = "500" height="500" />
     </div>
 
