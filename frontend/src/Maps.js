@@ -80,7 +80,6 @@ function Maps(props) {
         }
         Object.keys(info).forEach((id) => {
             const curr = info[id]
-            //context.lineWidth = 1
             context.strokeStyle = curr.color;
             context.beginPath()
             context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
@@ -96,6 +95,14 @@ function Maps(props) {
         drawWays(context, 0, "")
     }, [drawWays]
     )
+
+    // useEffect(() => {
+    //         canvas = canvasRef.current
+    //         contextRef.current = canvas.getContext('2d')
+    //         context = contextRef.current
+    //         drawWays(context, 0, "")
+    //     }, [callEffect]
+    // )
 
     function calcLonPixels(lon) {
         const x = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
@@ -167,33 +174,40 @@ function Maps(props) {
             let y = calcLatCoord(canvas, event.pageY)
             circle.pop()
             if (firstClick == 0) {
-                if (circle.length < 1) {
-                    firstCircle.context = context
-                    firstCircle.x = event.pageX - canvas.offsetLeft;
-                    firstCircle.y = event.pageY - canvas.offsetTop;
-                    circle.push(firstCircle)
-                    circle[0].draw()
-                }
-                console.log(circle.length + " in effect 1")
+                firstCircle.context = context
+                firstCircle.x = event.pageX - canvas.offsetLeft;
+                firstCircle.y = event.pageY - canvas.offsetTop;
+                circle.push(firstCircle)
+                firstCircle.draw()
+               // console.log(circle.length + " in effect 1")
                 setFirstMouseX(x)
                 setFirstMouseY(y)
                 firstClick = 1
             } else if (firstClick == 1) {
-                if (circle.length < 1) {
-                    secondCircle.context = context
-                    secondCircle.x = event.pageX - canvas.offsetLeft;
-                    secondCircle.y = event.pageY - canvas.offsetTop;
-                    circle.push(secondCircle)
-                    circle[0].draw()
-                }
-                console.log(circle.length + " in effect 2")
+                secondCircle.context = context
+                secondCircle.x = event.pageX - canvas.offsetLeft;
+                secondCircle.y = event.pageY - canvas.offsetTop;
+                circle.push(secondCircle)
+                secondCircle.draw()
+              //  console.log(circle.length + " in effect 2")
                 setSecondMouseX(x)
                 setSecondMouseY(y)
+                firstClick = 2
+            } else {
+                callEffect()
                 firstClick = 0
             }
         })
     }, []
     )
+
+    function callEffect() {
+        Object.keys(shortestRoute).forEach((id) => {
+            const curr = shortestRoute[id]
+            curr.color = "#008000"
+         //   curr.color = "#b00014";
+        })
+    }
 
     return <div>
         <AwesomeButton type="primary" onPress={requestShortestRoute}>Show Route</AwesomeButton>
