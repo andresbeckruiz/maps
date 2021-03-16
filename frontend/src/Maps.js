@@ -94,6 +94,7 @@ function Maps(props) {
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
         drawWays(context, 0, "")
+        console.log("running")
     }, [drawWays]
     )
 
