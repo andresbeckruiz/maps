@@ -11,9 +11,7 @@ function Maps(props) {
     const contextRef = useRef();
     let canvas = canvasRef.current;
     let context = contextRef.current;
-
     let firstClick = 0
-
     const canvasMap = props.map;
     const canvasWidth = 500;
     const canvasHeight = 500;
@@ -27,11 +25,30 @@ function Maps(props) {
     const [secondMouseY, setSecondMouseY] = useState(0);
     const [shortestRoute, setShortestRoute] = useState("");
 
+    class Circle {
+        draw() {
+            console.log("circle")
+            console.log(this.x)
+            console.log(this.y)
+            this.context.beginPath();
+            this.context.fillStyle = "#be1212"
+            this.context.arc(this.x, this.y, 10, 0, Math.PI * 4, true);
+            this.context.stroke();
+        }
+        clear() {
+            this.canvas.remove();
+        }
+    }
+
+    let firstCircle = new Circle();
+  //  let secondCircle = new Circle();
+
+
     const drawWays = (context) => {
+        context.fillStyle = "#000000"
         context.beginPath()
         Object.keys(canvasMap).forEach((id) => {
             const curr = canvasMap[id]
-            context.fillStyle = "black"
             context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
             context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
         })
@@ -56,26 +73,19 @@ function Maps(props) {
         return y;
     }
 
-    // converting to lon/lat
-    // use bottom lat, top lat
-    // get pixel top bottom -- canvas.getBoundingClientRect
-    // offsetX and offsetY (see lab)
-
     function calcLonCoord(canvas, xClick) {
       let x = xClick - canvas.offsetLeft;
-      return ((x*(maxBoundLon - minBoundLon))/canvasHeight) - minBoundLon
+      let ret = ((x*(maxBoundLon - minBoundLon))/canvasHeight) + minBoundLon
+      return ret;
     }
 
     function calcLatCoord(canvas, yClick) {
         let y= yClick - canvas.offsetTop;
-        return ((y*(maxBoundLat - minBoundLat))/canvasHeight) - minBoundLat
+        let ret = ((y*(maxBoundLat - minBoundLat))/canvasHeight) + minBoundLat
+        return ret;
     }
 
     const requestShortestRoute  = () => {
-        console.log(firstMouseY + " startLon")
-        console.log(firstMouseX + " startLat")
-        console.log(secondMouseY + " endLon")
-        console.log(secondMouseX + " endLon")
         const toSend = {
             startLon : firstMouseY,
             startLat : firstMouseX,
@@ -106,21 +116,25 @@ function Maps(props) {
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
         canvas.addEventListener("mousedown", (event) => {
-            console.log(event.pageX + "  x")
-            console.log(event.pageY + "  y")
-          //  setFirstMouseX(event.pageX)
-           // setFirstMouseY(event.pageY)
-                // make a variable outside of useEffect
+          //  console.log(event.pageX + "  x")
+          //  console.log(event.pageY + "  y")
             let x = calcLonCoord(canvas, event.pageX)
             let y = calcLatCoord(canvas, event.pageY)
-
             if (firstClick == 0) {
-                console.log(firstClick + " on first")
+                // firstCircle.clear()
+                // firstCircle.context = context
+                // firstCircle.x = event.pageX - canvas.offsetLeft;
+                // firstCircle.y = event.pageY - canvas.offsetTop;
+                // firstCircle.draw()
                 setFirstMouseX(x)
                 setFirstMouseY(y)
                 firstClick = 1
             } else if (firstClick == 1) {
-                console.log(firstClick + "  on second")
+               // let secondCircle = new Circle();
+                // secondCircle.context = context
+                // secondCircle.x = event.pageX - canvas.offsetLeft;
+                // secondCircle.y = event.pageY - canvas.offsetTop;
+                // secondCircle.draw()
                 setSecondMouseX(x)
                 setSecondMouseY(y)
                 firstClick = 0
@@ -141,5 +155,6 @@ function Maps(props) {
 
 }
 export default Maps;
+
 // add more event listeners for
 // have strictly drawing function in here, etc.
