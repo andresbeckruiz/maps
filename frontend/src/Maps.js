@@ -12,7 +12,8 @@ function Maps(props) {
     let canvas = canvasRef.current;
     let context = contextRef.current;
     let firstClick = 0
-    const canvasMap = props.map;
+   // const canvasMap = props.map;
+    const [canvasMap, setCanvasMap] = useState(props.map);
     const canvasWidth = 500;
     const canvasHeight = 500;
     //gonna have to make these state variables
@@ -52,9 +53,6 @@ function Maps(props) {
             context.arc(this.x, this.y, 10, 0, Math.PI * 4, true);
             context.stroke();
         }
-        // clear() {
-        //      this.canvas.remove();
-        //  }
     }
 
   //  let firstCircle = new Circle();
@@ -69,6 +67,7 @@ function Maps(props) {
        } else {
            console.log("hi")
            info = canvasMap;
+           console.log(info.length)
            context.lineWidth = 1
            Object.keys(canvasMap).forEach((id) => {
                const curr = canvasMap[id]
@@ -93,13 +92,15 @@ function Maps(props) {
         canvas = canvasRef.current
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
-       // canvas.addEventListener("click", (event) => {
-            drawWays(context, 0, "")
+        drawWays(context, 0, "")
+        console.log("running")
+    }, [canvasMap]
+    )
 
       //  })
-        }, [drawWays]
+   //     }, [drawWays]
         //}, [drawWays]
-    )
+ //   )
     // useEffect(() => {
     //         canvas = canvasRef.current
     //         contextRef.current = canvas.getContext('2d')
@@ -199,20 +200,22 @@ function Maps(props) {
                 firstClick = 2
                 console.log(firstClick  + " second")
             } else {
+                 context.fillStyle = "#ffffff";
+                 context.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                setCircle([])
                 let firstCircle = new Circle();
                 firstCircle.context = context
                 firstCircle.x = event.pageX - canvas.offsetLeft;
                 firstCircle.y = event.pageY - canvas.offsetTop;
                 circle.push(firstCircle)
                 firstCircle.draw()
-                setFirstMouseX(x)
-                setFirstMouseY(y)
-                console.log(firstClick  + " third")
+                drawWays(context, canvasMap, "")
+                 setFirstMouseX(x)
+                 setFirstMouseY(y)
+                 console.log(firstClick  + " third")
                 firstClick = 1
-                setCircle([])
-                context.fillStyle = "#ffffff";
-                context.fillRect(0, 0, canvasWidth, canvasHeight);
-                drawWays(context, 0, "")
+
             }
         })
     }, []
