@@ -94,7 +94,7 @@ function Maps(props) {
         context = contextRef.current
         drawWays(context, 0, "")
         console.log("running")
-    }, [drawWays]
+    }, [canvasMap]
     )
 
     // useEffect(() => {
