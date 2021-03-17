@@ -149,6 +149,8 @@ function Maps(props) {
             })
             let lonPixels = calcLonPixels(currNode[1])
             let latPixels = calcLatPixels(currNode[0])
+            console.log(lonPixels + "    xxx")
+            console.log(latPixels + "    yyy")
 
             if (firstClick == 2){
                 context.fillStyle = "#ffffff";
@@ -156,7 +158,9 @@ function Maps(props) {
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                context.arc(200, lonPixels, latPixels, 0, Math.PI * 4, true);
+                console.log(lonPixels + " lon")
+                console.log(latPixels + " lat")
+                context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
                 context.stroke();
                 drawWays(context, 0, props.map)
             }
@@ -164,6 +168,8 @@ function Maps(props) {
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
+                console.log(lonPixels + " lon")
+                console.log(latPixels + " lat")
                 context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
                 context.stroke();
             }

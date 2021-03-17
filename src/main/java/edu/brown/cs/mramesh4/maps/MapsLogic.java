@@ -340,6 +340,12 @@ public class MapsLogic implements ActionMethod<String> {
         List<WayNodes> ret = wayNodesTree.nearestNeighbors(1, target, false);
         WayNodes nearest = ret.get(0);
         wayNodeCache.put(nearest.getId(), nearest);
+
+        String[] frontEndInfo = new String[2];
+        frontEndInfo[0] = Double.toString(nearest.getLat());
+        frontEndInfo[1] = Double.toString(nearest.getLong());
+        frontendReturn.put(nearest.getId(), frontEndInfo);
+
         System.out.println(nearest.getInfo("id"));
         return nearest;
       } catch (NumberFormatException e) {
