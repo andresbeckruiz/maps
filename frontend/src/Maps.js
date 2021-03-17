@@ -151,8 +151,27 @@ function Maps(props) {
             let data = response.data["nearest"]
             Object.keys(data).forEach((id) => {
                 currNode = data[id]
-                console.log("CurrNode 1 IN METHOD WTF " + currNode[1])
+                console.log("CurrNode 1 IN METHOD" + currNode[1])
             })
+            let lonPixels = calcLonPixels(currNode[1])
+            let latPixels = calcLatPixels(currNode[0])
+            if (firstClick == 2){
+                context.fillStyle = "#ffffff";
+                context.fillRect(0, 0, canvasWidth, canvasHeight);
+                context.beginPath();
+                context.lineWidth = 5;
+                context.strokeStyle = "#be1212";
+                context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
+                context.stroke();
+                drawWays(context, 0, props.map)
+            }
+            else {
+                context.beginPath();
+                context.lineWidth = 5;
+                context.strokeStyle = "#be1212";
+                context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
+                context.stroke();
+            }
         })
             .catch(function (error) {
                 console.log(error);
@@ -221,23 +240,23 @@ function Maps(props) {
         getNearestNode(y, x)
         // console.log("CurrNode 1 " + currNode[1])
         // console.log("CurrNode 0" + currNode[0])
-        let lonPixels = calcLonPixels(currNode[1])
-        let latPixels = calcLatPixels(currNode[0])
+        // let lonPixels = calcLonPixels(currNode[1])
+        // let latPixels = calcLatPixels(currNode[0])
         // console.log("Event page X - offset" + (event.pageX - canvas.offsetLeft))
         // console.log("Lonpixels" + lonPixels)
         // console.log("Event page Y - offset" + (event.pageY - canvas.offsetTop))
         // console.log("Latpixels" + latPixels)
         if (firstClick == 2) {
-            context.fillStyle = "#ffffff";
-            context.fillRect(0, 0, canvasWidth, canvasHeight);
-
-            context.beginPath();
-            context.lineWidth = 5;
-            context.strokeStyle = "#be1212";
-            context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
-            context.stroke();
-
-            drawWays(context, 0, props.map)
+            // context.fillStyle = "#ffffff";
+            // context.fillRect(0, 0, canvasWidth, canvasHeight);
+            //
+            // context.beginPath();
+            // context.lineWidth = 5;
+            // context.strokeStyle = "#be1212";
+            // context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
+            // context.stroke();
+            //
+            // drawWays(context, 0, props.map)
             //come back here if theres a bug between discrepancy of arc x and y and mouse x and y (shouldn't be)
             setFirstMouseX(x)
             setFirstMouseY(y)
@@ -245,11 +264,11 @@ function Maps(props) {
             //firstClick = 1
             setFirstClick(1)
         } else {
-            context.beginPath();
-            context.lineWidth = 5;
-            context.strokeStyle = "#be1212";
-            context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
-            context.stroke();
+            // context.beginPath();
+            // context.lineWidth = 5;
+            // context.strokeStyle = "#be1212";
+            // context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
+            // context.stroke();
             if (firstClick == 1) {
                 setSecondMouseX(x)
                 setSecondMouseY(y)
