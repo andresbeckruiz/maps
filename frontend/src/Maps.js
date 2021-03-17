@@ -11,10 +11,9 @@ function Maps(props) {
     const contextRef = useRef();
     let canvas = canvasRef.current;
     let context = contextRef.current;
-    let firstClick = 0
   //  const canvasMap = props.map;
     const [canvasMap, setCanvasMap] = useState(props.map);
-
+    //let firstClick = 0
     const canvasWidth = 500;
     const canvasHeight = 500;
     //gonna have to make these state variables
@@ -23,6 +22,7 @@ function Maps(props) {
     const minBoundLon = -71.40729;
     const maxBoundLat = 41.82433;
     const maxBoundLon = -71.39572;
+    const [firstClick, setFirstClick] = useState(0);
     const [firstMouseX, setFirstMouseX] = useState(0);
     const [firstMouseY, setFirstMouseY] = useState(0);
     const [secondMouseX, setSecondMouseX] = useState(0);
@@ -71,16 +71,6 @@ function Maps(props) {
             context.stroke();
         })
     }
-
-    useEffect(() => {
-            canvas = canvasRef.current
-            contextRef.current = canvas.getContext('2d')
-            context = contextRef.current
-            setCanvasMap(props.map)
-            drawWays(context, 0, props.map)
-            console.log("running")
-        }, [props.map]
-    )
 
     function calcLonPixels(lon) {
         const x = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
@@ -141,48 +131,112 @@ function Maps(props) {
             });
     }
 
+
+    // useEffect(() => {
+    //         canvas = canvasRef.current
+    //         contextRef.current = canvas.getContext('2d')
+    //         context = contextRef.current
+    //         canvas.addEventListener("mousedown", (event) => {
+    //             let x = calcLonCoord(canvas, event.pageX)
+    //             let y = calcLatCoord(canvas, event.pageY)
+    //             if (firstClick == 2) {
+    //                 context.fillStyle = "#ffffff";
+    //                 context.fillRect(0, 0, canvasWidth, canvasHeight);
+    //
+    //                 context.beginPath();
+    //                 context.lineWidth = 5;
+    //                 context.strokeStyle = "#be1212";
+    //                 context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
+    //                 context.stroke();
+    //
+    //                 drawWays(context, 0, props.map)
+    //                 setFirstMouseX(x)
+    //                 setFirstMouseY(y)
+    //                 console.log(firstClick  + " third")
+    //                 firstClick = 1
+    //             } else {
+    //                 context.beginPath();
+    //                 context.lineWidth = 5;
+    //                 context.strokeStyle = "#be1212";
+    //                 context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
+    //                 context.stroke();
+    //                 if (firstClick == 1) {
+    //                     setSecondMouseX(x)
+    //                     setSecondMouseY(y)
+    //                     firstClick = 2
+    //                     console.log(firstClick  + " 1")
+    //                 } else if (firstClick == 0) {
+    //                     setFirstMouseX(x)
+    //                     setFirstMouseY(y)
+    //                     firstClick = 1
+    //                     console.log(firstClick  + " 0")
+    //                 }
+    //             }
+    //         })
+    //     }, []
+    // )
+
+    const down = () => {
+        //console.log("down!")
+    }
+
+    const click = (event) => {
+        canvas = canvasRef.current
+        contextRef.current = canvas.getContext('2d')
+        context = contextRef.current
+        let x = calcLonCoord(canvas, event.pageX)
+        let y = calcLatCoord(canvas, event.pageY)
+        if (firstClick == 2) {
+            context.fillStyle = "#ffffff";
+            context.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            context.beginPath();
+            context.lineWidth = 5;
+            context.strokeStyle = "#be1212";
+            context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
+            context.stroke();
+
+            drawWays(context, 0, props.map)
+            setFirstMouseX(x)
+            setFirstMouseY(y)
+            // console.log(firstClick.valueOf()  + " third")
+            //firstClick = 1
+            setFirstClick(1)
+        } else {
+            context.beginPath();
+            context.lineWidth = 5;
+            context.strokeStyle = "#be1212";
+            context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
+            context.stroke();
+            if (firstClick == 1) {
+                setSecondMouseX(x)
+                setSecondMouseY(y)
+                //firstClick = 2
+                setFirstClick(2)
+                // console.log("Got here!")
+                // console.log(firstClick.valueOf()  + " 1")
+            } else {
+                setFirstMouseX(x)
+                setFirstMouseY(y)
+                //firstClick = 1
+                setFirstClick(1)
+                // console.log(firstClick.valueOf()  + " 0")
+            }
+        }
+    }
+
+    const up = () => {
+        //console.log("up")
+    }
+
     useEffect(() => {
             canvas = canvasRef.current
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
-            canvas.addEventListener("mousedown", (event) => {
-                let x = calcLonCoord(canvas, event.pageX)
-                let y = calcLatCoord(canvas, event.pageY)
-                if (firstClick == 2) {
-                    context.fillStyle = "#ffffff";
-                    context.fillRect(0, 0, canvasWidth, canvasHeight);
-
-                    context.beginPath();
-                    context.lineWidth = 5;
-                    context.strokeStyle = "#be1212";
-                    context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
-                    context.stroke();
-
-                    drawWays(context, 0, props.map)
-                    setFirstMouseX(x)
-                    setFirstMouseY(y)
-                    console.log(firstClick  + " third")
-                    firstClick = 1
-                } else {
-                    context.beginPath();
-                    context.lineWidth = 5;
-                    context.strokeStyle = "#be1212";
-                    context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
-                    context.stroke();
-                    if (firstClick == 1) {
-                        setSecondMouseX(x)
-                        setSecondMouseY(y)
-                        firstClick = 2
-                        console.log(firstClick  + " 1")
-                    } else if (firstClick == 0) {
-                        setFirstMouseX(x)
-                        setFirstMouseY(y)
-                        firstClick = 1
-                        console.log(firstClick  + " 0")
-                    }
-                }
-            })
-        }, []
+            //setCanvasMap(props.map)
+            drawWays(context, 0, props.map)
+            //console.log("running")
+        }, [props.map]
     )
 
     return <div>
@@ -192,7 +246,8 @@ function Maps(props) {
         <TextBox label={"Start Latitude: "} change={setFirstMouseX} value={firstMouseX}/>
         <TextBox label={"End Longitude: "} change={setSecondMouseY} value={secondMouseY}/>
         <TextBox label={"End Latitude: "} change={setSecondMouseX} value={secondMouseX}/>
-        <canvas ref = {canvasRef} style = {{border:"2px solid black"}} width = "500" height="500" />
+        <canvas onClick={click} onMouseDown={down} onMouseUp={up} ref={canvasRef}
+                style={{border:"2px solid black"}} width="500" height="500" />
     </div>
 
 }
