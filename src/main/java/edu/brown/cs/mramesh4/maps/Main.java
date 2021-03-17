@@ -338,6 +338,7 @@ public final class Main {
     @Override
     public Object handle(Request request, Response response) throws Exception {
       // request is what is from user
+      System.out.println("in java");
       JSONObject data = new JSONObject(request.body());
       double startLon = data.getDouble("startLon");
       double startLat = data.getDouble("startLat");

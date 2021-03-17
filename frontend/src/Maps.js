@@ -43,27 +43,15 @@ function Maps(props) {
     // 4. call draw
     // 5. after setting all to red, route will show up in red
 
-    class Circle {
-        draw() {
-            context.beginPath();
-            context.lineWidth = 5;
-            context.strokeStyle = "#be1212";
-            context.arc(this.x, this.y, 10, 0, Math.PI * 4, true);
-            context.stroke();
-        }
-    }
-    //  let firstCircle = new Circle();
-    //  let secondCircle = new Circle();
-
     const drawWays = (context, newMap, route) => {
         if (newMap == 1) {
-            console.log("noway")
+            console.log("drawing route")
             info = route;
             context.lineWidth = 4
         } else {
-            console.log("hi")
+            console.log("drawing entire map")
             info = route;
-            console.log(info.length)
+            console.log(typeof info + " info type")
             context.lineWidth = 1
             Object.keys(info).forEach((id) => {
                 const curr = info[id]
@@ -88,7 +76,7 @@ function Maps(props) {
             canvas = canvasRef.current
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
-        setCanvasMap(props.map)
+            setCanvasMap(props.map)
             drawWays(context, 0, props.map)
             console.log("running")
         }, [props.map]
@@ -117,6 +105,10 @@ function Maps(props) {
     }
 
     const requestShortestRoute  = () => {
+        console.log(firstMouseY + " a")
+        console.log(firstMouseX + " b")
+        console.log(secondMouseY + " c")
+        console.log(secondMouseX + " d")
         const toSend = {
             startLon : firstMouseY,
             startLat : firstMouseX,
@@ -133,18 +125,14 @@ function Maps(props) {
             "http://localhost:4567/shortestRoute",
             toSend,
             config
-        )
-            .then(response => {
-                //  console.log(circle.length + " len 1")
-                //  circle.pop()
-                //  circle.pop()
-                //    circle = []
-                //   console.log(circle.length + " len 2")
+        ).then(response => {
+            console.log("went here")
                 setShortestRoute(response.data["shortestRoute"]);
                 Object.keys(shortestRoute).forEach((id) => {
                     const curr = shortestRoute[id]
                     curr.color = "#b00014";
                 })
+            console.log("down here")
                 drawWays(context, 1, shortestRoute);
 
             })
@@ -158,47 +146,40 @@ function Maps(props) {
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
             canvas.addEventListener("mousedown", (event) => {
-                //  console.log(event.pageX + "  x")
-                //  console.log(event.pageY + "  y")
                 let x = calcLonCoord(canvas, event.pageX)
                 let y = calcLatCoord(canvas, event.pageY)
-                if (firstClick == 0) {
-                    let firstCircle = new Circle();
-                    firstCircle.context = context
-                    firstCircle.x = event.pageX - canvas.offsetLeft;
-                    firstCircle.y = event.pageY - canvas.offsetTop;
-                    circle.push(firstCircle)
-                    firstCircle.draw()
-                    setFirstMouseX(x)
-                    setFirstMouseY(y)
-                    firstClick = 1
-                    console.log(firstClick  + " first")
-                } else if (firstClick == 1) {
-                    let secondCircle = new Circle();
-                    secondCircle.context = context
-                    secondCircle.x = event.pageX - canvas.offsetLeft;
-                    secondCircle.y = event.pageY - canvas.offsetTop;
-                    circle.push(secondCircle)
-                    secondCircle.draw()
-                    setSecondMouseX(x)
-                    setSecondMouseY(y)
-                    firstClick = 2
-                    console.log(firstClick  + " second")
-                } else {
+                if (firstClick == 2) {
                     context.fillStyle = "#ffffff";
                     context.fillRect(0, 0, canvasWidth, canvasHeight);
-                    setCircle([])
-                    let firstCircle = new Circle();
-                    firstCircle.context = context
-                    firstCircle.x = event.pageX - canvas.offsetLeft;
-                    firstCircle.y = event.pageY - canvas.offsetTop;
-                    circle.push(firstCircle)
-                    firstCircle.draw()
-                    drawWays(context, 0, canvasMap)
+
+                    context.beginPath();
+                    context.lineWidth = 5;
+                    context.strokeStyle = "#be1212";
+                    context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
+                    context.stroke();
+
+                    drawWays(context, 0, props.map)
                     setFirstMouseX(x)
                     setFirstMouseY(y)
                     console.log(firstClick  + " third")
                     firstClick = 1
+                } else {
+                    context.beginPath();
+                    context.lineWidth = 5;
+                    context.strokeStyle = "#be1212";
+                    context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
+                    context.stroke();
+                    if (firstClick == 1) {
+                        setSecondMouseX(x)
+                        setSecondMouseY(y)
+                        firstClick = 2
+                        console.log(firstClick  + " 1")
+                    } else if (firstClick == 0) {
+                        setFirstMouseX(x)
+                        setFirstMouseY(y)
+                        firstClick = 1
+                        console.log(firstClick  + " 0")
+                    }
                 }
             })
         }, []
