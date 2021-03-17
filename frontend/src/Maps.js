@@ -22,6 +22,8 @@ function Maps(props) {
     const minBoundLon = -71.40729;
     const maxBoundLat = 41.82433;
     const maxBoundLon = -71.39572;
+    const [mouseDown , setMouseDown] = useState([])
+    const [mouseUp, setMouseUp] = useState([])
     const [firstClick, setFirstClick] = useState(0);
     const [firstMouseX, setFirstMouseX] = useState(0);
     const [firstMouseY, setFirstMouseY] = useState(0);
@@ -220,20 +222,23 @@ function Maps(props) {
         canvas = canvasRef.current
         let x = event.pageX - canvas.offsetLeft
         let y = event.pageY - canvas.offsetTop
-
+        setMouseUp([x - mouseDown[0], y - mouseDown[1]])
     }
 
     const down = (event) => {
         canvas = canvasRef.current
         let x = event.pageX - canvas.offsetLeft
         let y = event.pageY - canvas.offsetTop
-
+        setMouseDown([x,y])
     }
 
     const click = (event) => {
         canvas = canvasRef.current
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
+        if (mouseDown[0] == 0 && mouseDown[1] == 0){
+          console.log("THIS WAS A CLICK!")
+        }
         let x = calcLonCoord(canvas, event.pageX)
         let y = calcLatCoord(canvas, event.pageY)
         getNearestNode(y, x)

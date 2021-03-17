@@ -51,6 +51,7 @@ public final class Main {
   private static StarsLogic db;
   private static MapsLogic mapsLogic;
   private static final Gson GSON = new Gson();
+  private boolean firstRun;
 
   private Main(String[] args) {
     this.args = args;
@@ -78,8 +79,7 @@ public final class Main {
     methods.put("nearest", mapsLogic);
     methods.put("route", mapsLogic);
     //loads our Brown map initially
-    String[] mapCommand = {"map", "data/maps/maps.sqlite3"};
-    mapsLogic.run(mapCommand);
+    firstRun = true;
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
     }
@@ -321,7 +321,6 @@ public final class Main {
       HashMap<String, Object> map = mapsLogic.run(command);
       Map<String, Object> variables = ImmutableMap.of("way", map);
       return GSON.toJson(variables);
-
     }
   }
 
