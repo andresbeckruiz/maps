@@ -28,9 +28,7 @@ function Maps(props) {
     const [secondMouseX, setSecondMouseX] = useState(0);
     const [secondMouseY, setSecondMouseY] = useState(0);
     const [shortestRoute, setShortestRoute] = useState("");
-    const [circle, setCircle] = useState([]);
     // set a list of colors - certain type of ID be a color
-    //  let circle = [] // to clear, reset this circle to an empty array
     // add center point to circle array
     const route = [] // so I can access this everywhere
     // everytime you get a route, you add parsed ways to your route
@@ -94,11 +92,11 @@ function Maps(props) {
         return ret;
     }
 
-    const requestShortestRoute  = () => {
-        console.log(firstMouseY + " a")
-        console.log(firstMouseX + " b")
-        console.log(secondMouseY + " c")
-        console.log(secondMouseX + " d")
+    const requestShortestRoute = () => {
+        // console.log(firstMouseY + " a")
+        // console.log(firstMouseX + " b")
+        // console.log(secondMouseY + " c")
+        // console.log(secondMouseX + " d")
         const toSend = {
             startLon : firstMouseY,
             startLat : firstMouseX,
@@ -117,19 +115,21 @@ function Maps(props) {
             config
         ).then(response => {
             console.log("went here")
-                setShortestRoute(response.data["shortestRoute"]);
-                Object.keys(shortestRoute).forEach((id) => {
-                    const curr = shortestRoute[id]
-                    curr.color = "#b00014";
-                })
+            setShortestRoute(response.data["shortestRoute"]);
+            console.log("DATA" + response.data["shortestRoute"]);
+            Object.keys(shortestRoute).forEach((id) => {
+                const curr = shortestRoute[id]
+                curr.color = "#b00014";
+            })
             console.log("down here")
-                drawWays(context, 1, shortestRoute);
-
+            console.log(shortestRoute.valueOf());
+            drawWays(context, 1, response.data["shortestRoute"]);
             })
             .catch(function (error) {
                 console.log(error);
             });
     }
+
 
 
     // useEffect(() => {
