@@ -36,7 +36,6 @@ public class MapsLogic implements ActionMethod<String> {
    * all the nodes in the database.
    */
   public MapsLogic() {
-    frontendReturn = new HashMap<>();
     wayNodeList = new ArrayList<WayNodes>();
   }
 
@@ -46,8 +45,8 @@ public class MapsLogic implements ActionMethod<String> {
    */
   @Override
   public HashMap<String, Object> run(String[] coms) {
-    frontendReturn = new HashMap<>();
     //assuming the length > 0
+    frontendReturn = new HashMap<>();
     if (coms.length > 0) {
       //run regardless of uppercase and trimmed space
       switch (coms[0]) {
@@ -99,8 +98,14 @@ public class MapsLogic implements ActionMethod<String> {
       if (isValidTable(tables)) {
         PreparedStatement prep;
         //get all of the nodes table
+      //  prep = conn.prepareStatement(
+      //  prep = conn.prepareStatement(
+        //    "SELECT * from node");
         prep = conn.prepareStatement(
-          "SELECT * from node");
+            "SELECT node.* FROM 'node', 'way' WHERE"
+                + "((way.start = node.id) OR (way.end = node.id))"
+                + " AND (way.type != '') AND (way.type != ?);");
+        prep.setString(1, "unclassified");
         ResultSet rs = prep.executeQuery();
         wayNodeList.clear();
         //makes sure our table is correctly columned
@@ -158,7 +163,7 @@ public class MapsLogic implements ActionMethod<String> {
     try {
       for (int i = 0; i < tablename.length; i++) {
         boolean exist = conn.getMetaData().getTables(null,
-                null, tablename[i], null).next();
+            null, tablename[i], null).next();
         if (!exist) {
           return false;
         }
@@ -221,7 +226,7 @@ public class MapsLogic implements ActionMethod<String> {
         Double lonMax = Double.parseDouble(coms[4]);
         if (latMax < latMin || lonMax < lonMin) {
           System.err.println("ERROR: Please make sure the values for "
-                  + "<lat2><long2> are less than <lat1><long1>");
+              + "<lat2><long2> are less than <lat1><long1>");
           return;
         }
         PreparedStatement prep;
@@ -267,13 +272,13 @@ public class MapsLogic implements ActionMethod<String> {
 //        }
 //        rs.close();
         prep = conn.prepareStatement("WITH startN AS (SELECT id AS startId, latitude AS "
-                + "startLat, longitude AS startLong FROM node), endN AS (SELECT id AS "
-                + "endId, latitude AS endLat, longitude AS endLong FROM node), "
-                + "relativeN AS (SELECT id as nodeId FROM node WHERE CAST(latitude AS DOUBLE)"
-                + "BETWEEN ? AND ? AND CAST(longitude AS DOUBLE) BETWEEN ? and ?),"
-                + "resultingWays AS (SELECT * FROM way WHERE start IN relativeN OR end IN "
-                + "relativeN) SELECT * FROM resultingWays AS rw JOIN startN AS sn ON "
-                + "rw.start == sn.startId JOIN endN AS en ON rw.end == en.endId ");
+            + "startLat, longitude AS startLong FROM node), endN AS (SELECT id AS "
+            + "endId, latitude AS endLat, longitude AS endLong FROM node), "
+            + "relativeN AS (SELECT id as nodeId FROM node WHERE CAST(latitude AS DOUBLE)"
+            + "BETWEEN ? AND ? AND CAST(longitude AS DOUBLE) BETWEEN ? and ?),"
+            + "resultingWays AS (SELECT * FROM way WHERE start IN relativeN OR end IN "
+            + "relativeN) SELECT * FROM resultingWays AS rw JOIN startN AS sn ON "
+            + "rw.start == sn.startId JOIN endN AS en ON rw.end == en.endId ");
         // group by -- or distinct
         prep.setDouble(1, latMin);
         prep.setDouble(2, latMax);
@@ -336,10 +341,6 @@ public class MapsLogic implements ActionMethod<String> {
         WayNodes nearest = ret.get(0);
         wayNodeCache.put(nearest.getId(), nearest);
         System.out.println(nearest.getInfo("id"));
-        String[] frontEndInfo = new String[2];
-        frontEndInfo[0] = Double.toString(nearest.getLat());
-        frontEndInfo[1] = Double.toString(nearest.getLong());
-        frontendReturn.put(nearest.getId(), frontEndInfo);
         return nearest;
       } catch (NumberFormatException e) {
         System.err.println("ERROR: Please supply a valid double");
@@ -490,7 +491,7 @@ public class MapsLogic implements ActionMethod<String> {
     for (int i = route.size() - 1; i >= 0; i--) {
       //formatting string to print in terminal
       System.out.println(route.get(i).getFrom().getId() + " -> " + route.get(i).getTo().getId()
-              + " : " + route.get(i).getId());
+          + " : " + route.get(i).getId());
     }
   }
 
@@ -529,7 +530,7 @@ public class MapsLogic implements ActionMethod<String> {
           //instantiate WayNode object
           while (answer1.next()) {
             ws = new WayNodes(answer1.getString(1),
-              answer1.getDouble(2), answer1.getDouble(3), conn);
+                answer1.getDouble(2), answer1.getDouble(3), conn);
             wayNodeCache.put(ws.getId(), ws);
           }
           return ws;
@@ -573,5 +574,3 @@ public class MapsLogic implements ActionMethod<String> {
   }
 
 }
-
-
