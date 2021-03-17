@@ -12,8 +12,8 @@ function Maps(props) {
     let canvas = canvasRef.current;
     let context = contextRef.current;
     let firstClick = 0
-   // const canvasMap = props.map;
-    const [canvasMap, setCanvasMap] = useState(props.map);
+    const canvasMap = props.map;
+    //const [canvasMap, setCanvasMap] = useState(props.map);
     const canvasWidth = 500;
     const canvasHeight = 500;
     //gonna have to make these state variables
