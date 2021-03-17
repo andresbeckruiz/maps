@@ -37,6 +37,7 @@ public class MapsLogic implements ActionMethod<String> {
    */
   public MapsLogic() {
     wayNodeList = new ArrayList<WayNodes>();
+    frontendReturn = new HashMap<>();
   }
 
   /**
