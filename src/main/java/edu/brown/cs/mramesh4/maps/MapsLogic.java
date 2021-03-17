@@ -46,8 +46,8 @@ public class MapsLogic implements ActionMethod<String> {
    */
   @Override
   public HashMap<String, Object> run(String[] coms) {
-    //assuming the length > 0
     frontendReturn = new HashMap<>();
+    //assuming the length > 0
     if (coms.length > 0) {
       //run regardless of uppercase and trimmed space
       switch (coms[0]) {
