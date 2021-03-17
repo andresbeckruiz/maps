@@ -156,7 +156,7 @@ function Maps(props) {
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                context.arc(200, 100, 10, 0, Math.PI * 4, true);
+                context.arc(200, lonPixels, latPixels, 0, Math.PI * 4, true);
                 context.stroke();
                 drawWays(context, 0, props.map)
             }
