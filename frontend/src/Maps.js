@@ -94,10 +94,6 @@ function Maps(props) {
     }
 
     const requestShortestRoute = () => {
-        // console.log(firstMouseY + " a")
-        // console.log(firstMouseX + " b")
-        // console.log(secondMouseY + " c")
-        // console.log(secondMouseX + " d")
         const toSend = {
             startLon : firstMouseY,
             startLat : firstMouseX,
@@ -115,16 +111,12 @@ function Maps(props) {
             toSend,
             config
         ).then(response => {
-            console.log("went here")
             setShortestRoute(response.data["shortestRoute"]);
-            console.log("DATA" + response.data["shortestRoute"]);
-            //might be a bug here because of ASYNC
             Object.keys(shortestRoute).forEach((id) => {
                 const curr = shortestRoute[id]
                 curr.color = "#b00014";
             })
-            console.log("down here")
-            console.log(shortestRoute.valueOf());
+            // console.log(shortestRoute.valueOf());
             drawWays(context, 1, response.data["shortestRoute"]);
             })
             .catch(function (error) {
@@ -223,12 +215,18 @@ function Maps(props) {
     //     }, []
     // )
 
-    const up = () => {
-        //console.log("up")
+    const up = (event) => {
+        canvas = canvasRef.current
+        let x = event.pageX - canvas.offsetLeft
+        let y = event.pageY - canvas.offsetTop
+
     }
 
-    const down = () => {
-        //console.log("down!")
+    const down = (event) => {
+        canvas = canvasRef.current
+        let x = event.pageX - canvas.offsetLeft
+        let y = event.pageY - canvas.offsetTop
+
     }
 
     const click = (event) => {
@@ -238,50 +236,19 @@ function Maps(props) {
         let x = calcLonCoord(canvas, event.pageX)
         let y = calcLatCoord(canvas, event.pageY)
         getNearestNode(y, x)
-        // console.log("CurrNode 1 " + currNode[1])
-        // console.log("CurrNode 0" + currNode[0])
-        // let lonPixels = calcLonPixels(currNode[1])
-        // let latPixels = calcLatPixels(currNode[0])
-        // console.log("Event page X - offset" + (event.pageX - canvas.offsetLeft))
-        // console.log("Lonpixels" + lonPixels)
-        // console.log("Event page Y - offset" + (event.pageY - canvas.offsetTop))
-        // console.log("Latpixels" + latPixels)
         if (firstClick == 2) {
-            // context.fillStyle = "#ffffff";
-            // context.fillRect(0, 0, canvasWidth, canvasHeight);
-            //
-            // context.beginPath();
-            // context.lineWidth = 5;
-            // context.strokeStyle = "#be1212";
-            // context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
-            // context.stroke();
-            //
-            // drawWays(context, 0, props.map)
-            //come back here if theres a bug between discrepancy of arc x and y and mouse x and y (shouldn't be)
             setFirstMouseX(x)
             setFirstMouseY(y)
-            // console.log(firstClick.valueOf()  + " third")
-            //firstClick = 1
             setFirstClick(1)
         } else {
-            // context.beginPath();
-            // context.lineWidth = 5;
-            // context.strokeStyle = "#be1212";
-            // context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
-            // context.stroke();
             if (firstClick == 1) {
                 setSecondMouseX(x)
                 setSecondMouseY(y)
-                //firstClick = 2
                 setFirstClick(2)
-                // console.log("Got here!")
-                // console.log(firstClick.valueOf()  + " 1")
             } else {
                 setFirstMouseX(x)
                 setFirstMouseY(y)
-                //firstClick = 1
                 setFirstClick(1)
-                // console.log(firstClick.valueOf()  + " 0")
             }
         }
     }
