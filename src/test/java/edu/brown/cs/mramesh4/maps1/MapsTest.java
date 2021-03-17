@@ -37,7 +37,7 @@ public class MapsTest{
     assertEquals(_maps.getWayNodeList().size(), 6, DELTA);
     String[] db2 = new String[]{"map", "data/maps/maps.sqlite3"};
     _maps.run(db2);
-    assertEquals(_maps.getWayNodeList().size(), 639498, DELTA);
+    assertEquals(_maps.getWayNodeList().size(), 392958, DELTA);
     assertFalse(_maps.getWayNodeList().isEmpty());
     String[] db3 = new String[]{"ways", "41.02", "-38.22", "43.02", "-37.22"};
     _maps.run(db3);
