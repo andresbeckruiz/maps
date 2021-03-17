@@ -102,7 +102,7 @@ public class MapsLogic implements ActionMethod<String> {
       //  prep = conn.prepareStatement(
         //    "SELECT * from node");
         prep = conn.prepareStatement(
-            "SELECT node.* FROM 'node', 'way' WHERE"
+            "SELECT DISTINCT node.* FROM 'node', 'way' WHERE"
                 + "((way.start = node.id) OR (way.end = node.id))"
                 + " AND (way.type != '') AND (way.type != ?);");
         prep.setString(1, "unclassified");

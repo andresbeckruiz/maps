@@ -147,13 +147,14 @@ function Maps(props) {
             })
             let lonPixels = calcLonPixels(currNode[1])
             let latPixels = calcLatPixels(currNode[0])
+
             if (firstClick == 2){
                 context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvasWidth, canvasHeight);
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
+                context.arc(200, 100, 10, 0, Math.PI * 4, true);
                 context.stroke();
                 drawWays(context, 0, props.map)
             }
