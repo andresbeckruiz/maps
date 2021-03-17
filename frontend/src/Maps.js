@@ -114,7 +114,6 @@ function Maps(props) {
             toSend,
             config
         ).then(response => {
-            console.log("went here")
             setShortestRoute(response.data["shortestRoute"]);
             console.log("DATA" + response.data["shortestRoute"]);
             //might be a bug here because of ASYNC
@@ -122,7 +121,6 @@ function Maps(props) {
                 const curr = shortestRoute[id]
                 curr.color = "#b00014";
             })
-            console.log("down here")
             console.log(shortestRoute.valueOf());
             drawWays(context, 1, response.data["shortestRoute"]);
             })
@@ -261,9 +259,7 @@ function Maps(props) {
             canvas = canvasRef.current
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
-            //setCanvasMap(props.map)
             drawWays(context, 0, props.map)
-            //console.log("running")
         }, [props.map]
     )
 
@@ -280,6 +276,3 @@ function Maps(props) {
 
 }
 export default Maps;
-
-// add more event listeners for
-// have strictly drawing function in here, etc.
