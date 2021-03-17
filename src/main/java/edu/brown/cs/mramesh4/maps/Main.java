@@ -135,6 +135,7 @@ public final class Main {
     Spark.post("/way", new WayHandler());
     Spark.post("/map", new MapHandler());
     Spark.post("/shortestRoute", new ShortestRouteHandler());
+    Spark.post("/nearest", new NearestHandler());
   }
 
   /**
@@ -323,6 +324,7 @@ public final class Main {
 
     }
   }
+
   private static class MapHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
@@ -348,6 +350,19 @@ public final class Main {
           Double.toString(endLon), Double.toString(endLat)};
       HashMap<String, Object> map = mapsLogic.run(command);
       Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
+      return GSON.toJson(variables);
+    }
+  }
+
+  private static class NearestHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      JSONObject data = new JSONObject(request.body());
+      double nearestLat = data.getDouble("nearLat");
+      double nearestLon = data.getDouble("nearLon");
+      String[] command = {"nearest", Double.toString(nearestLat), Double.toString(nearestLon)};
+      HashMap<String, Object> map = mapsLogic.run(command);
+      Map<String, Object> variables = ImmutableMap.of("nearest", map);
       return GSON.toJson(variables);
     }
   }

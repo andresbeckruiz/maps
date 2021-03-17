@@ -36,6 +36,7 @@ public class MapsLogic implements ActionMethod<String> {
    * all the nodes in the database.
    */
   public MapsLogic() {
+    frontendReturn = new HashMap<>();
     wayNodeList = new ArrayList<WayNodes>();
   }
 
@@ -335,6 +336,10 @@ public class MapsLogic implements ActionMethod<String> {
         WayNodes nearest = ret.get(0);
         wayNodeCache.put(nearest.getId(), nearest);
         System.out.println(nearest.getInfo("id"));
+        String[] frontEndInfo = new String[2];
+        frontEndInfo[0] = Double.toString(nearest.getLat());
+        frontEndInfo[1] = Double.toString(nearest.getLong());
+        frontendReturn.put(nearest.getId(), frontEndInfo);
         return nearest;
       } catch (NumberFormatException e) {
         System.err.println("ERROR: Please supply a valid double");

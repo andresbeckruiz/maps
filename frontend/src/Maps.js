@@ -87,7 +87,7 @@ function Maps(props) {
     }
 
     function calcLatCoord(canvas, yClick) {
-        let y= yClick - canvas.offsetTop;
+        let y = yClick - canvas.offsetTop;
         let ret = ((y*(maxBoundLat - minBoundLat))/canvasHeight) + minBoundLat
         return ret;
     }
@@ -117,6 +117,7 @@ function Maps(props) {
             console.log("went here")
             setShortestRoute(response.data["shortestRoute"]);
             console.log("DATA" + response.data["shortestRoute"]);
+            //might be a bug here because of ASYNC
             Object.keys(shortestRoute).forEach((id) => {
                 const curr = shortestRoute[id]
                 curr.color = "#b00014";
@@ -130,6 +131,32 @@ function Maps(props) {
             });
     }
 
+    const getNearestNode = (nearestLat, nearestLong) => {
+        const toSend = {
+            nearLat : nearestLat,
+            nearLon : nearestLong
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.post(
+            "http://localhost:4567/nearest",
+            toSend,
+            config
+        ).then(response => {
+            let data = response.data["nearest"]
+            Object.keys(data).forEach((id) => {
+                let currNode = data[id]
+                console.log(currNode)
+            })
+        })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
 
 
     // useEffect(() => {
@@ -176,6 +203,10 @@ function Maps(props) {
     //     }, []
     // )
 
+    const up = () => {
+        //console.log("up")
+    }
+
     const down = () => {
         //console.log("down!")
     }
@@ -186,6 +217,7 @@ function Maps(props) {
         context = contextRef.current
         let x = calcLonCoord(canvas, event.pageX)
         let y = calcLatCoord(canvas, event.pageY)
+        getNearestNode(x,y)
         if (firstClick == 2) {
             context.fillStyle = "#ffffff";
             context.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -223,10 +255,6 @@ function Maps(props) {
                 // console.log(firstClick.valueOf()  + " 0")
             }
         }
-    }
-
-    const up = () => {
-        //console.log("up")
     }
 
     useEffect(() => {
