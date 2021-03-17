@@ -12,7 +12,8 @@ function Maps(props) {
     let canvas = canvasRef.current;
     let context = contextRef.current;
     let firstClick = 0
-    const canvasMap = props.map;
+  //  const canvasMap = props.map;
+    const [canvasMap, setCanvasMap] = useState(props.map);
 
     const canvasWidth = 500;
     const canvasHeight = 500;
@@ -44,9 +45,6 @@ function Maps(props) {
 
     class Circle {
         draw() {
-            // console.log("circle")
-            // console.log(this.x)
-            // console.log(this.y)
             context.beginPath();
             context.lineWidth = 5;
             context.strokeStyle = "#be1212";
@@ -54,10 +52,8 @@ function Maps(props) {
             context.stroke();
         }
     }
-
     //  let firstCircle = new Circle();
     //  let secondCircle = new Circle();
-
 
     const drawWays = (context, newMap, route) => {
         if (newMap == 1) {
@@ -66,11 +62,11 @@ function Maps(props) {
             context.lineWidth = 4
         } else {
             console.log("hi")
-            info = canvasMap;
+            info = route;
             console.log(info.length)
             context.lineWidth = 1
-            Object.keys(canvasMap).forEach((id) => {
-                const curr = canvasMap[id]
+            Object.keys(info).forEach((id) => {
+                const curr = info[id]
                 if (curr[4] == 'unclassified' || curr[4] == ''){
                     curr.color = "#000000"
                 } else {
@@ -92,22 +88,11 @@ function Maps(props) {
             canvas = canvasRef.current
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
-            drawWays(context, 0, "")
+        setCanvasMap(props.map)
+            drawWays(context, 0, props.map)
             console.log("running")
-        }, [drawWays]
+        }, [props.map]
     )
-
-    //  })
-    //     }, [drawWays]
-    //}, [drawWays]
-    //   )
-    // useEffect(() => {
-    //         canvas = canvasRef.current
-    //         contextRef.current = canvas.getContext('2d')
-    //         context = contextRef.current
-    //         drawWays(context, 0, "")
-    //     }, [callEffect]
-    // )
 
     function calcLonPixels(lon) {
         const x = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
@@ -202,7 +187,6 @@ function Maps(props) {
                 } else {
                     context.fillStyle = "#ffffff";
                     context.fillRect(0, 0, canvasWidth, canvasHeight);
-
                     setCircle([])
                     let firstCircle = new Circle();
                     firstCircle.context = context
@@ -210,12 +194,11 @@ function Maps(props) {
                     firstCircle.y = event.pageY - canvas.offsetTop;
                     circle.push(firstCircle)
                     firstCircle.draw()
-                    drawWays(context, canvasMap, "")
+                    drawWays(context, 0, canvasMap)
                     setFirstMouseX(x)
                     setFirstMouseY(y)
                     console.log(firstClick  + " third")
                     firstClick = 1
-
                 }
             })
         }, []
