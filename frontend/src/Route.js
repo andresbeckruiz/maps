@@ -48,7 +48,7 @@ function Route() {
             });
     }
 
-    const requestMap = () => {
+    const requestInitialMap = () => {
         const toSend = {
         };
         let config = {
@@ -72,14 +72,14 @@ function Route() {
     }
     //allows the map to be loaded in when page loads
     useEffect(() => {
-        requestMap()
+        requestInitialMap()
     },[])
 
     return (
         <div>
             <h1> Maps! </h1>
             <h2></h2>
-            <AwesomeButton type="primary" onPress={requestMap}>Load Map </AwesomeButton>
+            <AwesomeButton type="primary" onPress={requestInitialMap}>Load Map </AwesomeButton>
             <h2></h2>
             {/*<h2>Ways: {JSON.stringify(route)}</h2>*/}
             <Maps map={map}/>

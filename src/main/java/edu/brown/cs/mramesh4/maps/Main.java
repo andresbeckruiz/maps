@@ -133,7 +133,7 @@ public final class Main {
     Spark.post("/neighbors", new NeighborsHandler(), freeMarker);
     Spark.post("/route", new RouteHandler());
     Spark.post("/way", new WayHandler());
-    Spark.post("/map", new MapHandler());
+    Spark.post("/map", new InitialMapHandler());
     Spark.post("/shortestRoute", new ShortestRouteHandler());
     Spark.post("/nearest", new NearestHandler());
   }
@@ -308,23 +308,23 @@ public final class Main {
     public Object handle(Request request, Response response) throws Exception {
       // request is what is from user
       JSONObject data = new JSONObject(request.body());
-      double sLat = data.getDouble("srclat");
-      double sLon = data.getDouble("srclon");
-      double eLat = data.getDouble("destlat");
-      double eLon = data.getDouble("destlon");
+      double minLatit = data.getDouble("minLat");
+      double minLong = data.getDouble("minLon");
+      double maxLatit = data.getDouble("maxLat");
+      double maxLong = data.getDouble("maxLon");
       // call ways method using these variables
       // BUT we cannot return a list of ways back to frontend!
       // we want to send back a dictionary of strings (way ID corresponds to start lat, )
       // make dictionary
-      String[] command = {"ways", Double.toString(sLat), Double.toString(sLon),
-              Double.toString(eLat), Double.toString(eLon)};
+      String[] command = {"ways", Double.toString(maxLatit), Double.toString(minLong),
+              Double.toString(minLatit), Double.toString(maxLong)};
       HashMap<String, Object> map = mapsLogic.run(command);
       Map<String, Object> variables = ImmutableMap.of("way", map);
       return GSON.toJson(variables);
     }
   }
 
-  private static class MapHandler implements Route {
+  private static class InitialMapHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
       JSONObject data = new JSONObject(request.body());
@@ -353,6 +353,9 @@ public final class Main {
     }
   }
 
+  /**
+   * Gets nearest neighbors
+   */
   private static class NearestHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {

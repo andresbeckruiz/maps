@@ -5,23 +5,24 @@ import axios from "axios";
 import TextBox from "./TextBox";
 import {AwesomeButton} from "react-awesome-button";
 
-
+//NEED TO FIX BUG WHERE GREEN ROUTE DRAWN TO DELETED CIRCLE LOCATION
+//NEED TO FIX BUG WHERE IF YOU SCROLL AND CLICK MAP BOUNDS ARE REDRAWN
 function Maps(props) {
     const canvasRef = useRef(); // allows variables to stay across re-renders
     const contextRef = useRef();
     let canvas = canvasRef.current;
     let context = contextRef.current;
-  //  const canvasMap = props.map;
-    const [canvasMap, setCanvasMap] = useState(props.map);
+    //what ways we want to display
+    let canvasMap = props.map;
     //let firstClick = 0
     const canvasWidth = 500;
     const canvasHeight = 500;
     //gonna have to make these state variables
-    const minBoundLat = 41.82953; // make these state variables
+    let minBoundLat = 41.82953; // make these state variables
     // everytime you reset page, state variables will not change
-    const minBoundLon = -71.40729;
-    const maxBoundLat = 41.82433;
-    const maxBoundLon = -71.39572;
+    let minBoundLon = -71.40729;
+    let maxBoundLat = 41.82433;
+    let maxBoundLon = -71.39572;
     const [mouseDown , setMouseDown] = useState([])
     const [mouseUp, setMouseUp] = useState([])
     const [firstClick, setFirstClick] = useState(0);
@@ -145,12 +146,12 @@ function Maps(props) {
             let data = response.data["nearest"]
             Object.keys(data).forEach((id) => {
                 currNode = data[id]
-                console.log("CurrNode 1 IN METHOD" + currNode[1])
+                // console.log("CurrNode 1 IN METHOD" + currNode[1])
             })
             let lonPixels = calcLonPixels(currNode[1])
             let latPixels = calcLatPixels(currNode[0])
-            console.log(lonPixels + "    xxx")
-            console.log(latPixels + "    yyy")
+            // console.log(lonPixels + "    xxx")
+            // console.log(latPixels + "    yyy")
 
             if (firstClick == 2){
                 context.fillStyle = "#ffffff";
@@ -158,22 +159,57 @@ function Maps(props) {
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                console.log(lonPixels + " lon")
-                console.log(latPixels + " lat")
+                // console.log(lonPixels + " lon")
+                // console.log(latPixels + " lat")
                 context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
                 context.stroke();
-                drawWays(context, 0, props.map)
+                drawWays(context, 0, canvasMap)
             }
             else {
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                console.log(lonPixels + " lon")
-                console.log(latPixels + " lat")
+                // console.log(lonPixels + " lon")
+                // console.log(latPixels + " lat")
                 context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
                 context.stroke();
             }
         })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
+    const requestWays = () => {
+        console.log(minBoundLat)
+        console.log(minBoundLon)
+        const toSend = {
+            minLat: maxBoundLat, // srclat is key, startLat is value
+            minLon: minBoundLon,
+            maxLat: minBoundLat,
+            maxLon: maxBoundLon
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        //TODO: Fill in 1) location for request 2) your data 3) configuration
+        axios.post( /// this is thing I am sending to backend
+            "http://localhost:4567/way",
+            toSend,
+            config
+        ).then(response => {
+                canvasMap = response.data["way"];
+                console.log("Canvas" + canvasMap)
+                canvas = canvasRef.current
+                contextRef.current = canvas.getContext('2d')
+                context = contextRef.current
+                context.fillStyle = "#ffffff";
+                context.fillRect(0, 0, canvasWidth, canvasHeight);
+                drawWays(context, 0, canvasMap)
+            })
             .catch(function (error) {
                 console.log(error);
             });
@@ -242,25 +278,39 @@ function Maps(props) {
         canvas = canvasRef.current
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
-        if (mouseDown[0] == 0 && mouseDown[1] == 0){
-          console.log("THIS WAS A CLICK!")
-        }
-        let x = calcLonCoord(canvas, event.pageX)
-        let y = calcLatCoord(canvas, event.pageY)
-        getNearestNode(y, x)
-        if (firstClick == 2) {
-            setFirstMouseX(x)
-            setFirstMouseY(y)
-            setFirstClick(1)
-        } else {
-            if (firstClick == 1) {
-                setSecondMouseX(x)
-                setSecondMouseY(y)
-                setFirstClick(2)
-            } else {
+        // console.log("Mouse down" + mouseDown[0])
+        // console.log("Mouse down" + mouseDown[1])
+        console.log("Mouse up" + mouseUp[0])
+        console.log("Mouse up " + mouseUp[1])
+        if (mouseUp[0] != 0 || mouseUp[1] != 0){
+          console.log("not a click!")
+          //updating bounded box
+          let addedLat = mouseUp[1] * (0.000005)
+          let addedLon = mouseUp[0] * (0.00001)
+          minBoundLat = minBoundLat + addedLat
+          maxBoundLat = maxBoundLat + addedLat
+          minBoundLon = minBoundLon + addedLon
+          maxBoundLon = maxBoundLon + addedLon
+          requestWays()
+        } //if its a click
+        else {
+            let x = calcLonCoord(canvas, event.pageX)
+            let y = calcLatCoord(canvas, event.pageY)
+            getNearestNode(y, x)
+            if (firstClick == 2) {
                 setFirstMouseX(x)
                 setFirstMouseY(y)
                 setFirstClick(1)
+            } else {
+                if (firstClick == 1) {
+                    setSecondMouseX(x)
+                    setSecondMouseY(y)
+                    setFirstClick(2)
+                } else {
+                    setFirstMouseX(x)
+                    setFirstMouseY(y)
+                    setFirstClick(1)
+                }
             }
         }
     }
@@ -269,9 +319,11 @@ function Maps(props) {
             canvas = canvasRef.current
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
-            drawWays(context, 0, props.map)
+            canvasMap = props.map
+            drawWays(context, 0, canvasMap)
         }, [props.map]
     )
+
 
     return <div>
         <AwesomeButton type="primary" onPress={requestShortestRoute}>Show Route</AwesomeButton>
