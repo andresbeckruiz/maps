@@ -328,6 +328,12 @@ public final class Main {
     @Override
     public Object handle(Request request, Response response) throws Exception {
       JSONObject data = new JSONObject(request.body());
+
+//      minBoundLat : minLat,
+//          minBoundLon : minLon,
+//          maxBoundLat : maxLat,
+//          maxBoundLon : maxLon,
+
       String[] wayCommand = {"ways", "41.82953", "-71.40729", "41.82433", "-71.39572"};
       HashMap<String, Object> map = mapsLogic.run(wayCommand);
       Map<String, Object> variables = ImmutableMap.of("map", map);

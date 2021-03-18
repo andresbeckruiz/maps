@@ -5,6 +5,36 @@ import axios from "axios";
 import TextBox from "./TextBox";
 import {AwesomeButton} from "react-awesome-button";
 
+
+
+export const drawWays = (context, newMap, route, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat) => {
+    if (newMap == 1) {
+        console.log("drawing route")
+        context.lineWidth = 4
+    } else {
+        console.log("drawing entire map")
+        context.lineWidth = 1
+        Object.keys(route).forEach((id) => {
+            const curr = route[id]
+            if (curr[4] == 'unclassified' || curr[4] == ''){
+                curr.color = "#000000"
+            } else {
+                curr.color = "#008000"
+            }
+        })
+    }
+    Object.keys(route).forEach((id) => {
+        const curr = route[id]
+        context.strokeStyle = curr.color;
+        context.beginPath()
+        context.moveTo(500 * (curr[1] - minBoundLon) / (maxBoundLon - minBoundLon),
+            500 * (curr[0] - maxBoundLat) / (minBoundLat - maxBoundLat));
+        context.lineTo(500 * (curr[3] - minBoundLon) / (maxBoundLon - minBoundLon),
+            500 * (curr[2] - maxBoundLat) / (minBoundLat - maxBoundLat));
+        context.stroke();
+    })
+}
+
 //NEED TO FIX BUG WHERE GREEN ROUTE DRAWN TO DELETED CIRCLE LOCATION
 //NEED TO FIX BUG WHERE IF YOU SCROLL AND CLICK MAP BOUNDS ARE REDRAWN
 function Maps(props) {
@@ -45,34 +75,34 @@ function Maps(props) {
     // 4. call draw
     // 5. after setting all to red, route will show up in red
 
-    const drawWays = (context, newMap, route) => {
-        if (newMap == 1) {
-            console.log("drawing route")
-            info = route;
-            context.lineWidth = 4
-        } else {
-            console.log("drawing entire map")
-            info = route;
-            console.log(typeof info + " info type")
-            context.lineWidth = 1
-            Object.keys(info).forEach((id) => {
-                const curr = info[id]
-                if (curr[4] == 'unclassified' || curr[4] == ''){
-                    curr.color = "#000000"
-                } else {
-                    curr.color = "#008000"
-                }
-            })
-        }
-        Object.keys(info).forEach((id) => {
-            const curr = info[id]
-            context.strokeStyle = curr.color;
-            context.beginPath()
-            context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
-            context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
-            context.stroke();
-        })
-    }
+    // const drawWays = (context, newMap, route) => {
+    //     if (newMap == 1) {
+    //         console.log("drawing route")
+    //         info = route;
+    //         context.lineWidth = 4
+    //     } else {
+    //         console.log("drawing entire map")
+    //         info = route;
+    //         console.log(typeof info + " info type")
+    //         context.lineWidth = 1
+    //         Object.keys(info).forEach((id) => {
+    //             const curr = info[id]
+    //             if (curr[4] == 'unclassified' || curr[4] == ''){
+    //                 curr.color = "#000000"
+    //             } else {
+    //                 curr.color = "#008000"
+    //             }
+    //         })
+    //     }
+    //     Object.keys(info).forEach((id) => {
+    //         const curr = info[id]
+    //         context.strokeStyle = curr.color;
+    //         context.beginPath()
+    //         context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
+    //         context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
+    //         context.stroke();
+    //     })
+    // }
 
     function calcLonPixels(lon) {
         const x = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
@@ -120,7 +150,7 @@ function Maps(props) {
                 curr.color = "#b00014";
             })
             console.log(shortestRoute.valueOf());
-            drawWays(context, 1, response.data["shortestRoute"]);
+            drawWays(context, 1, response.data["shortestRoute"], minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat);
             })
             .catch(function (error) {
                 console.log(error);
@@ -163,7 +193,7 @@ function Maps(props) {
                 // console.log(latPixels + " lat")
                 context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
                 context.stroke();
-                drawWays(context, 0, canvasMap)
+                drawWays(context, 0, canvasMap, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
             }
             else {
                 context.beginPath();
@@ -208,7 +238,7 @@ function Maps(props) {
                 context = contextRef.current
                 context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvasWidth, canvasHeight);
-                drawWays(context, 0, canvasMap)
+                drawWays(context, 0, canvasMap, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
             })
             .catch(function (error) {
                 console.log(error);
@@ -320,7 +350,7 @@ function Maps(props) {
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
             canvasMap = props.map
-            drawWays(context, 0, canvasMap)
+            drawWays(context, 0, canvasMap, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
         }, [props.map]
     )
 
