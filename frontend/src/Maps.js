@@ -18,10 +18,10 @@ function Maps(props) {
     const canvasWidth = 500;
     const canvasHeight = 500;
     //gonna have to make these state variables
-    let minBoundLat = 41.82953; // make these state variables
+    let minBoundLat = 41.82433; // make these state variables
     // everytime you reset page, state variables will not change
     let minBoundLon = -71.40729;
-    let maxBoundLat = 41.82433;
+    let maxBoundLat = 41.82953;
     let maxBoundLon = -71.39572;
     const [mouseDown , setMouseDown] = useState([])
     const [mouseUp, setMouseUp] = useState([])
@@ -80,7 +80,7 @@ function Maps(props) {
     }
 
     function calcLatPixels(lat) {
-        const y = canvasWidth * ((lat - minBoundLat) / (maxBoundLat - minBoundLat))
+        const y = canvasWidth * ((lat - maxBoundLat) / (minBoundLat - maxBoundLat))
         return y;
     }
 
@@ -92,7 +92,7 @@ function Maps(props) {
 
     function calcLatCoord(canvas, yClick) {
         let y = yClick - canvas.offsetTop;
-        let ret = ((y*(maxBoundLat - minBoundLat))/canvasHeight) + minBoundLat
+        let ret = ((y*(minBoundLat - maxBoundLat))/canvasHeight) + maxBoundLat
         return ret;
     }
 
@@ -184,9 +184,9 @@ function Maps(props) {
         console.log(minBoundLat)
         console.log(minBoundLon)
         const toSend = {
-            minLat: maxBoundLat, // srclat is key, startLat is value
+            minLat: minBoundLat, // srclat is key, startLat is value
             minLon: minBoundLon,
-            maxLat: minBoundLat,
+            maxLat: maxBoundLat,
             maxLon: maxBoundLon
         };
         let config = {
