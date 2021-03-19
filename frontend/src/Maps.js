@@ -46,11 +46,17 @@ function Maps(props) {
     const canvasWidth = 500;
     const canvasHeight = 500;
     //gonna have to make these state variables
-    let minBoundLat = 41.82433; // make these state variables
+   // let minBoundLat = 41.82433; // make these state variables
     // everytime you reset page, state variables will not change
-    let minBoundLon = -71.40729;
-    let maxBoundLat = 41.82953;
-    let maxBoundLon = -71.39572;
+  //  let minBoundLon = -71.40729;
+ //   let maxBoundLat = 41.82953;
+ //   let maxBoundLon = -71.39572;
+
+    const [minBoundLat, setMinBoundLat] = useState(41.82433)
+    const [minBoundLon, setMinBoundLon] = useState(-71.40729)
+    const [maxBoundLat, setMaxBoundLat] = useState(41.82953)
+    const [maxBoundLon, setMaxBoundLon] = useState(-71.39572)
+
     const [mouseDown , setMouseDown] = useState([])
     const [mouseUp, setMouseUp] = useState([])
     const [firstClick, setFirstClick] = useState(0);
@@ -76,6 +82,7 @@ function Maps(props) {
             context.lineWidth = 1
             Object.keys(info).forEach((id) => {
                 const curr = info[id]
+                //console.log(curr)
                 if (curr[4] == 'unclassified' || curr[4] == ''){
                     curr.color = "#000000"
                 } else {
@@ -138,7 +145,7 @@ function Maps(props) {
                 const curr = shortestRoute[id]
                 curr.color = "#b00014";
             })
-            drawWays(context, 1, response.data["shortestRoute"], minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat);
+            drawWays(context, 1, response.data["shortestRoute"]);
             })
             .catch(function (error) {
                 console.log(error);
@@ -161,6 +168,7 @@ function Maps(props) {
             toSend,
             config
         ).then(response => {
+            console.log(minBoundLat + " " + minBoundLon)
             let data = response.data["nearest"]
             Object.keys(data).forEach((id) => {
                 currNode = data[id]
@@ -190,41 +198,6 @@ function Maps(props) {
                 console.log(error);
             });
     }
-
-    const requestWays = () => {
-        console.log(minBoundLat)
-        console.log(minBoundLon)
-        const toSend = {
-            minLat: minBoundLat,
-            minLon: minBoundLon,
-            maxLat: maxBoundLat,
-            maxLon: maxBoundLon
-        };
-        let config = {
-            headers: {
-                "Content-Type": "application/json",
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        axios.post(
-            "http://localhost:4567/way",
-            toSend,
-            config
-        ).then(response => {
-                canvasMap = response.data["way"];
-                console.log("Canvas" + canvasMap)
-                canvas = canvasRef.current
-                contextRef.current = canvas.getContext('2d')
-                context = contextRef.current
-                context.fillStyle = "#ffffff";
-                context.fillRect(0, 0, canvasWidth, canvasHeight);
-                drawWays(context, 0, canvasMap)
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }
-
 
     // useEffect(() => {
     //         canvas = canvasRef.current
@@ -302,12 +275,16 @@ function Maps(props) {
             // should be related to 1/500 in some way
             let addedLat = mouseUp[1] * (0.00002)
             let addedLon = mouseUp[0] * (0.00002)
-            minBoundLat = minBoundLat + addedLat
-            maxBoundLat = maxBoundLat + addedLat // look into these calculations (maybe - instead of +)
-            minBoundLon = minBoundLon + addedLon
-            maxBoundLon = maxBoundLon + addedLon
+            let smallLat = minBoundLat + addedLat
+            let bigLat = maxBoundLat + addedLat // look into these calculations (maybe - instead of +)
+            let smallLon = minBoundLon + addedLon
+            let bigLon = maxBoundLon + addedLon
+            setMinBoundLat(smallLat)
+            setMaxBoundLat(bigLat)
+            setMinBoundLon(smallLon)
+            setMaxBoundLon(bigLon)
            // requestWays()
-            caching()
+            caching(smallLat, bigLat, smallLon, bigLon)
 
         } //if its a click
         else {
@@ -337,34 +314,40 @@ function Maps(props) {
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
             canvasMap = props.map
+        console.log(canvasMap)
             drawWays(context, 0, canvasMap)
         }, [props.map]
     )
 
 
-    function caching() {
+    function caching(smallLat, bigLat, smallLon, bigLon) {
         let updatedMap = []
-        let minLon = roundDown(minBoundLon)
-        let minLat = roundDown(minBoundLat)
-        let maxLon = roundUp(maxBoundLon)
-        let maxLat = roundUp(maxBoundLat)
+        let minLon = roundDown(smallLon)
+        let minLat = roundDown(smallLat)
+        let maxLon = roundUp(bigLon)
+        let maxLat = roundUp(bigLat)
         canvas = canvasRef.current
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
         context.fillStyle = "#ffffff";
         context.fillRect(0, 0, canvasWidth, canvasHeight);
         for (let a = minLon; a<=maxLon; a = roundUp(a + ROUND_NUM)) {
-            for (let b = minLat; b<=maxLat; b = roundUp(b + ROUND_NUM)) {
+            for (let b = minLat; b <= maxLat; b = roundUp(b + ROUND_NUM)) {
                 let tile = a.toString() + b.toString()
                 if (tile in cache) {
                     console.log("cached already")
                     canvas = canvasRef.current
                     contextRef.current = canvas.getContext('2d')
                     context = contextRef.current
-                    updatedMap.push(cache[tile])
-             //     console.log((500 * (a - minBoundLon) / (maxBoundLon - minBoundLon)) + "  == " + a)
-                // console.log((500 * (b - maxBoundLat) / (minBoundLat - maxBoundLat)) + " == " + b)
-              //      context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
+                 //   updatedMap.push(cache[tile])
+                    Object.keys(cache[tile]).forEach((id) => {
+                        const curr = cache[tile][id]
+                           //  console.log(curr)
+                        updatedMap.push(curr)
+                    })
+                    //     console.log((500 * (a - minBoundLon) / (maxBoundLon - minBoundLon)) + "  == " + a)
+                    // console.log((500 * (b - maxBoundLat) / (minBoundLat - maxBoundLat)) + " == " + b)
+                    //      context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
                     drawWays(context, 0, cache[tile])
                 } else {
                     const toSend = {
@@ -387,11 +370,15 @@ function Maps(props) {
                         .then(response => {
                             cache[tile] = response.data["way"];
                             if (cache[tile] != {}) {
-                                updatedMap.push(cache[tile])
+                             //      updatedMap.push(cache[tile])
+                                Object.keys(cache[tile]).forEach((id) => {
+                                    const curr = cache[tile][id]
+                                    updatedMap.push(curr)
+                                })
                                 canvas = canvasRef.current
                                 contextRef.current = canvas.getContext('2d')
                                 context = contextRef.current
-                             //   context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
+                                //   context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
                                 drawWays(context, 0, cache[tile])
                             }
                         })
