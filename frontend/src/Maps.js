@@ -5,35 +5,33 @@ import axios from "axios";
 import TextBox from "./TextBox";
 import {AwesomeButton} from "react-awesome-button";
 
-
-
-export const drawWays = (context, newMap, route, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat) => {
-    if (newMap == 1) {
-        console.log("drawing route")
-        context.lineWidth = 4
-    } else {
-        console.log("drawing entire map")
-        context.lineWidth = 1
-        Object.keys(route).forEach((id) => {
-            const curr = route[id]
-            if (curr[4] == 'unclassified' || curr[4] == ''){
-                curr.color = "#000000"
-            } else {
-                curr.color = "#008000"
-            }
-        })
-    }
-    Object.keys(route).forEach((id) => {
-        const curr = route[id]
-        context.strokeStyle = curr.color;
-        context.beginPath()
-        context.moveTo(500 * (curr[1] - minBoundLon) / (maxBoundLon - minBoundLon),
-            500 * (curr[0] - maxBoundLat) / (minBoundLat - maxBoundLat));
-        context.lineTo(500 * (curr[3] - minBoundLon) / (maxBoundLon - minBoundLon),
-            500 * (curr[2] - maxBoundLat) / (minBoundLat - maxBoundLat));
-        context.stroke();
-    })
-}
+// export const drawWays = (context, newMap, route, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat) => {
+//     if (newMap == 1) {
+//         console.log("drawing route")
+//         context.lineWidth = 4
+//     } else {
+//         console.log("drawing entire map")
+//         context.lineWidth = 1
+//         Object.keys(route).forEach((id) => {
+//             const curr = route[id]
+//             if (curr[4] == 'unclassified' || curr[4] == ''){
+//                 curr.color = "#000000"
+//             } else {
+//                 curr.color = "#008000"
+//             }
+//         })
+//     }
+//     Object.keys(route).forEach((id) => {
+//         const curr = route[id]
+//         context.strokeStyle = curr.color;
+//         context.beginPath()
+//         context.moveTo(500 * (curr[1] - minBoundLon) / (maxBoundLon - minBoundLon),
+//             500 * (curr[0] - maxBoundLat) / (minBoundLat - maxBoundLat));
+//         context.lineTo(500 * (curr[3] - minBoundLon) / (maxBoundLon - minBoundLon),
+//             500 * (curr[2] - maxBoundLat) / (minBoundLat - maxBoundLat));
+//         context.stroke();
+//     })
+// }
 
 //NEED TO FIX BUG WHERE IF YOU SCROLL AND CLICK MAP BOUNDS ARE REDRAWN
 function Maps(props) {
@@ -60,48 +58,39 @@ function Maps(props) {
     const [secondMouseX, setSecondMouseX] = useState("");
     const [secondMouseY, setSecondMouseY] = useState("");
     const [shortestRoute, setShortestRoute] = useState("");
-    // set a list of colors - certain type of ID be a color
-    // add center point to circle array
-    const route = [] // so I can access this everywhere
-    // everytime you get a route, you add parsed ways to your route
     let info = ""
     let currNode = ""
-    // 1. get ways from backend
-    // 2. add everything to route variable
-    // for each in js and then element.id, element.type = residential, etc. element.lat
-    // 3. change the color for each route within this array
-    // loop through route and set everything to red
-    // 4. call draw
-    // 5. after setting all to red, route will show up in red
+    const [cache, setCache] = useState({});
+    const ROUND_NUM = 0.01
 
-    // const drawWays = (context, newMap, route) => {
-    //     if (newMap == 1) {
-    //         console.log("drawing route")
-    //         info = route;
-    //         context.lineWidth = 4
-    //     } else {
-    //         console.log("drawing entire map")
-    //         info = route;
-    //         console.log(typeof info + " info type")
-    //         context.lineWidth = 1
-    //         Object.keys(info).forEach((id) => {
-    //             const curr = info[id]
-    //             if (curr[4] == 'unclassified' || curr[4] == ''){
-    //                 curr.color = "#000000"
-    //             } else {
-    //                 curr.color = "#008000"
-    //             }
-    //         })
-    //     }
-    //     Object.keys(info).forEach((id) => {
-    //         const curr = info[id]
-    //         context.strokeStyle = curr.color;
-    //         context.beginPath()
-    //         context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
-    //         context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
-    //         context.stroke();
-    //     })
-    // }
+    const drawWays = (context, newMap, route) => {
+        if (newMap == 1) {
+            console.log("drawing route")
+            info = route;
+            context.lineWidth = 4
+        } else {
+            console.log("drawing entire map")
+            info = route;
+            console.log(typeof info + " info type")
+            context.lineWidth = 1
+            Object.keys(info).forEach((id) => {
+                const curr = info[id]
+                if (curr[4] == 'unclassified' || curr[4] == ''){
+                    curr.color = "#000000"
+                } else {
+                    curr.color = "#008000"
+                }
+            })
+        }
+        Object.keys(info).forEach((id) => {
+            const curr = info[id]
+            context.strokeStyle = curr.color;
+            context.beginPath()
+            context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
+            context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
+            context.stroke();
+        })
+    }
 
     function calcLonPixels(lon) {
         const x = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
@@ -140,6 +129,20 @@ function Maps(props) {
                     'Access-Control-Allow-Origin': '*',
                 }
             }
+// <<<<<<< HEAD
+//             axios.post(
+//                 "http://localhost:4567/shortestRoute",
+//                 toSend,
+//                 config
+//             ).then(response => {
+//                 setShortestRoute(response.data["shortestRoute"]);
+//                 Object.keys(shortestRoute).forEach((id) => {
+//                     const curr = shortestRoute[id]
+//                     curr.color = "#b00014";
+//                 })
+//                 console.log(shortestRoute.valueOf());
+//                 drawWays(context, 1, response.data["shortestRoute"], minBoundLon, minBoundLat, maxBoundLon, maxBoundLat);
+// =======
             axios.post(
                 "http://localhost:4567/shortestRoute",
                 toSend,
@@ -150,7 +153,6 @@ function Maps(props) {
                     const curr = shortestRoute[id]
                     curr.color = "#b00014";
                 })
-                console.log(shortestRoute.valueOf());
                 drawWays(context, 1, response.data["shortestRoute"], minBoundLon, minBoundLat, maxBoundLon, maxBoundLat);
             })
                 .catch(function (error) {
@@ -182,27 +184,20 @@ function Maps(props) {
             })
             let lonPixels = calcLonPixels(currNode[1])
             let latPixels = calcLatPixels(currNode[0])
-            // console.log(lonPixels + "    xxx")
-            // console.log(latPixels + "    yyy")
-
             if (firstClick == 2){
                 context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvasWidth, canvasHeight);
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                // console.log(lonPixels + " lon")
-                // console.log(latPixels + " lat")
                 context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
                 context.stroke();
-                drawWays(context, 0, canvasMap, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
+                drawWays(context, 0, canvasMap)
             }
             else {
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                // console.log(lonPixels + " lon")
-                // console.log(latPixels + " lat")
                 context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
                 context.stroke();
             }
@@ -216,7 +211,7 @@ function Maps(props) {
         console.log(minBoundLat)
         console.log(minBoundLon)
         const toSend = {
-            minLat: minBoundLat, // srclat is key, startLat is value
+            minLat: minBoundLat,
             minLon: minBoundLon,
             maxLat: maxBoundLat,
             maxLon: maxBoundLon
@@ -227,8 +222,7 @@ function Maps(props) {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        //TODO: Fill in 1) location for request 2) your data 3) configuration
-        axios.post( /// this is thing I am sending to backend
+        axios.post(
             "http://localhost:4567/way",
             toSend,
             config
@@ -240,7 +234,7 @@ function Maps(props) {
                 context = contextRef.current
                 context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvasWidth, canvasHeight);
-                drawWays(context, 0, canvasMap, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
+                drawWays(context, 0, canvasMap)
             })
             .catch(function (error) {
                 console.log(error);
@@ -296,7 +290,9 @@ function Maps(props) {
         canvas = canvasRef.current
         let x = event.pageX - canvas.offsetLeft
         let y = event.pageY - canvas.offsetTop
-        setMouseUp([x - mouseDown[0], y - mouseDown[1]])
+    //    setMouseUp(x - [mouseDown[0], y - mouseDown[1]])
+        setMouseUp([mouseDown[0] - x, y - mouseDown[1]])
+        // maybe mouseDown[0] - x instead ...
     }
 
     const down = (event) => {
@@ -315,18 +311,33 @@ function Maps(props) {
         console.log("Mouse up" + mouseUp[0])
         console.log("Mouse up " + mouseUp[1])
         if (mouseUp[0] != 0 || mouseUp[1] != 0){
-          console.log("not a click!")
-          //updating bounded box
-          let addedLat = mouseUp[1] * (0.000005)
-          console.log("Added lat" + addedLat)
-          let addedLon = mouseUp[0] * (0.00001)
-          minBoundLat = minBoundLat + addedLat
-          maxBoundLat = maxBoundLat + addedLat
-          console.log("Min bound lat" + minBoundLat)
-          console.log("Max bound lat" + maxBoundLat)
-          minBoundLon = minBoundLon + addedLon
-          maxBoundLon = maxBoundLon + addedLon
-          requestWays()
+// <<<<<<< HEAD
+//           console.log("not a click!")
+//           //updating bounded box
+//           let addedLat = mouseUp[1] * (0.000005)
+//           console.log("Added lat" + addedLat)
+//           let addedLon = mouseUp[0] * (0.00001)
+//           minBoundLat = minBoundLat + addedLat
+//           maxBoundLat = maxBoundLat + addedLat
+//           console.log("Min bound lat" + minBoundLat)
+//           console.log("Max bound lat" + maxBoundLat)
+//           minBoundLon = minBoundLon + addedLon
+//           maxBoundLon = maxBoundLon + addedLon
+//           requestWays()
+// =======
+            console.log("not a click!")
+            //updating bounded box
+            // let addedLat = mouseUp[1] * (0.000005) // play around with these numbers -- try a little bigger
+            // let addedLon = mouseUp[0] * (0.00001)
+            // should be related to 1/500 in some way
+            let addedLat = mouseUp[1] * (0.00002)
+            let addedLon = mouseUp[0] * (0.00002)
+            minBoundLat = minBoundLat + addedLat
+            maxBoundLat = maxBoundLat + addedLat // look into these calculations (maybe - instead of +)
+            minBoundLon = minBoundLon + addedLon
+            maxBoundLon = maxBoundLon + addedLon
+           // requestWays()
+            caching()
         } //if its a click
         else {
             let x = calcLonCoord(canvas, event.pageX)
@@ -357,10 +368,84 @@ function Maps(props) {
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
             canvasMap = props.map
-            drawWays(context, 0, canvasMap, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
+            drawWays(context, 0, canvasMap)
         }, [props.map]
     )
 
+
+    function caching() {
+        let updatedMap = []
+        let minLon = roundDown(minBoundLon)
+        let minLat = roundDown(minBoundLat)
+        let maxLon = roundUp(maxBoundLon)
+        let maxLat = roundUp(maxBoundLat)
+        canvas = canvasRef.current
+        contextRef.current = canvas.getContext('2d')
+        context = contextRef.current
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvasWidth, canvasHeight);
+        for (let a = minLon; a<=maxLon; a = roundUp(a + ROUND_NUM)) {
+            for (let b = minLat; b<=maxLat; b = roundUp(b + ROUND_NUM)) {
+                let tile = a.toString() + b.toString()
+                if (tile in cache) {
+                    console.log("cached already")
+                    canvas = canvasRef.current
+                    contextRef.current = canvas.getContext('2d')
+                    context = contextRef.current
+                    updatedMap.push(cache[tile])
+             //     console.log((500 * (a - minBoundLon) / (maxBoundLon - minBoundLon)) + "  == " + a)
+                // console.log((500 * (b - maxBoundLat) / (minBoundLat - maxBoundLat)) + " == " + b)
+              //      context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
+                    drawWays(context, 0, cache[tile])
+                } else {
+                    const toSend = {
+                        minLat: b,
+                        minLon: a,
+                        maxLat: roundUp(b + ROUND_NUM),
+                        maxLon: roundUp(a + ROUND_NUM)
+                    };
+                    let config = {
+                        headers: {
+                            "Content-Type": "application/json",
+                            'Access-Control-Allow-Origin': '*',
+                        }
+                    }
+                    axios.post(
+                        "http://localhost:4567/way",
+                        toSend,
+                        config
+                    )
+                        .then(response => {
+                            cache[tile] = response.data["way"];
+                            if (cache[tile] != {}) {
+                                updatedMap.push(cache[tile])
+                                canvas = canvasRef.current
+                                contextRef.current = canvas.getContext('2d')
+                                context = contextRef.current
+                             //   context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
+                                drawWays(context, 0, cache[tile])
+                            }
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
+            }
+        }
+        canvasMap = updatedMap
+    }
+
+    function roundDown(value) {
+        let wholeNum = value/ROUND_NUM
+        let rounded = Math.floor(wholeNum)
+        return (rounded*ROUND_NUM)
+    }
+
+    function roundUp(value) {
+        let wholeNum = value/ROUND_NUM
+        let rounded = Math.ceil(wholeNum)
+        return (rounded*ROUND_NUM)
+    }
 
     return <div>
         <AwesomeButton type="primary" onPress={requestRoute}>Show Route</AwesomeButton>
