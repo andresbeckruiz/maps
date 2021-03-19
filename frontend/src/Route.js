@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import {AwesomeButton} from "react-awesome-button"
 import "react-awesome-button/dist/styles.css"
 import axios from "axios";
-import Maps, {drawWays} from "./Maps"
+import Maps from "./Maps";
 
 export const requestWayss = (context, canvas, canvasRef, contextRef, minBoundLat, minBoundLon, maxBoundLat, maxBoundLon) => {
     const toSend = {
@@ -32,7 +32,7 @@ export const requestWayss = (context, canvas, canvasRef, contextRef, minBoundLat
         let contextReturn = contextRef.current
         context.fillStyle = "#ffffff";
         context.fillRect(0, 0, 500, 500);
-        drawWays(context, 0, canvasMapReturn, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
+     //   drawWays(context, 0, canvasMapReturn, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
        // console.log(canvasMapReturn)
         let array = [canvasMapReturn, canvasReturn, contextReturn]
         return array
@@ -102,7 +102,7 @@ function Route() {
                     return cache[tile]
                 } else {
                     cache[tile] = requestMapWithCache(minLon, minLat,  minLon + a, minLat + b)
-                    drawWays()
+                   // drawWays()
                 }
             }
         }
