@@ -356,7 +356,7 @@ function Maps(props) {
 
 
     function caching() {
-     //   let updatedMap = []
+        let updatedMap = []
         let minLon = roundDown(minBoundLon)
         let minLat = roundDown(minBoundLat)
         let maxLon = roundUp(maxBoundLon)
@@ -374,7 +374,7 @@ function Maps(props) {
                     canvas = canvasRef.current
                     contextRef.current = canvas.getContext('2d')
                     context = contextRef.current
-              //      updatedMap.push(cache[tile])
+                    updatedMap.push(cache[tile])
              //       context.fillStyle = "#0a6ea4";
              //        console.log(minBoundLon + " minboundLon")
              //        console.log(maxBoundLon + " maxboundLon")
@@ -390,6 +390,8 @@ function Maps(props) {
                     // context.fillRect(0, 0, canvasWidth, canvasHeight);
                 } else {
                     console.log("post request")
+                    console.log(a + " a")
+                    console.log(b + " b")
                     const toSend = {
                         minLat: b,
                         minLon: a,
@@ -409,8 +411,8 @@ function Maps(props) {
                     )
                         .then(response => {
                             cache[tile] = response.data["way"];
-
                             if (cache[tile] != {}) {
+                                updatedMap.push(cache[tile])
                                 console.log(response.data["way"] + " dataaaaa")
                                // updatedMap.push(response.data["way"])
                                 canvas = canvasRef.current
@@ -428,7 +430,7 @@ function Maps(props) {
                 }
             }
         }
-     //   canvasMap = updatedMap
+        canvasMap = updatedMap
     }
 
     // const cacheResponse = (tile) => {
