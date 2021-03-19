@@ -33,7 +33,6 @@ import {AwesomeButton} from "react-awesome-button";
 //     })
 // }
 
-//NEED TO FIX BUG WHERE GREEN ROUTE DRAWN TO DELETED CIRCLE LOCATION
 //NEED TO FIX BUG WHERE IF YOU SCROLL AND CLICK MAP BOUNDS ARE REDRAWN
 function Maps(props) {
     const canvasRef = useRef(); // allows variables to stay across re-renders
@@ -60,10 +59,10 @@ function Maps(props) {
     const [mouseDown , setMouseDown] = useState([])
     const [mouseUp, setMouseUp] = useState([])
     const [firstClick, setFirstClick] = useState(0);
-    const [firstMouseX, setFirstMouseX] = useState(0);
-    const [firstMouseY, setFirstMouseY] = useState(0);
-    const [secondMouseX, setSecondMouseX] = useState(0);
-    const [secondMouseY, setSecondMouseY] = useState(0);
+    const [firstMouseX, setFirstMouseX] = useState("");
+    const [firstMouseY, setFirstMouseY] = useState("");
+    const [secondMouseX, setSecondMouseX] = useState("");
+    const [secondMouseY, setSecondMouseY] = useState("");
     const [shortestRoute, setShortestRoute] = useState("");
     let info = ""
     let currNode = ""
@@ -122,34 +121,49 @@ function Maps(props) {
         return ret;
     }
 
-    const requestShortestRoute = () => {
-        const toSend = {
-            startLon : firstMouseY,
-            startLat : firstMouseX,
-            endLon : secondMouseY,
-            endLat : secondMouseX,
-        };
-        let config = {
-            headers: {
-                "Content-Type": "application/json",
-                'Access-Control-Allow-Origin': '*',
+    const requestRoute = () => {
+        if (secondMouseX != "") {
+            console.log("Called!!!!")
+            const toSend = {
+                startLon: firstMouseY,
+                startLat: firstMouseX,
+                endLon: secondMouseY,
+                endLat: secondMouseX,
+            };
+            let config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    'Access-Control-Allow-Origin': '*',
+                }
             }
-        }
-        axios.post(
-            "http://localhost:4567/shortestRoute",
-            toSend,
-            config
-        ).then(response => {
-            setShortestRoute(response.data["shortestRoute"]);
-            Object.keys(shortestRoute).forEach((id) => {
-                const curr = shortestRoute[id]
-                curr.color = "#b00014";
-            })
-            drawWays(context, 1, response.data["shortestRoute"]);
+//             axios.post(
+//                 "http://localhost:4567/shortestRoute",
+//                 toSend,
+//                 config
+//             ).then(response => {
+//                 setShortestRoute(response.data["shortestRoute"]);
+//                 Object.keys(shortestRoute).forEach((id) => {
+//                     const curr = shortestRoute[id]
+//                     curr.color = "#b00014";
+//                 })
+//                 console.log(shortestRoute.valueOf());
+//                 drawWays(context, 1, response.data["shortestRoute"], minBoundLon, minBoundLat, maxBoundLon, maxBoundLat);
+            axios.post(
+                "http://localhost:4567/shortestRoute",
+                toSend,
+                config
+            ).then(response => {
+                setShortestRoute(response.data["shortestRoute"]);
+                Object.keys(shortestRoute).forEach((id) => {
+                    const curr = shortestRoute[id]
+                    curr.color = "#b00014";
+                })
+                drawWays(context, 1, response.data["shortestRoute"]);
             })
             .catch(function (error) {
                 console.log(error);
             });
+        }
     }
 
     const getNearestNode = (nearestLat, nearestLong) => {
@@ -268,6 +282,18 @@ function Maps(props) {
         console.log("Mouse up" + mouseUp[0])
         console.log("Mouse up " + mouseUp[1])
         if (mouseUp[0] != 0 || mouseUp[1] != 0){
+//           console.log("not a click!")
+//           //updating bounded box
+//           let addedLat = mouseUp[1] * (0.000005)
+//           console.log("Added lat" + addedLat)
+//           let addedLon = mouseUp[0] * (0.00001)
+//           minBoundLat = minBoundLat + addedLat
+//           maxBoundLat = maxBoundLat + addedLat
+//           console.log("Min bound lat" + minBoundLat)
+//           console.log("Max bound lat" + maxBoundLat)
+//           minBoundLon = minBoundLon + addedLon
+//           maxBoundLon = maxBoundLon + addedLon
+//           requestWays()
             console.log("not a click!")
             //updating bounded box
             // let addedLat = mouseUp[1] * (0.000005) // play around with these numbers -- try a little bigger
@@ -285,7 +311,6 @@ function Maps(props) {
             setMaxBoundLon(bigLon)
            // requestWays()
             caching(smallLat, bigLat, smallLon, bigLon)
-
         } //if its a click
         else {
             let x = calcLonCoord(canvas, event.pageX)
@@ -294,6 +319,8 @@ function Maps(props) {
             if (firstClick == 2) {
                 setFirstMouseX(x)
                 setFirstMouseY(y)
+                setSecondMouseX("")
+                setSecondMouseY("")
                 setFirstClick(1)
             } else {
                 if (firstClick == 1) {
@@ -404,7 +431,7 @@ function Maps(props) {
     }
 
     return <div>
-        <AwesomeButton type="primary" onPress={requestShortestRoute}>Show Route</AwesomeButton>
+        <AwesomeButton type="primary" onPress={requestRoute}>Show Route</AwesomeButton>
         <h3></h3>
         <TextBox label={"Start Longitude: "} change={setFirstMouseY} value={firstMouseY}/>
         <TextBox label={"Start Latitude: "} change={setFirstMouseX} value={firstMouseX}/>
