@@ -5,34 +5,6 @@ import axios from "axios";
 import TextBox from "./TextBox";
 import {AwesomeButton} from "react-awesome-button";
 
-// export const drawWays = (context, newMap, route, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat) => {
-//     if (newMap == 1) {
-//         console.log("drawing route")
-//         context.lineWidth = 4
-//     } else {
-//         console.log("drawing entire map")
-//         context.lineWidth = 1
-//         Object.keys(route).forEach((id) => {
-//             const curr = route[id]
-//             if (curr[4] == 'unclassified' || curr[4] == ''){
-//                 curr.color = "#000000"
-//             } else {
-//                 curr.color = "#008000"
-//             }
-//         })
-//     }
-//     Object.keys(route).forEach((id) => {
-//         const curr = route[id]
-//         context.strokeStyle = curr.color;
-//         context.beginPath()
-//         context.moveTo(500 * (curr[1] - minBoundLon) / (maxBoundLon - minBoundLon),
-//             500 * (curr[0] - maxBoundLat) / (minBoundLat - maxBoundLat));
-//         context.lineTo(500 * (curr[3] - minBoundLon) / (maxBoundLon - minBoundLon),
-//             500 * (curr[2] - maxBoundLat) / (minBoundLat - maxBoundLat));
-//         context.stroke();
-//     })
-// }
-
 //NEED TO FIX BUG WHERE IF YOU SCROLL AND CLICK MAP BOUNDS ARE REDRAWN
 function Maps(props) {
     const canvasRef = useRef(); // allows variables to stay across re-renders
@@ -44,12 +16,6 @@ function Maps(props) {
     //let firstClick = 0
     const canvasWidth = 500;
     const canvasHeight = 500;
-    //gonna have to make these state variables
-   // let minBoundLat = 41.82433; // make these state variables
-    // everytime you reset page, state variables will not change
-  //  let minBoundLon = -71.40729;
- //   let maxBoundLat = 41.82953;
- //   let maxBoundLon = -71.39572;
 
     const [minBoundLat, setMinBoundLat] = useState(41.82433)
     const [minBoundLon, setMinBoundLon] = useState(-71.40729)
@@ -182,11 +148,9 @@ function Maps(props) {
             toSend,
             config
         ).then(response => {
-            console.log(minBoundLat + " " + minBoundLon)
             let data = response.data["nearest"]
             Object.keys(data).forEach((id) => {
                 currNode = data[id]
-                // console.log("CurrNode 1 IN METHOD" + currNode[1])
             })
             let lonPixels = calcLonPixels(currNode[1])
             let latPixels = calcLatPixels(currNode[0])
@@ -311,8 +275,7 @@ function Maps(props) {
             setMaxBoundLon(bigLon)
            // requestWays()
             caching(smallLat, bigLat, smallLon, bigLon)
-        } //if its a click
-        else {
+        } else { //if its a click
             let x = calcLonCoord(canvas, event.pageX)
             let y = calcLatCoord(canvas, event.pageY)
             getNearestNode(y, x)
@@ -341,11 +304,9 @@ function Maps(props) {
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
             canvasMap = props.map
-        console.log(canvasMap)
             drawWays(context, 0, canvasMap)
         }, [props.map]
     )
-
 
     function caching(smallLat, bigLat, smallLon, bigLon) {
         let updatedMap = []
@@ -362,7 +323,6 @@ function Maps(props) {
             for (let b = minLat; b <= maxLat; b = roundUp(b + ROUND_NUM)) {
                 let tile = a.toString() + b.toString()
                 if (tile in cache) {
-                    console.log("cached already")
                     canvas = canvasRef.current
                     contextRef.current = canvas.getContext('2d')
                     context = contextRef.current
