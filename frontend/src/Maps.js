@@ -5,34 +5,6 @@ import axios from "axios";
 import TextBox from "./TextBox";
 import {AwesomeButton} from "react-awesome-button";
 
-// export const drawWays = (context, newMap, route, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat) => {
-//     if (newMap == 1) {
-//         console.log("drawing route")
-//         context.lineWidth = 4
-//     } else {
-//         console.log("drawing entire map")
-//         context.lineWidth = 1
-//         Object.keys(route).forEach((id) => {
-//             const curr = route[id]
-//             if (curr[4] == 'unclassified' || curr[4] == ''){
-//                 curr.color = "#000000"
-//             } else {
-//                 curr.color = "#008000"
-//             }
-//         })
-//     }
-//     Object.keys(route).forEach((id) => {
-//         const curr = route[id]
-//         context.strokeStyle = curr.color;
-//         context.beginPath()
-//         context.moveTo(500 * (curr[1] - minBoundLon) / (maxBoundLon - minBoundLon),
-//             500 * (curr[0] - maxBoundLat) / (minBoundLat - maxBoundLat));
-//         context.lineTo(500 * (curr[3] - minBoundLon) / (maxBoundLon - minBoundLon),
-//             500 * (curr[2] - maxBoundLat) / (minBoundLat - maxBoundLat));
-//         context.stroke();
-//     })
-// }
-
 //NEED TO FIX BUG WHERE IF YOU SCROLL AND CLICK MAP BOUNDS ARE REDRAWN
 function Maps(props) {
     const canvasRef = useRef(); // allows variables to stay across re-renders
@@ -44,12 +16,12 @@ function Maps(props) {
     //let firstClick = 0
     const canvasWidth = 500;
     const canvasHeight = 500;
-    //gonna have to make these state variables
-    let minBoundLat = 41.82433; // make these state variables
-    // everytime you reset page, state variables will not change
-    let minBoundLon = -71.40729;
-    let maxBoundLat = 41.82953;
-    let maxBoundLon = -71.39572;
+
+    const [minBoundLat, setMinBoundLat] = useState(41.82433)
+    const [minBoundLon, setMinBoundLon] = useState(-71.40729)
+    const [maxBoundLat, setMaxBoundLat] = useState(41.82953)
+    const [maxBoundLon, setMaxBoundLon] = useState(-71.39572)
+
     const [mouseDown , setMouseDown] = useState([])
     const [mouseUp, setMouseUp] = useState([])
     const [firstClick, setFirstClick] = useState(0);
@@ -75,6 +47,7 @@ function Maps(props) {
             context.lineWidth = 1
             Object.keys(info).forEach((id) => {
                 const curr = info[id]
+                //console.log(curr)
                 if (curr[4] == 'unclassified' || curr[4] == ''){
                     curr.color = "#000000"
                 } else {
@@ -129,7 +102,6 @@ function Maps(props) {
                     'Access-Control-Allow-Origin': '*',
                 }
             }
-// <<<<<<< HEAD
 //             axios.post(
 //                 "http://localhost:4567/shortestRoute",
 //                 toSend,
@@ -142,7 +114,6 @@ function Maps(props) {
 //                 })
 //                 console.log(shortestRoute.valueOf());
 //                 drawWays(context, 1, response.data["shortestRoute"], minBoundLon, minBoundLat, maxBoundLon, maxBoundLat);
-// =======
             axios.post(
                 "http://localhost:4567/shortestRoute",
                 toSend,
@@ -153,11 +124,11 @@ function Maps(props) {
                     const curr = shortestRoute[id]
                     curr.color = "#b00014";
                 })
-                drawWays(context, 1, response.data["shortestRoute"], minBoundLon, minBoundLat, maxBoundLon, maxBoundLat);
+                drawWays(context, 1, response.data["shortestRoute"]);
             })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            .catch(function (error) {
+                console.log(error);
+            });
         }
     }
 
@@ -180,7 +151,6 @@ function Maps(props) {
             let data = response.data["nearest"]
             Object.keys(data).forEach((id) => {
                 currNode = data[id]
-                // console.log("CurrNode 1 IN METHOD" + currNode[1])
             })
             let lonPixels = calcLonPixels(currNode[1])
             let latPixels = calcLatPixels(currNode[0])
@@ -206,41 +176,6 @@ function Maps(props) {
                 console.log(error);
             });
     }
-
-    const requestWays = () => {
-        console.log(minBoundLat)
-        console.log(minBoundLon)
-        const toSend = {
-            minLat: minBoundLat,
-            minLon: minBoundLon,
-            maxLat: maxBoundLat,
-            maxLon: maxBoundLon
-        };
-        let config = {
-            headers: {
-                "Content-Type": "application/json",
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        axios.post(
-            "http://localhost:4567/way",
-            toSend,
-            config
-        ).then(response => {
-                canvasMap = response.data["way"];
-                console.log("Canvas" + canvasMap)
-                canvas = canvasRef.current
-                contextRef.current = canvas.getContext('2d')
-                context = contextRef.current
-                context.fillStyle = "#ffffff";
-                context.fillRect(0, 0, canvasWidth, canvasHeight);
-                drawWays(context, 0, canvasMap)
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }
-
 
     // useEffect(() => {
     //         canvas = canvasRef.current
@@ -312,7 +247,6 @@ function Maps(props) {
         console.log("Mouse up " + mouseUp[1])
         //maybe change these values so that scrolling a bit doesn't affect anything
         if (mouseUp[0] != 0 || mouseUp[1] != 0){
-// <<<<<<< HEAD
 //           console.log("not a click!")
 //           //updating bounded box
 //           let addedLat = mouseUp[1] * (0.000005)
@@ -325,7 +259,6 @@ function Maps(props) {
 //           minBoundLon = minBoundLon + addedLon
 //           maxBoundLon = maxBoundLon + addedLon
 //           requestWays()
-// =======
             console.log("not a click!")
             //updating bounded box
             // let addedLat = mouseUp[1] * (0.000005) // play around with these numbers -- try a little bigger
@@ -333,14 +266,17 @@ function Maps(props) {
             // should be related to 1/500 in some way
             let addedLat = mouseUp[1] * (0.00002)
             let addedLon = mouseUp[0] * (0.00002)
-            minBoundLat = minBoundLat + addedLat
-            maxBoundLat = maxBoundLat + addedLat // look into these calculations (maybe - instead of +)
-            minBoundLon = minBoundLon + addedLon
-            maxBoundLon = maxBoundLon + addedLon
+            let smallLat = minBoundLat + addedLat
+            let bigLat = maxBoundLat + addedLat // look into these calculations (maybe - instead of +)
+            let smallLon = minBoundLon + addedLon
+            let bigLon = maxBoundLon + addedLon
+            setMinBoundLat(smallLat)
+            setMaxBoundLat(bigLat)
+            setMinBoundLon(smallLon)
+            setMaxBoundLon(bigLon)
            // requestWays()
-            caching()
-        } //if its a click
-        else {
+            caching(smallLat, bigLat, smallLon, bigLon)
+        } else { //if its a click
             let x = calcLonCoord(canvas, event.pageX)
             let y = calcLatCoord(canvas, event.pageY)
             getNearestNode(y, x)
@@ -377,30 +313,33 @@ function Maps(props) {
         }, [props.map]
     )
 
-
-    function caching() {
+    function caching(smallLat, bigLat, smallLon, bigLon) {
         let updatedMap = []
-        let minLon = roundDown(minBoundLon)
-        let minLat = roundDown(minBoundLat)
-        let maxLon = roundUp(maxBoundLon)
-        let maxLat = roundUp(maxBoundLat)
+        let minLon = roundDown(smallLon)
+        let minLat = roundDown(smallLat)
+        let maxLon = roundUp(bigLon)
+        let maxLat = roundUp(bigLat)
         canvas = canvasRef.current
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
         context.fillStyle = "#ffffff";
         context.fillRect(0, 0, canvasWidth, canvasHeight);
         for (let a = minLon; a<=maxLon; a = roundUp(a + ROUND_NUM)) {
-            for (let b = minLat; b<=maxLat; b = roundUp(b + ROUND_NUM)) {
+            for (let b = minLat; b <= maxLat; b = roundUp(b + ROUND_NUM)) {
                 let tile = a.toString() + b.toString()
                 if (tile in cache) {
-                    console.log("cached already")
                     canvas = canvasRef.current
                     contextRef.current = canvas.getContext('2d')
                     context = contextRef.current
-                    updatedMap.push(cache[tile])
-             //     console.log((500 * (a - minBoundLon) / (maxBoundLon - minBoundLon)) + "  == " + a)
-                // console.log((500 * (b - maxBoundLat) / (minBoundLat - maxBoundLat)) + " == " + b)
-              //      context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
+                 //   updatedMap.push(cache[tile])
+                    Object.keys(cache[tile]).forEach((id) => {
+                        const curr = cache[tile][id]
+                           //  console.log(curr)
+                        updatedMap.push(curr)
+                    })
+                    //     console.log((500 * (a - minBoundLon) / (maxBoundLon - minBoundLon)) + "  == " + a)
+                    // console.log((500 * (b - maxBoundLat) / (minBoundLat - maxBoundLat)) + " == " + b)
+                    //      context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
                     drawWays(context, 0, cache[tile])
                 } else {
                     const toSend = {
@@ -423,11 +362,15 @@ function Maps(props) {
                         .then(response => {
                             cache[tile] = response.data["way"];
                             if (cache[tile] != {}) {
-                                updatedMap.push(cache[tile])
+                             //      updatedMap.push(cache[tile])
+                                Object.keys(cache[tile]).forEach((id) => {
+                                    const curr = cache[tile][id]
+                                    updatedMap.push(curr)
+                                })
                                 canvas = canvasRef.current
                                 contextRef.current = canvas.getContext('2d')
                                 context = contextRef.current
-                             //   context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
+                                //   context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
                                 drawWays(context, 0, cache[tile])
                             }
                         })
