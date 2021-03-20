@@ -30,7 +30,11 @@ function Maps(props) {
     const [secondMouseX, setSecondMouseX] = useState("");
     const [secondMouseY, setSecondMouseY] = useState("");
     const [shortestRoute, setShortestRoute] = useState("");
-    let circles = [];
+    const [firstCircle, setFirstCircle, ] = useState([])
+    const [secondCircle, setSecondCircle, ] = useState([])
+
+    // let firstCircle = [];
+    // let secondCircle = [];
 
     const [streetOne, setStreetOne] = useState("")
     const [streetTwo, setStreetTwo] = useState("")
@@ -73,10 +77,9 @@ function Maps(props) {
     }
 
     //function that keeps ways and circles when scroll or zoom occurs
-    const drawWays2 = (context, canvasMap, route, circles) => {
+    const drawWaysScroll = (context, canvasMap, route) => {
         console.log("drawing entire map")
         //console.log(typeof info + " info type")
-        context.lineWidth = 1
         //see if we can clean this up later
         Object.keys(canvasMap).forEach((id) => {
             const curr = canvasMap[id]
@@ -87,6 +90,8 @@ function Maps(props) {
                 curr.color = "#008000"
             }
         })
+        //drawing map
+        context.lineWidth = 1
         Object.keys(canvasMap).forEach((id) => {
             const curr = canvasMap[id]
             context.strokeStyle = curr.color;
@@ -95,28 +100,52 @@ function Maps(props) {
             context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
             context.stroke();
         })
-        Object.keys(route).forEach((id) => {
-            const curr = route[id]
-            context.strokeStyle = curr.color;
-            context.beginPath()
-            context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
-            context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
-            context.stroke();
-        })
+        //drawing route
+        if (shortestRoute != ""){
+            context.lineWidth = 4
+            Object.keys(route).forEach((id) => {
+                const curr = route[id]
+                context.strokeStyle = "#be1212";
+                context.beginPath()
+                context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
+                context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
+                context.stroke();
+            })
+        }
         //checking if we need to draw circles
-        if (circles.length == 2){
+        if (firstCircle != [] && secondCircle == [] ){
+            console.log("First circle lon" + firstCircle[1])
+            console.log("First circle lat" + firstCircle[0])
+            let firstLonPixels = calcLonPixels(firstCircle[1])
+            let firstLatPixels = calcLatPixels(firstCircle[0])
+            console.log("First circle latpixels" + firstLonPixels)
+            console.log("First circle lonpixels" + firstLatPixels)
             context.beginPath();
             context.lineWidth = 5;
             context.strokeStyle = "#be1212";
-            context.arc(circles[1], circles[0], 10, 0, Math.PI * 4, true);
+            context.arc(firstLonPixels, firstLatPixels, 10, 0, Math.PI * 4, true);
             context.stroke();
         }
-        if (circles.length == 4){
+        if (firstCircle != [] && secondCircle != [] ){
+            console.log("First circle lon" + firstCircle[1])
+            console.log("First circle lat" + firstCircle[0])
+            let firstLonPixels = calcLonPixels(firstCircle[1])
+            let firstLatPixels = calcLatPixels(firstCircle[0])
+            console.log("Second circle lon" + secondCircle[1])
+            console.log("Second circle lat" + secondCircle[0])
+            let secondLonPixels = calcLonPixels(secondCircle[1])
+            let secondLatPixels = calcLatPixels(secondCircle[0])
+            console.log("First circle latpixels" + firstLonPixels)
+            console.log("First circle lonpixels" + firstLatPixels)
+            console.log("Second circle latpixels" + secondLonPixels)
+            console.log("Second circle lonpixels" + secondLonPixels)
             context.beginPath();
             context.lineWidth = 5;
             context.strokeStyle = "#be1212";
-            context.arc(circles[1], circles[0], 10, 0, Math.PI * 4, true);
-            context.arc(circles[3], circles[2], 10, 0, Math.PI * 4, true);
+            context.arc(firstLonPixels, firstLatPixels, 10, 0, Math.PI * 4, true);
+            context.stroke();
+            context.beginPath();
+            context.arc(secondLonPixels, secondLatPixels, 10, 0, Math.PI * 4, true);
             context.stroke();
         }
     }
@@ -232,8 +261,15 @@ function Maps(props) {
                 currNode = data[id]
             })
             let lonPixels = calcLonPixels(currNode[1])
+            console.log("Currnode lon" + currNode[1])
+            console.log("Lon pixels" + lonPixels)
             let latPixels = calcLatPixels(currNode[0])
-            if (firstClick == 2){
+            console.log("Currnode lat" + currNode[0])
+            console.log("Lon pixels" + latPixels)
+            if (firstClick == 2) {
+                setShortestRoute("")
+                setFirstCircle([currNode[0], currNode[1]])
+                setSecondCircle([])
                 context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvasWidth, canvasHeight);
                 context.beginPath();
@@ -243,7 +279,16 @@ function Maps(props) {
                 context.stroke();
                 drawWays(context, 0, canvasMap)
             }
-            else {
+            else if (firstClick == 1) {
+                setSecondCircle([currNode[0], currNode[1]])
+                context.beginPath();
+                context.lineWidth = 5;
+                context.strokeStyle = "#be1212";
+                context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
+                context.stroke();
+                //should only happen when first click is registered
+            } else {
+                setFirstCircle([currNode[0], currNode[1]])
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
@@ -353,7 +398,7 @@ function Maps(props) {
             setMaxBoundLat(bigLat)
             setMinBoundLon(smallLon)
             setMaxBoundLon(bigLon)
-           // requestWays()
+            //requestWays()
             caching(smallLat, bigLat, smallLon, bigLon)
         } else { //if its a click
             let x = calcLonCoord(canvas, event.pageX)
@@ -392,6 +437,41 @@ function Maps(props) {
         }, [props.map]
     )
 
+    const requestWays = () => {
+        console.log(minBoundLat)
+        console.log(minBoundLon)
+        const toSend = {
+            minLat: maxBoundLat, // srclat is key, startLat is value
+            minLon: minBoundLon,
+            maxLat: minBoundLat,
+            maxLon: maxBoundLon
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        //TODO: Fill in 1) location for request 2) your data 3) configuration
+        axios.post( /// this is thing I am sending to backend
+            "http://localhost:4567/way",
+            toSend,
+            config
+        ).then(response => {
+            canvasMap = response.data["way"];
+            console.log("Canvas" + canvasMap)
+            canvas = canvasRef.current
+            contextRef.current = canvas.getContext('2d')
+            context = contextRef.current
+            context.fillStyle = "#ffffff";
+            context.fillRect(0, 0, canvasWidth, canvasHeight);
+            drawWaysScroll(context, canvasMap, shortestRoute)
+        })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
     function caching(smallLat, bigLat, smallLon, bigLon) {
         let updatedMap = []
         let minLon = roundDown(smallLon)
@@ -419,7 +499,8 @@ function Maps(props) {
                     //     console.log((500 * (a - minBoundLon) / (maxBoundLon - minBoundLon)) + "  == " + a)
                     // console.log((500 * (b - maxBoundLat) / (minBoundLat - maxBoundLat)) + " == " + b)
                     //      context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
-                    drawWays(context, 0, cache[tile])
+                    //drawWays(context, 0, cache[tile])
+                    drawWaysScroll(context, cache[tile], shortestRoute)
                 } else {
                     const toSend = {
                         minLat: b,
@@ -450,7 +531,8 @@ function Maps(props) {
                                 contextRef.current = canvas.getContext('2d')
                                 context = contextRef.current
                                 //   context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
-                                drawWays(context, 0, cache[tile])
+                                //drawWays(context, 0, cache[tile])
+                                drawWaysScroll(context, cache[tile], shortestRoute)
                             }
                         })
                         .catch(function (error) {
@@ -483,13 +565,6 @@ function Maps(props) {
         <h3>Intersection Two: </h3>
         <TextBox label={"Street 3 Name: "} change={setStreetThree} value={streetThree}/>
         <TextBox label={"Street 4 Name: "} change={setStreetFour} value={streetFour}/>
-        <canvas onClick={click} onMouseDown={down} onMouseUp={up} ref={canvasRef}
-                style={{border:"2px solid black"}} width="500" height="500" />
-
-        {/*<TextBox label={"Start Longitude: "} change={setFirstMouseY} value={firstMouseY}/>*/}
-        {/*<TextBox label={"Start Latitude: "} change={setFirstMouseX} value={firstMouseX}/>*/}
-        {/*<TextBox label={"End Longitude: "} change={setSecondMouseY} value={secondMouseY}/>*/}
-        {/*<TextBox label={"End Latitude: "} change={setSecondMouseX} value={secondMouseX}/>*/}
         <canvas onClick={click} onMouseDown={down} onMouseUp={up} onWheel={zoom} ref={canvasRef}
                 style={{border:"2px solid black"}} width="500" height="500" />
     </div>
