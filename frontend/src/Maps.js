@@ -437,40 +437,6 @@ function Maps(props) {
         }, [props.map]
     )
 
-    const requestWays = () => {
-        console.log(minBoundLat)
-        console.log(minBoundLon)
-        const toSend = {
-            minLat: maxBoundLat, // srclat is key, startLat is value
-            minLon: minBoundLon,
-            maxLat: minBoundLat,
-            maxLon: maxBoundLon
-        };
-        let config = {
-            headers: {
-                "Content-Type": "application/json",
-                'Access-Control-Allow-Origin': '*',
-            }
-        }
-        //TODO: Fill in 1) location for request 2) your data 3) configuration
-        axios.post( /// this is thing I am sending to backend
-            "http://localhost:4567/way",
-            toSend,
-            config
-        ).then(response => {
-            canvasMap = response.data["way"];
-            console.log("Canvas" + canvasMap)
-            canvas = canvasRef.current
-            contextRef.current = canvas.getContext('2d')
-            context = contextRef.current
-            context.fillStyle = "#ffffff";
-            context.fillRect(0, 0, canvasWidth, canvasHeight);
-            drawWaysScroll(context, canvasMap, shortestRoute)
-        })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }
 
     function caching(smallLat, bigLat, smallLon, bigLon) {
         let updatedMap = []
