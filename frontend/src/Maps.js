@@ -310,6 +310,7 @@ function Maps(props) {
         // console.log("Mouse down" + mouseDown[1])
         console.log("Mouse up" + mouseUp[0])
         console.log("Mouse up " + mouseUp[1])
+        //maybe change these values so that scrolling a bit doesn't affect anything
         if (mouseUp[0] != 0 || mouseUp[1] != 0){
 // <<<<<<< HEAD
 //           console.log("not a click!")
@@ -361,6 +362,10 @@ function Maps(props) {
                 }
             }
         }
+    }
+
+    const zoom = (event) => {
+
     }
 
     useEffect(() => {
@@ -454,7 +459,7 @@ function Maps(props) {
         <TextBox label={"Start Latitude: "} change={setFirstMouseX} value={firstMouseX}/>
         <TextBox label={"End Longitude: "} change={setSecondMouseY} value={secondMouseY}/>
         <TextBox label={"End Latitude: "} change={setSecondMouseX} value={secondMouseX}/>
-        <canvas onClick={click} onMouseDown={down} onMouseUp={up} ref={canvasRef}
+        <canvas onClick={click} onMouseDown={down} onMouseUp={up} onWheel={zoom} ref={canvasRef}
                 style={{border:"2px solid black"}} width="500" height="500" />
     </div>
 
