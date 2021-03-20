@@ -31,6 +31,12 @@ function Maps(props) {
     const [secondMouseY, setSecondMouseY] = useState("");
     const [shortestRoute, setShortestRoute] = useState("");
     let circles = [];
+
+    const [streetOne, setStreetOne] = useState("")
+    const [streetTwo, setStreetTwo] = useState("")
+    const [streetThree, setStreetThree] = useState("")
+    const [streetFour, setStreetFour] = useState("")
+
     let info = ""
     let currNode = ""
     const [cache, setCache] = useState({});
@@ -138,20 +144,43 @@ function Maps(props) {
     }
 
     const requestRoute = () => {
+        let sLon = ""
+        let sLat = ""
+        let eLon = ""
+        let eLat = ""
+        let version = 0 // 0 for both clicks, 1 for both routes, 2 for one of each
+        if (firstMouseX != "") {
+            sLon = firstMouseY
+            sLat = firstMouseX
+            version = 2
+        }
         if (secondMouseX != "") {
-            console.log("Called!!!!")
-            const toSend = {
-                startLon: firstMouseY,
-                startLat: firstMouseX,
-                endLon: secondMouseY,
-                endLat: secondMouseX,
-            };
-            let config = {
-                headers: {
-                    "Content-Type": "application/json",
-                    'Access-Control-Allow-Origin': '*',
-                }
+            eLon = secondMouseY
+            eLat = secondMouseX
+            version = 0
+        } else {
+            if (streetOne != "" && streetTwo != "") {
+                sLon = streetOne
+                sLat = streetTwo
+            } if (streetOne != "" && streetTwo != "") {
+                eLon = streetThree
+                eLat = streetFour
+                version = 1
             }
+        }
+        const toSend = {
+            startLon: sLon,
+            startLat: sLat,
+            endLon: eLon,
+            endLat: eLat,
+            version: version
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
 //             axios.post(
 //                 "http://localhost:4567/shortestRoute",
 //                 toSend,
@@ -164,22 +193,22 @@ function Maps(props) {
 //                 })
 //                 console.log(shortestRoute.valueOf());
 //                 drawWays(context, 1, response.data["shortestRoute"], minBoundLon, minBoundLat, maxBoundLon, maxBoundLat);
-            axios.post(
-                "http://localhost:4567/shortestRoute",
-                toSend,
-                config
-            ).then(response => {
-                setShortestRoute(response.data["shortestRoute"]);
-                Object.keys(shortestRoute).forEach((id) => {
-                    const curr = shortestRoute[id]
-                    curr.color = "#b00014";
-                })
-                drawWays(context, 1, response.data["shortestRoute"]);
+        axios.post(
+            "http://localhost:4567/shortestRoute",
+            toSend,
+            config
+        ).then(response => {
+            setShortestRoute(response.data["shortestRoute"]);
+            Object.keys(shortestRoute).forEach((id) => {
+                const curr = shortestRoute[id]
+                curr.color = "#b00014";
             })
-            .catch(function (error) {
-                console.log(error);
-            });
-        }
+            drawWays(context, 1, response.data["shortestRoute"]);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+//    }
     }
 
     const getNearestNode = (nearestLat, nearestLong) => {
@@ -448,10 +477,19 @@ function Maps(props) {
     return <div>
         <AwesomeButton type="primary" onPress={requestRoute}>Show Route</AwesomeButton>
         <h3></h3>
-        <TextBox label={"Start Longitude: "} change={setFirstMouseY} value={firstMouseY}/>
-        <TextBox label={"Start Latitude: "} change={setFirstMouseX} value={firstMouseX}/>
-        <TextBox label={"End Longitude: "} change={setSecondMouseY} value={secondMouseY}/>
-        <TextBox label={"End Latitude: "} change={setSecondMouseX} value={secondMouseX}/>
+        <h3>Intersection One: </h3>
+        <TextBox label={"Street 1 Name: "} change={setStreetOne} value={streetOne}/>
+        <TextBox label={"Street 2 Name: "} change={setStreetTwo} value={streetTwo}/>
+        <h3>Intersection Two: </h3>
+        <TextBox label={"Street 3 Name: "} change={setStreetThree} value={streetThree}/>
+        <TextBox label={"Street 4 Name: "} change={setStreetFour} value={streetFour}/>
+        <canvas onClick={click} onMouseDown={down} onMouseUp={up} ref={canvasRef}
+                style={{border:"2px solid black"}} width="500" height="500" />
+
+        {/*<TextBox label={"Start Longitude: "} change={setFirstMouseY} value={firstMouseY}/>*/}
+        {/*<TextBox label={"Start Latitude: "} change={setFirstMouseX} value={firstMouseX}/>*/}
+        {/*<TextBox label={"End Longitude: "} change={setSecondMouseY} value={secondMouseY}/>*/}
+        {/*<TextBox label={"End Latitude: "} change={setSecondMouseX} value={secondMouseX}/>*/}
         <canvas onClick={click} onMouseDown={down} onMouseUp={up} onWheel={zoom} ref={canvasRef}
                 style={{border:"2px solid black"}} width="500" height="500" />
     </div>

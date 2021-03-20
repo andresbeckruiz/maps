@@ -40,8 +40,7 @@ public final class Main {
   /**
    * The initial method called when execution begins.
    *
-   * @param args
-   *          An array of command line arguments
+   * @param args An array of command line arguments
    */
   public static void main(String[] args) {
     new Main(args).run();
@@ -63,7 +62,7 @@ public final class Main {
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
     parser.accepts("port").withRequiredArg().ofType(Integer.class)
-    .defaultsTo(DEFAULT_PORT);
+        .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
     MockPersonMethod m = new MockPersonMethod();
     mapsLogic = new MapsLogic();
@@ -140,7 +139,6 @@ public final class Main {
 
   /**
    * Handle requests to the front page of our Stars website.
-   *
    */
   private static class FrontHandler implements TemplateViewRoute {
     @Override
@@ -157,7 +155,6 @@ public final class Main {
 
   /**
    * Display an error page when an exception occurs in the server.
-   *
    */
   private static class ExceptionPrinter implements ExceptionHandler {
     @Override
@@ -210,15 +207,15 @@ public final class Main {
             ret = "The stars within the radius: " + coms[1] + " are";
             ret += "<br> <br>";
             ret += "<table id=\"table\">"
-              + "<tr> <th> Match # </th> <th> Name </th>"
-              + "<th> ID </th> <th> X </th> <th> Y </th> <th> Z </th> </tr>";
+                + "<tr> <th> Match # </th> <th> Name </th>"
+                + "<th> ID </th> <th> X </th> <th> Y </th> <th> Z </th> </tr>";
             for (int i = 0; i < stars.size(); i++) {
               Star curr = stars.get(i);
               ret += "<tr><td>" + Integer.toString(i + 1) + "</td>" + "<td>" + curr.getName()
-                + "</td>" + "<td>" + curr.getStarID() + "</td>"
-                + "<td>" + curr.getX() + "</td>"
-                + "<td>" + curr.getY() + "</td>"
-                + "<td>" + curr.getZ() + "</td>";
+                  + "</td>" + "<td>" + curr.getStarID() + "</td>"
+                  + "<td>" + curr.getX() + "</td>"
+                  + "<td>" + curr.getY() + "</td>"
+                  + "<td>" + curr.getZ() + "</td>";
               ret += "</tr>";
             }
             ret += "</table>";
@@ -264,15 +261,15 @@ public final class Main {
             //
             ret += "<br> <br>";
             ret += "<table id=\"table\">"
-              + "<tr> <th> Match # </th> <th> Name </th>"
-              + "<th> ID </th> <th> X </th> <th> Y </th> <th> Z </th> </tr>";
+                + "<tr> <th> Match # </th> <th> Name </th>"
+                + "<th> ID </th> <th> X </th> <th> Y </th> <th> Z </th> </tr>";
             for (int i = 0; i < stars.size(); i++) {
               Star curr = stars.get(i);
               ret += "<tr><td>" + Integer.toString(i + 1) + "</td>"
-                + "<td>" + curr.getName() + "</td>"
-                + "<td>" + curr.getStarID() + "</td>"
-                + "<td>" + curr.getX() + "</td>" + "<td>" + curr.getY()
-                + "</td>" + "<td>" + curr.getZ() + "</td>";
+                  + "<td>" + curr.getName() + "</td>"
+                  + "<td>" + curr.getStarID() + "</td>"
+                  + "<td>" + curr.getX() + "</td>" + "<td>" + curr.getY()
+                  + "</td>" + "<td>" + curr.getZ() + "</td>";
               ret += "</tr>";
             }
             ret += "</table>";
@@ -317,7 +314,7 @@ public final class Main {
       // we want to send back a dictionary of strings (way ID corresponds to start lat, )
       // make dictionary
       String[] command = {"ways", Double.toString(maxLatit), Double.toString(minLong),
-              Double.toString(minLatit), Double.toString(maxLong)};
+          Double.toString(minLatit), Double.toString(maxLong)};
       HashMap<String, Object> map = mapsLogic.run(command);
       Map<String, Object> variables = ImmutableMap.of("way", map);
       return GSON.toJson(variables);
@@ -342,18 +339,40 @@ public final class Main {
   private static class ShortestRouteHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-      // request is what is from user
-      //System.out.println("in java");
       JSONObject data = new JSONObject(request.body());
-      double startLon = data.getDouble("startLon");
-      double startLat = data.getDouble("startLat");
-      double endLon = data.getDouble("endLon");
-      double endLat = data.getDouble("endLat");
-      String[] command = {"route", Double.toString(startLon), Double.toString(startLat),
-          Double.toString(endLon), Double.toString(endLat)};
-      HashMap<String, Object> map = mapsLogic.run(command);
-      Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
-      return GSON.toJson(variables);
+      double version = data.getDouble("version");
+
+//      double streetOne = data.getDouble("streetOne");
+//      double streetTwo = data.getDouble("streetTwo");
+//      double streetThree = data.getDouble("streetThree");
+//      double streetFour = data.getDouble("streetFour");
+
+      if (version == 0) {
+        double startLon = data.getDouble("startLon");
+        double startLat = data.getDouble("startLat");
+        double endLon = data.getDouble("endLon");
+        double endLat = data.getDouble("endLat");
+        String[] command = {"route", Double.toString(startLon), Double.toString(startLat),
+            Double.toString(endLon), Double.toString(endLat)};
+        HashMap<String, Object> map = mapsLogic.run(command);
+        Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
+        return GSON.toJson(variables);
+      } else if (version == 1) {
+        String startLon = data.getString("startLon");
+        String startLat = data.getString("startLat");
+        String endLon = data.getString("endLon");
+        String endLat = data.getString("endLat");
+        String[] command = {"route", startLon, startLat, endLon, endLat};
+        HashMap<String, Object> map = mapsLogic.run(command);
+        Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
+        return GSON.toJson(variables);
+      } else if (version == 2) {
+//        String[] end = {"nearest", Double.toString(nearestLat), Double.toString(nearestLon)};
+//        HashMap<String, Object> map = mapsLogic.run(command);
+//        String[] command = {"route", Double.toString(startLon), Double.toString(startLat),
+//            Double.toString(endLon), Double.toString(endLat)};
+      }
+      return "";
     }
   }
 
