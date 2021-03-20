@@ -30,6 +30,7 @@ function Maps(props) {
     const [secondMouseX, setSecondMouseX] = useState("");
     const [secondMouseY, setSecondMouseY] = useState("");
     const [shortestRoute, setShortestRoute] = useState("");
+    let circles = [];
     let info = ""
     let currNode = ""
     const [cache, setCache] = useState({});
@@ -63,6 +64,55 @@ function Maps(props) {
             context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
             context.stroke();
         })
+    }
+
+    //function that keeps ways and circles when scroll or zoom occurs
+    const drawWays2 = (context, canvasMap, route, circles) => {
+        console.log("drawing entire map")
+        //console.log(typeof info + " info type")
+        context.lineWidth = 1
+        //see if we can clean this up later
+        Object.keys(canvasMap).forEach((id) => {
+            const curr = canvasMap[id]
+            //console.log(curr)
+            if (curr[4] == 'unclassified' || curr[4] == ''){
+                curr.color = "#000000"
+            } else {
+                curr.color = "#008000"
+            }
+        })
+        Object.keys(canvasMap).forEach((id) => {
+            const curr = canvasMap[id]
+            context.strokeStyle = curr.color;
+            context.beginPath()
+            context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
+            context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
+            context.stroke();
+        })
+        Object.keys(route).forEach((id) => {
+            const curr = route[id]
+            context.strokeStyle = curr.color;
+            context.beginPath()
+            context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
+            context.lineTo(calcLonPixels(curr[3]), calcLatPixels(curr[2]));
+            context.stroke();
+        })
+        //checking if we need to draw circles
+        if (circles.length == 2){
+            context.beginPath();
+            context.lineWidth = 5;
+            context.strokeStyle = "#be1212";
+            context.arc(circles[1], circles[0], 10, 0, Math.PI * 4, true);
+            context.stroke();
+        }
+        if (circles.length == 4){
+            context.beginPath();
+            context.lineWidth = 5;
+            context.strokeStyle = "#be1212";
+            context.arc(circles[1], circles[0], 10, 0, Math.PI * 4, true);
+            context.arc(circles[3], circles[2], 10, 0, Math.PI * 4, true);
+            context.stroke();
+        }
     }
 
     function calcLonPixels(lon) {
