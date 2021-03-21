@@ -116,12 +116,8 @@ function Maps(props) {
         }
         //checking if we need to draw circles
         if (firstCircle != [] && secondCircle == [] ){
-            // console.log("First circle lon" + firstCircle[1])
-            // console.log("First circle lat" + firstCircle[0])
             let firstLonPixels = calcLonPixels(firstCircle[1])
             let firstLatPixels = calcLatPixels(firstCircle[0])
-            // console.log("First circle latpixels" + firstLonPixels)
-            // console.log("First circle lonpixels" + firstLatPixels)
             context.beginPath();
             context.lineWidth = 5;
             context.strokeStyle = "#be1212";
@@ -129,12 +125,8 @@ function Maps(props) {
             context.stroke();
         }
         if (firstCircle != [] && secondCircle != [] ){
-            // console.log("First circle lon" + firstCircle[1])
-            // console.log("First circle lat" + firstCircle[0])
             let firstLonPixels = calcLonPixels(firstCircle[1])
             let firstLatPixels = calcLatPixels(firstCircle[0])
-            // console.log("Second circle lon" + secondCircle[1])
-            // console.log("Second circle lat" + secondCircle[0])
             let secondLonPixels = calcLonPixels(secondCircle[1])
             let secondLatPixels = calcLatPixels(secondCircle[0])
             // console.log("First circle latpixels" + firstLonPixels)
@@ -220,16 +212,16 @@ function Maps(props) {
         let sLon = ""
         let sLat = ""
         if (intersectionNumber == 1) {
-            // sLon = streetOne
-            // sLat = streetTwo
-            sLon = "Prospect Street"
-            sLat = "George Street"
+            sLon = streetOne
+            sLat = streetTwo
+            // sLon = "Prospect Street"
+            // sLat = "George Street"
             setIntersectionNumber(2)
         } else {
-            // sLon = streetThree
-            // sLat = streetFour
-            sLon = "Thayer Street"
-            sLat = "Waterman Street"
+            sLon = streetThree
+            sLat = streetFour
+            // sLon = "Thayer Street"
+            // sLat = "Waterman Street"
             setIntersectionNumber(1)
         }
         const toSend = {
@@ -506,16 +498,10 @@ function Maps(props) {
                     canvas = canvasRef.current
                     contextRef.current = canvas.getContext('2d')
                     context = contextRef.current
-                 //   updatedMap.push(cache[tile])
                     Object.keys(cache[tile]).forEach((id) => {
                         const curr = cache[tile][id]
-                           //  console.log(curr)
                         updatedMap.push(curr)
                     })
-                    //     console.log((500 * (a - minBoundLon) / (maxBoundLon - minBoundLon)) + "  == " + a)
-                    // console.log((500 * (b - maxBoundLat) / (minBoundLat - maxBoundLat)) + " == " + b)
-                    //      context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
-                    //drawWays(context, 0, cache[tile])
                     drawWaysScroll(context, cache[tile], shortestRoute)
                 } else {
                     const toSend = {
@@ -538,7 +524,6 @@ function Maps(props) {
                         .then(response => {
                             cache[tile] = response.data["way"];
                             if (cache[tile] != {}) {
-                             //      updatedMap.push(cache[tile])
                                 Object.keys(cache[tile]).forEach((id) => {
                                     const curr = cache[tile][id]
                                     updatedMap.push(curr)
@@ -546,8 +531,6 @@ function Maps(props) {
                                 canvas = canvasRef.current
                                 contextRef.current = canvas.getContext('2d')
                                 context = contextRef.current
-                                //   context.fillRect(calcLatPixels(b), calcLonPixels(a), 5, 5);
-                                //drawWays(context, 0, cache[tile])
                                 drawWaysScroll(context, cache[tile], shortestRoute)
                             }
                         })
