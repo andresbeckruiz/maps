@@ -12,7 +12,8 @@ function Maps(props) {
     let canvas = canvasRef.current;
     let context = contextRef.current;
     //what ways we want to display
-    let canvasMap = props.map;
+  //  let canvasMap = props.map;
+    const [canvasMap, setCanvasMap] = useState(props.map)
     const canvasWidth = 500;
     const canvasHeight = 500;
 
@@ -474,7 +475,8 @@ function Maps(props) {
             canvas = canvasRef.current
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
-            canvasMap = props.map
+            // canvasMap = props.map
+            setCanvasMap(props.map)
             drawWays(context, 0, canvasMap)
         }, [props.map]
     )
@@ -540,7 +542,8 @@ function Maps(props) {
                 }
             }
         }
-        canvasMap = updatedMap
+       // canvasMap = updatedMap
+        setCanvasMap(updatedMap)
     }
 
     function roundDown(value) {
@@ -555,6 +558,15 @@ function Maps(props) {
         return (rounded*ROUND_NUM)
     }
 
+    const clear = () => {
+      canvas = canvasRef.current
+      contextRef.current = canvas.getContext('2d')
+      context = contextRef.current
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvasWidth, canvasHeight);
+      drawWays(context, 0, canvasMap)
+    }
+
     return <div>
         <AwesomeButton type="primary" onPress={requestRoute}>Show Route</AwesomeButton>
         <h3></h3>
@@ -566,6 +578,7 @@ function Maps(props) {
         <TextBox label={"Street 4 Name: "} change={setStreetFour} value={streetFour}/>
         <canvas onClick={click} onMouseDown={down} onMouseUp={up} onWheel={zoom} ref={canvasRef}
                 style={{border:"2px solid black"}} width="500" height="500" />
+        <AwesomeButton type="primary" onPress={clear}>Clear</AwesomeButton>
     </div>
 
 }
