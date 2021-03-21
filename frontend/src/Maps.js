@@ -20,9 +20,15 @@ function Maps(props) {
     const [minBoundLon, setMinBoundLon] = useState(-71.40729)
     const [maxBoundLat, setMaxBoundLat] = useState(41.82953)
     const [maxBoundLon, setMaxBoundLon] = useState(-71.39572)
+    // let minBoundLat = 41.82433
+    // let minBoundLon = -71.40729
+    // let maxBoundLat = 41.82953
+    // let maxBoundLon = -71.39572
 
-    const [mouseDown , setMouseDown] = useState([])
-    const [mouseUp, setMouseUp] = useState([])
+    // const [mouseDown , setMouseDown] = useState([])
+    // const [mouseUp, setMouseUp] = useState([])
+    let mouseDown = []
+    let mouseUp = []
     const [firstClick, setFirstClick] = useState(0);
     const [intersectionNumber, setIntersectionNumber] = useState(1);
     const [firstMouseX, setFirstMouseX] = useState("");
@@ -41,6 +47,7 @@ function Maps(props) {
     let currNode = ""
     const [cache, setCache] = useState({});
     const ROUND_NUM = 0.01
+    let scrolling = false;
 
     const drawWays = (context, newMap, route) => {
         if (newMap == 1) {
@@ -73,6 +80,8 @@ function Maps(props) {
 
     //function that keeps ways and circles when scroll or zoom occurs
     const drawWaysScroll = (context, canvasMap, route) => {
+        // console.log("drawing entire map")
+        //console.log(typeof info + " info type")
         //see if we can clean this up later
         Object.keys(canvasMap).forEach((id) => {
             const curr = canvasMap[id]
@@ -107,12 +116,12 @@ function Maps(props) {
         }
         //checking if we need to draw circles
         if (firstCircle != [] && secondCircle == [] ){
-            console.log("First circle lon" + firstCircle[1])
-            console.log("First circle lat" + firstCircle[0])
+            // console.log("First circle lon" + firstCircle[1])
+            // console.log("First circle lat" + firstCircle[0])
             let firstLonPixels = calcLonPixels(firstCircle[1])
             let firstLatPixels = calcLatPixels(firstCircle[0])
-            console.log("First circle latpixels" + firstLonPixels)
-            console.log("First circle lonpixels" + firstLatPixels)
+            // console.log("First circle latpixels" + firstLonPixels)
+            // console.log("First circle lonpixels" + firstLatPixels)
             context.beginPath();
             context.lineWidth = 5;
             context.strokeStyle = "#be1212";
@@ -120,18 +129,18 @@ function Maps(props) {
             context.stroke();
         }
         if (firstCircle != [] && secondCircle != [] ){
-            console.log("First circle lon" + firstCircle[1])
-            console.log("First circle lat" + firstCircle[0])
+            // console.log("First circle lon" + firstCircle[1])
+            // console.log("First circle lat" + firstCircle[0])
             let firstLonPixels = calcLonPixels(firstCircle[1])
             let firstLatPixels = calcLatPixels(firstCircle[0])
-            console.log("Second circle lon" + secondCircle[1])
-            console.log("Second circle lat" + secondCircle[0])
+            // console.log("Second circle lon" + secondCircle[1])
+            // console.log("Second circle lat" + secondCircle[0])
             let secondLonPixels = calcLonPixels(secondCircle[1])
             let secondLatPixels = calcLatPixels(secondCircle[0])
-            console.log("First circle latpixels" + firstLonPixels)
-            console.log("First circle lonpixels" + firstLatPixels)
-            console.log("Second circle latpixels" + secondLonPixels)
-            console.log("Second circle lonpixels" + secondLonPixels)
+            // console.log("First circle latpixels" + firstLonPixels)
+            // console.log("First circle lonpixels" + firstLatPixels)
+            // console.log("Second circle latpixels" + secondLonPixels)
+            // console.log("Second circle lonpixels" + secondLonPixels)
             context.beginPath();
             context.lineWidth = 5;
             context.strokeStyle = "#be1212";
@@ -273,18 +282,12 @@ function Maps(props) {
                 currNode = data[id]
             })
             let lonPixels = calcLonPixels(currNode[1])
-            // console.log("Currnode lon" + currNode[1])
-            console.log("Lon pixels" + lonPixels)
             let latPixels = calcLatPixels(currNode[0])
-            // console.log("Currnode lat" + currNode[0])
-             console.log("Lat pixels" + latPixels)
             if (clickNum == 2) {
-                console.log("first click = 2")
                 setShortestRoute("")
                 setFirstCircle([currNode[0], currNode[1]])
-                console.log(currNode[0] + " " + currNode[1])
-                console.log(lonPixels + " " + latPixels)
                 setSecondCircle([])
+                // secondCircle = []
                 context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvasWidth, canvasHeight);
                 context.beginPath();
@@ -295,10 +298,8 @@ function Maps(props) {
                 drawWays(context, 0, canvasMap)
             }
             else if (clickNum == 1) {
-                console.log("first click = 1")
-                console.log(currNode[0] + " " + currNode[1])
-                console.log(lonPixels + " " + latPixels)
                 setSecondCircle([currNode[0], currNode[1]])
+                // secondCircle = [currNode[0], currNode[1]]
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
@@ -308,6 +309,7 @@ function Maps(props) {
             } else {
                 console.log("first click = 0 " + currNode[0] + " " + currNode[1] + " " + lonPixels + " " + latPixels )
                 setFirstCircle([currNode[0], currNode[1]])
+                // firstCircle = [currNode[0], currNode[1]]
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
@@ -325,7 +327,8 @@ function Maps(props) {
         let x = event.pageX - canvas.offsetLeft
         let y = event.pageY - canvas.offsetTop
     //    setMouseUp(x - [mouseDown[0], y - mouseDown[1]])
-        setMouseUp([mouseDown[0] - x, y - mouseDown[1]])
+        mouseUp = [mouseDown[0] - x, y - mouseDown[1]]
+        // setMouseUp([mouseDown[0] - x, y - mouseDown[1]])
         // maybe mouseDown[0] - x instead ...
     }
 
@@ -333,7 +336,8 @@ function Maps(props) {
         canvas = canvasRef.current
         let x = event.pageX - canvas.offsetLeft
         let y = event.pageY - canvas.offsetTop
-        setMouseDown([x,y])
+        // setMouseDown([x,y])
+        mouseDown = [x,y]
     }
 
     const click = (event) => {
@@ -342,8 +346,7 @@ function Maps(props) {
         context = contextRef.current
         console.log("Mouse up" + mouseUp[0])
         console.log("Mouse up " + mouseUp[1])
-        //maybe change these values so that scrolling a bit doesn't affect anything
-        if (mouseUp[0] != 0 || mouseUp[1] != 0) {
+        if (Math.abs(mouseUp[0]) > 5 || Math.abs(mouseUp[1]) > 5 ) {
 //           console.log("not a click!")
 //           //updating bounded box
 //           let addedLat = mouseUp[1] * (0.000005)
@@ -361,12 +364,26 @@ function Maps(props) {
             // let addedLat = mouseUp[1] * (0.000005) // play around with these numbers -- try a little bigger
             // let addedLon = mouseUp[0] * (0.00001)
             // should be related to 1/500 in some way
-            let addedLat = mouseUp[1] * (0.00002)
-            let addedLon = mouseUp[0] * (0.00002)
+            let lat1 = calcLatCoord(canvas,mouseUp[1])
+            let lat2 = calcLatCoord(canvas,0)
+            let addedLat = lat2 - lat1
+            // console.log("ADDED LAT:" + addedLat)
+            let lon1 = calcLatCoord(canvas,mouseUp[0])
+            let lon2 = calcLatCoord(canvas,0)
+            let addedLon = lon2 - lon1
+            // console.log("ADDED LON:" + addedLon)
+            // let addedLat = mouseUp[1] * (0.00002)
+            // let addedLon = mouseUp[0] * (0.00002)
             let smallLat = minBoundLat + addedLat
             let bigLat = maxBoundLat + addedLat // look into these calculations (maybe - instead of +)
             let smallLon = minBoundLon + addedLon
             let bigLon = maxBoundLon + addedLon
+
+            // minBoundLat = smallLat
+            // maxBoundLat = bigLat
+            // minBoundLon = smallLon
+            // maxBoundLon = bigLon
+
             setMinBoundLat(smallLat)
             setMaxBoundLat(bigLat)
             setMinBoundLon(smallLon)
@@ -401,9 +418,65 @@ function Maps(props) {
         }
     }
 
-    const zoom = (event) => {
 
+    const updateZoomBounds = (deltaY) => {
+        let zoomLat = 0.0015
+        let zoomLon = 0.0015
+        if (deltaY > 0) {
+            console.log("Min bound lat" + minBoundLat)
+            console.log("Zoom lat" + zoomLat)
+            console.log("NEW TOTAL SHOULD BE" + (minBoundLat + zoomLat))
+            let smallLat = minBoundLat - zoomLat
+            let bigLat = maxBoundLat + zoomLat
+            let smallLon = minBoundLon - zoomLon
+            let bigLon = maxBoundLon + zoomLon
+            setMinBoundLat(smallLat)
+            setMaxBoundLat(bigLat)
+            setMinBoundLon(smallLon)
+            setMaxBoundLon(bigLon)
+            caching(smallLat, bigLat, smallLon, bigLon)
+        }
+        else if (deltaY < 0) {
+            let smallLat = minBoundLat + zoomLat
+            let bigLat = maxBoundLat - zoomLat
+            let smallLon = minBoundLon + zoomLon
+            let bigLon = maxBoundLon - zoomLon
+            setMinBoundLat(smallLat)
+            setMaxBoundLat(bigLat)
+            setMinBoundLon(smallLon)
+            setMaxBoundLon(bigLon)
+            caching(smallLat, bigLat, smallLon, bigLon)
+        }
+        setTimeout(() => {
+            scrolling = false
+        }, 2000)
     }
+
+
+    const zoom = (event) => {
+        if (!scrolling){
+            console.log("Happening!")
+            scrolling = true
+            setTimeout(() => {
+                updateZoomBounds(event.deltaY)
+            },2000)
+        }
+    }
+
+    // useEffect (() => {
+    //     canvas = canvasRef.current
+    //     canvas.addEventListener("wheel", (event) => {
+    //         if (!scrolling){
+    //             console.log("Happening!")
+    //             scrolling = true
+    //             setTimeout(() => {
+    //                 zoom(event.deltaY)
+    //             },2000)
+    //         }
+    //     })
+    // }, [])
+
+
 
     useEffect(() => {
             canvas = canvasRef.current
@@ -414,8 +487,8 @@ function Maps(props) {
         }, [props.map]
     )
 
-
     function caching(smallLat, bigLat, smallLon, bigLon) {
+        console.log("Caching called!")
         let updatedMap = []
         let minLon = roundDown(smallLon)
         let minLat = roundDown(smallLat)
