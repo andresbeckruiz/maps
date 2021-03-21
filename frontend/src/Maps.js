@@ -13,7 +13,6 @@ function Maps(props) {
     let context = contextRef.current;
     //what ways we want to display
     let canvasMap = props.map;
-    //let firstClick = 0
     const canvasWidth = 500;
     const canvasHeight = 500;
 
@@ -25,6 +24,7 @@ function Maps(props) {
     const [mouseDown , setMouseDown] = useState([])
     const [mouseUp, setMouseUp] = useState([])
     const [firstClick, setFirstClick] = useState(0);
+    const [intersectionNumber, setIntersectionNumber] = useState(1);
     const [firstMouseX, setFirstMouseX] = useState("");
     const [firstMouseY, setFirstMouseY] = useState("");
     const [secondMouseX, setSecondMouseX] = useState("");
@@ -32,15 +32,11 @@ function Maps(props) {
     const [shortestRoute, setShortestRoute] = useState("");
     const [firstCircle, setFirstCircle, ] = useState([])
     const [secondCircle, setSecondCircle, ] = useState([])
-
-    // let firstCircle = [];
-    // let secondCircle = [];
-
+    const [intersectPoints, setIntersectPoints] = useState("");
     const [streetOne, setStreetOne] = useState("")
     const [streetTwo, setStreetTwo] = useState("")
     const [streetThree, setStreetThree] = useState("")
     const [streetFour, setStreetFour] = useState("")
-
     let info = ""
     let currNode = ""
     const [cache, setCache] = useState({});
@@ -48,13 +44,12 @@ function Maps(props) {
 
     const drawWays = (context, newMap, route) => {
         if (newMap == 1) {
-            console.log("drawing route")
+            //console.log("drawing route")
             info = route;
             context.lineWidth = 4
         } else {
-            console.log("drawing entire map")
+            //console.log("drawing entire map")
             info = route;
-            console.log(typeof info + " info type")
             context.lineWidth = 1
             Object.keys(info).forEach((id) => {
                 const curr = info[id]
@@ -78,8 +73,6 @@ function Maps(props) {
 
     //function that keeps ways and circles when scroll or zoom occurs
     const drawWaysScroll = (context, canvasMap, route) => {
-        console.log("drawing entire map")
-        //console.log(typeof info + " info type")
         //see if we can clean this up later
         Object.keys(canvasMap).forEach((id) => {
             const curr = canvasMap[id]
@@ -177,32 +170,19 @@ function Maps(props) {
         let sLat = ""
         let eLon = ""
         let eLat = ""
-        let version = 0 // 0 for both clicks, 1 for both routes, 2 for one of each
         if (firstMouseX != "") {
             sLon = firstMouseY
             sLat = firstMouseX
-            version = 2
         }
         if (secondMouseX != "") {
             eLon = secondMouseY
             eLat = secondMouseX
-            version = 0
-        } else {
-            if (streetOne != "" && streetTwo != "") {
-                sLon = streetOne
-                sLat = streetTwo
-            } if (streetOne != "" && streetTwo != "") {
-                eLon = streetThree
-                eLat = streetFour
-                version = 1
-            }
         }
         const toSend = {
             startLon: sLon,
             startLat: sLat,
             endLon: eLon,
             endLat: eLat,
-            version: version
         };
         let config = {
             headers: {
@@ -210,26 +190,14 @@ function Maps(props) {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-//             axios.post(
-//                 "http://localhost:4567/shortestRoute",
-//                 toSend,
-//                 config
-//             ).then(response => {
-//                 setShortestRoute(response.data["shortestRoute"]);
-//                 Object.keys(shortestRoute).forEach((id) => {
-//                     const curr = shortestRoute[id]
-//                     curr.color = "#b00014";
-//                 })
-//                 console.log(shortestRoute.valueOf());
-//                 drawWays(context, 1, response.data["shortestRoute"], minBoundLon, minBoundLat, maxBoundLon, maxBoundLat);
         axios.post(
             "http://localhost:4567/shortestRoute",
             toSend,
             config
         ).then(response => {
             setShortestRoute(response.data["shortestRoute"]);
-            Object.keys(shortestRoute).forEach((id) => {
-                const curr = shortestRoute[id]
+            Object.keys(response.data["shortestRoute"]).forEach((id) => {
+                const curr = response.data["shortestRoute"][id]
                 curr.color = "#b00014";
             })
             drawWays(context, 1, response.data["shortestRoute"]);
@@ -237,10 +205,53 @@ function Maps(props) {
         .catch(function (error) {
             console.log(error);
         });
-//    }
     }
 
-    const getNearestNode = (nearestLat, nearestLong) => {
+    const findIntersection = () => {
+        let sLon = ""
+        let sLat = ""
+        if (intersectionNumber == 1) {
+            // sLon = streetOne
+            // sLat = streetTwo
+            sLon = "Prospect Street"
+            sLat = "George Street"
+            setIntersectionNumber(2)
+        } else {
+            // sLon = streetThree
+            // sLat = streetFour
+            sLon = "Thayer Street"
+            sLat = "Waterman Street"
+            setIntersectionNumber(1)
+        }
+        const toSend = {
+            startLon: sLon,
+            startLat: sLat,
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+    axios.post(
+        "http://localhost:4567/intersection",
+        toSend,
+        config
+    ).then(response => {
+        setIntersectPoints(response.data["intersection"]);
+        Object.keys(response.data["intersection"]).forEach((id) => {
+            const curr = response.data["intersection"][id]
+            console.log(curr[0] + " " + curr[1] + " in intersect")
+            getNearestNode(curr[0], curr[1], firstClick)
+            setClicks(curr[0], curr[1])
+        })
+    })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+    const getNearestNode = (nearestLat, nearestLong, clickNum) => {
         const toSend = {
             nearLat : nearestLat,
             nearLon : nearestLong
@@ -256,19 +267,23 @@ function Maps(props) {
             toSend,
             config
         ).then(response => {
+            console.log(nearestLat + " " + nearestLong + " xxx")
             let data = response.data["nearest"]
             Object.keys(data).forEach((id) => {
                 currNode = data[id]
             })
             let lonPixels = calcLonPixels(currNode[1])
-            console.log("Currnode lon" + currNode[1])
+            // console.log("Currnode lon" + currNode[1])
             console.log("Lon pixels" + lonPixels)
             let latPixels = calcLatPixels(currNode[0])
-            console.log("Currnode lat" + currNode[0])
-            console.log("Lon pixels" + latPixels)
-            if (firstClick == 2) {
+            // console.log("Currnode lat" + currNode[0])
+             console.log("Lat pixels" + latPixels)
+            if (clickNum == 2) {
+                console.log("first click = 2")
                 setShortestRoute("")
                 setFirstCircle([currNode[0], currNode[1]])
+                console.log(currNode[0] + " " + currNode[1])
+                console.log(lonPixels + " " + latPixels)
                 setSecondCircle([])
                 context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -279,7 +294,10 @@ function Maps(props) {
                 context.stroke();
                 drawWays(context, 0, canvasMap)
             }
-            else if (firstClick == 1) {
+            else if (clickNum == 1) {
+                console.log("first click = 1")
+                console.log(currNode[0] + " " + currNode[1])
+                console.log(lonPixels + " " + latPixels)
                 setSecondCircle([currNode[0], currNode[1]])
                 context.beginPath();
                 context.lineWidth = 5;
@@ -288,6 +306,7 @@ function Maps(props) {
                 context.stroke();
                 //should only happen when first click is registered
             } else {
+                console.log("first click = 0 " + currNode[0] + " " + currNode[1] + " " + lonPixels + " " + latPixels )
                 setFirstCircle([currNode[0], currNode[1]])
                 context.beginPath();
                 context.lineWidth = 5;
@@ -300,50 +319,6 @@ function Maps(props) {
                 console.log(error);
             });
     }
-
-    // useEffect(() => {
-    //         canvas = canvasRef.current
-    //         contextRef.current = canvas.getContext('2d')
-    //         context = contextRef.current
-    //         canvas.addEventListener("mousedown", (event) => {
-    //             let x = calcLonCoord(canvas, event.pageX)
-    //             let y = calcLatCoord(canvas, event.pageY)
-    //             if (firstClick == 2) {
-    //                 context.fillStyle = "#ffffff";
-    //                 context.fillRect(0, 0, canvasWidth, canvasHeight);
-    //
-    //                 context.beginPath();
-    //                 context.lineWidth = 5;
-    //                 context.strokeStyle = "#be1212";
-    //                 context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
-    //                 context.stroke();
-    //
-    //                 drawWays(context, 0, props.map)
-    //                 setFirstMouseX(x)
-    //                 setFirstMouseY(y)
-    //                 console.log(firstClick  + " third")
-    //                 firstClick = 1
-    //             } else {
-    //                 context.beginPath();
-    //                 context.lineWidth = 5;
-    //                 context.strokeStyle = "#be1212";
-    //                 context.arc(event.pageX - canvas.offsetLeft, event.pageY - canvas.offsetTop, 10, 0, Math.PI * 4, true);
-    //                 context.stroke();
-    //                 if (firstClick == 1) {
-    //                     setSecondMouseX(x)
-    //                     setSecondMouseY(y)
-    //                     firstClick = 2
-    //                     console.log(firstClick  + " 1")
-    //                 } else if (firstClick == 0) {
-    //                     setFirstMouseX(x)
-    //                     setFirstMouseY(y)
-    //                     firstClick = 1
-    //                     console.log(firstClick  + " 0")
-    //                 }
-    //             }
-    //         })
-    //     }, []
-    // )
 
     const up = (event) => {
         canvas = canvasRef.current
@@ -365,12 +340,10 @@ function Maps(props) {
         canvas = canvasRef.current
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
-        // console.log("Mouse down" + mouseDown[0])
-        // console.log("Mouse down" + mouseDown[1])
         console.log("Mouse up" + mouseUp[0])
         console.log("Mouse up " + mouseUp[1])
         //maybe change these values so that scrolling a bit doesn't affect anything
-        if (mouseUp[0] != 0 || mouseUp[1] != 0){
+        if (mouseUp[0] != 0 || mouseUp[1] != 0) {
 //           console.log("not a click!")
 //           //updating bounded box
 //           let addedLat = mouseUp[1] * (0.000005)
@@ -403,23 +376,27 @@ function Maps(props) {
         } else { //if its a click
             let x = calcLonCoord(canvas, event.pageX)
             let y = calcLatCoord(canvas, event.pageY)
-            getNearestNode(y, x)
-            if (firstClick == 2) {
+            getNearestNode(y, x, firstClick)
+            setClicks(y, x)
+        }
+    }
+
+    const setClicks = (y, x) => {
+        if (firstClick == 2) {
+            setFirstMouseX(x)
+            setFirstMouseY(y)
+            setSecondMouseX("")
+            setSecondMouseY("")
+            setFirstClick(1)
+        } else {
+            if (firstClick == 1) {
+                setSecondMouseX(x)
+                setSecondMouseY(y)
+                setFirstClick(2)
+            } else {
                 setFirstMouseX(x)
                 setFirstMouseY(y)
-                setSecondMouseX("")
-                setSecondMouseY("")
                 setFirstClick(1)
-            } else {
-                if (firstClick == 1) {
-                    setSecondMouseX(x)
-                    setSecondMouseY(y)
-                    setFirstClick(2)
-                } else {
-                    setFirstMouseX(x)
-                    setFirstMouseY(y)
-                    setFirstClick(1)
-                }
             }
         }
     }
@@ -525,10 +502,10 @@ function Maps(props) {
     return <div>
         <AwesomeButton type="primary" onPress={requestRoute}>Show Route</AwesomeButton>
         <h3></h3>
-        <h3>Intersection One: </h3>
+        <AwesomeButton type="primary" onPress={findIntersection}>Set Intersection One: </AwesomeButton>
         <TextBox label={"Street 1 Name: "} change={setStreetOne} value={streetOne}/>
         <TextBox label={"Street 2 Name: "} change={setStreetTwo} value={streetTwo}/>
-        <h3>Intersection Two: </h3>
+        <AwesomeButton type="primary" onPress={findIntersection}>Set Intersection Two: </AwesomeButton>
         <TextBox label={"Street 3 Name: "} change={setStreetThree} value={streetThree}/>
         <TextBox label={"Street 4 Name: "} change={setStreetFour} value={streetFour}/>
         <canvas onClick={click} onMouseDown={down} onMouseUp={up} onWheel={zoom} ref={canvasRef}

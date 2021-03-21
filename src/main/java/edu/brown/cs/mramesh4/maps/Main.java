@@ -135,6 +135,7 @@ public final class Main {
     Spark.post("/map", new InitialMapHandler());
     Spark.post("/shortestRoute", new ShortestRouteHandler());
     Spark.post("/nearest", new NearestHandler());
+    Spark.post("/intersection", new IntersectionHandler());
   }
 
   /**
@@ -340,39 +341,32 @@ public final class Main {
     @Override
     public Object handle(Request request, Response response) throws Exception {
       JSONObject data = new JSONObject(request.body());
-      double version = data.getDouble("version");
+      double startLon = data.getDouble("startLon");
+      double startLat = data.getDouble("startLat");
+      double endLon = data.getDouble("endLon");
+      double endLat = data.getDouble("endLat");
+      String[] command = {"route", Double.toString(startLon), Double.toString(startLat),
+          Double.toString(endLon), Double.toString(endLat)};
+      HashMap<String, Object> map = mapsLogic.run(command);
+      Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
+      return GSON.toJson(variables);
+    }
+  }
 
-//      double streetOne = data.getDouble("streetOne");
-//      double streetTwo = data.getDouble("streetTwo");
-//      double streetThree = data.getDouble("streetThree");
-//      double streetFour = data.getDouble("streetFour");
-
-      if (version == 0) {
-        double startLon = data.getDouble("startLon");
-        double startLat = data.getDouble("startLat");
-        double endLon = data.getDouble("endLon");
-        double endLat = data.getDouble("endLat");
-        String[] command = {"route", Double.toString(startLon), Double.toString(startLat),
-            Double.toString(endLon), Double.toString(endLat)};
-        HashMap<String, Object> map = mapsLogic.run(command);
-        Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
-        return GSON.toJson(variables);
-      } else if (version == 1) {
-        String startLon = data.getString("startLon");
-        String startLat = data.getString("startLat");
-        String endLon = data.getString("endLon");
-        String endLat = data.getString("endLat");
-        String[] command = {"route", startLon, startLat, endLon, endLat};
-        HashMap<String, Object> map = mapsLogic.run(command);
-        Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
-        return GSON.toJson(variables);
-      } else if (version == 2) {
-//        String[] end = {"nearest", Double.toString(nearestLat), Double.toString(nearestLon)};
-//        HashMap<String, Object> map = mapsLogic.run(command);
-//        String[] command = {"route", Double.toString(startLon), Double.toString(startLat),
-//            Double.toString(endLon), Double.toString(endLat)};
-      }
-      return "";
+  private static class IntersectionHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      JSONObject data = new JSONObject(request.body());
+      String startLon = '"' + data.getString("startLon") + '"';
+      String startLat = '"' + data.getString("startLat") + '"';
+      WayNodes nodeOne = mapsLogic.getWayNodesAtIntersection(startLon, startLat);
+      String[] nodeOneInfo = {Double.toString(nodeOne.getCoordinate(0)),
+          Double.toString(nodeOne.getCoordinate(1))};
+      HashMap<String, Object> map = new HashMap<>();
+      map.put(nodeOne.getId(), nodeOneInfo);
+      Map<String, Object> variables = ImmutableMap.of("intersection", map);
+      System.out.println(variables);
+      return GSON.toJson(variables);
     }
   }
 
