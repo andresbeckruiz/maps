@@ -5,9 +5,8 @@ import axios from "axios";
 import TextBox from "./TextBox";
 import {AwesomeButton} from "react-awesome-button";
 
-//NEED TO FIX BUG WHERE IF YOU SCROLL AND CLICK MAP BOUNDS ARE REDRAWN
 function Maps(props) {
-    const canvasRef = useRef(); // allows variables to stay across re-renders
+    const canvasRef = useRef();
     const contextRef = useRef();
     let canvas = canvasRef.current;
     let context = contextRef.current;
@@ -416,9 +415,9 @@ function Maps(props) {
         let zoomLat = 0.0015
         let zoomLon = 0.0015
         if (deltaY > 0) {
-            console.log("Min bound lat" + minBoundLat)
-            console.log("Zoom lat" + zoomLat)
-            console.log("NEW TOTAL SHOULD BE" + (minBoundLat + zoomLat))
+            // console.log("Min bound lat" + minBoundLat)
+            // console.log("Zoom lat" + zoomLat)
+            // console.log("NEW TOTAL SHOULD BE" + (minBoundLat + zoomLat))
             let smallLat = minBoundLat - zoomLat
             let bigLat = maxBoundLat + zoomLat
             let smallLon = minBoundLon - zoomLon
@@ -497,7 +496,7 @@ function Maps(props) {
             context.fillRect(0, 0, canvasWidth, canvasHeight);
             // canvasMap = props.map
             setCanvasMap(props.map)
-            drawWays(context, 0, canvasMap)
+            drawWays(context, 0, props.map)
             console.log("REDRAW!")
         }, [props.map]
     )
@@ -585,6 +584,9 @@ function Maps(props) {
       context = contextRef.current
       context.fillStyle = "#ffffff";
       context.fillRect(0, 0, canvasWidth, canvasHeight);
+      setFirstCircle([])
+      setSecondCircle([])
+      setShortestRoute("")
       drawWays(context, 0, canvasMap)
     }
 
