@@ -516,7 +516,28 @@ function Maps(props) {
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
             canvasMap = props.map
+            // setMinBoundLat(41.82433)
+            // setMaxBoundLat(-71.40729)
+            // setMinBoundLon(41.82953)
+            // setMaxBoundLon(-71.39572)
+            // setFirstClick(0)
+            // setFirstMouseX("")
+            // setFirstMouseY("")
+            // setSecondMouseX("")
+            // setSecondMouseY("")
+            // setShortestRoute("")
+            // setFirstCircle([])
+            // setSecondCircle([])
+            // setStreetOne("")
+            // setStreetTwo("")
+            // setStreetThree("")
+            // setStreetFour("")
+            // setCache({})
+
+            context.fillStyle = "#ffffff";
+            context.fillRect(0, 0, canvasWidth, canvasHeight);
             drawWays(context, 0, canvasMap)
+            console.log("REDRAW!")
         }, [props.map]
     )
 
