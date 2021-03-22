@@ -556,7 +556,6 @@ public class MapsLogic implements ActionMethod<String> {
    */
   public WayNodes getWayNodesAtIntersection(String s1, String s2) {
     try {
-
       PreparedStatement getWay1 = conn.prepareStatement("WITH street1 AS "
           + "(SELECT start, end FROM way WHERE name = ?), "
           + "cross1 as (SELECT start, end FROM way where name = ?) , "
@@ -574,10 +573,10 @@ public class MapsLogic implements ActionMethod<String> {
         answer1.close();
         return this.getIDByString(node);
       }
-      return null;
     } catch (SQLException e) {
       return null;
     }
+    return null;
   }
 
 }
