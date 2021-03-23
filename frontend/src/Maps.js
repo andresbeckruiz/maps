@@ -130,10 +130,6 @@ function Maps(props) {
             let firstLatPixels = calcLatPixels(firstCircle[0])
             let secondLonPixels = calcLonPixels(secondCircle[1])
             let secondLatPixels = calcLatPixels(secondCircle[0])
-            // console.log("First circle latpixels" + firstLonPixels)
-            // console.log("First circle lonpixels" + firstLatPixels)
-            // console.log("Second circle latpixels" + secondLonPixels)
-            // console.log("Second circle lonpixels" + secondLonPixels)
             context.beginPath();
             context.lineWidth = 5;
             context.strokeStyle = "#be1212";
