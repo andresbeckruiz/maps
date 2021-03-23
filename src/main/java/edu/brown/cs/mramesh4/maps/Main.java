@@ -374,6 +374,13 @@ public final class Main {
   private static class UserCheckinHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
+      /** IN THIS CLASS:
+       * This thread should be responsible for querying the server every few seconds,
+       * storing the user data in the database, and sending this data to your
+       * frontend when requested. The packages java.net.URL and
+       * java.net.HttpURLConnection may be useful for querying the endpoint.
+       */
+      // ^ we need to implement this still
       JSONObject data = new JSONObject(request.body());
       // time = data.getString("timestamp")
       HashMap<String, Object> map = new HashMap<>();
