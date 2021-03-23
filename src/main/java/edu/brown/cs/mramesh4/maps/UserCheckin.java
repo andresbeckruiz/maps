@@ -27,15 +27,19 @@ public class UserCheckin {
   public int getId() {
     return id;
   }
+
   public String getName() {
     return name;
   }
+
   public double getTimestamp() {
     return ts;
   }
+
   public double getLat() {
     return lat;
   }
+
   public double getLon() {
     return lon;
   }

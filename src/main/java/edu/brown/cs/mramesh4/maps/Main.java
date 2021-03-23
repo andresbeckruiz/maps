@@ -136,6 +136,7 @@ public final class Main {
     Spark.post("/shortestRoute", new ShortestRouteHandler());
     Spark.post("/nearest", new NearestHandler());
     Spark.post("/intersection", new IntersectionHandler());
+    Spark.post("/userCheckin", new UserCheckinHandler());
   }
 
   /**
@@ -366,6 +367,21 @@ public final class Main {
       map.put(nodeOne.getId(), nodeOneInfo);
       Map<String, Object> variables = ImmutableMap.of("intersection", map);
       System.out.println(variables);
+      return GSON.toJson(variables);
+    }
+  }
+
+  private static class UserCheckinHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      JSONObject data = new JSONObject(request.body());
+      // time = data.getString("timestamp")
+      HashMap<String, Object> map = new HashMap<>();
+      CheckinThread thread = new CheckinThread();
+      Map<Double, UserCheckin> newUsers = thread.getLatestCheckins();
+      // map.put(TIME, newUsers)
+      Map<String, Object> variables = ImmutableMap.of("newUserCheckins", map);
+      // System.out.println(variables);
       return GSON.toJson(variables);
     }
   }
