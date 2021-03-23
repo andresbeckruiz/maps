@@ -565,19 +565,15 @@ public class MapsLogic implements ActionMethod<String> {
           + "end as nodeID from cross1) "
           + "SELECT * FROM streetNodes INNER JOIN crossNodes ON "
           + "streetNodes.nodeID = crossNodes.nodeID");
-      System.out.println(s1);
-      System.out.println(s2);
       getWay1.setString(1, s1.substring(1, s1.length() - 1));
       getWay1.setString(2, s2.substring(1, s2.length() - 1));
       ResultSet answer1 = getWay1.executeQuery();
       while (answer1.next()) {
         String node = answer1.getString("nodeID");
-        System.out.println(node + " node");
         answer1.close();
         return this.getIDByString(node);
       }
     } catch (SQLException e) {
-      System.out.println("here2222");
       return null;
     }
     return null;

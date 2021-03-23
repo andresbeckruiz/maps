@@ -6,54 +6,44 @@ import "react-awesome-button/dist/styles.css"
 import axios from "axios";
 import Maps from "./Maps";
 
-export const requestWayss = (context, canvas, canvasRef, contextRef, minBoundLat, minBoundLon, maxBoundLat, maxBoundLon) => {
-    const toSend = {
-        minLat: minBoundLat,
-        minLon: minBoundLon,
-        maxLat: maxBoundLat,
-        maxLon: maxBoundLon
-    };
-    let config = {
-        headers: {
-            "Content-Type": "application/json",
-            'Access-Control-Allow-Origin': '*',
-        }
-    }
-    axios.post(
-        "http://localhost:4567/way",
-        toSend,
-        config
-    ).then(response => {
-     //   canvasMap = response.data["way"];
-        //  console.log("Canvas" + canvasMap)
-        let canvasMapReturn = response.data["way"];
-        let canvasReturn = canvasRef.current
-        contextRef.current = canvasReturn.getContext('2d')
-        let contextReturn = contextRef.current
-        context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, 500, 500);
-     //   drawWays(context, 0, canvasMapReturn, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
-       // console.log(canvasMapReturn)
-        let array = [canvasMapReturn, canvasReturn, contextReturn]
-        return array
-    })
-        .catch(function (error) {
-            console.log(error);
-        });
-}
+// export const requestWayss = (context, canvas, canvasRef, contextRef, minBoundLat, minBoundLon, maxBoundLat, maxBoundLon) => {
+//     const toSend = {
+//         minLat: minBoundLat,
+//         minLon: minBoundLon,
+//         maxLat: maxBoundLat,
+//         maxLon: maxBoundLon
+//     };
+//     let config = {
+//         headers: {
+//             "Content-Type": "application/json",
+//             'Access-Control-Allow-Origin': '*',
+//         }
+//     }
+//     axios.post(
+//         "http://localhost:4567/way",
+//         toSend,
+//         config
+//     ).then(response => {
+//      //   canvasMap = response.data["way"];
+//         //  console.log("Canvas" + canvasMap)
+//         let canvasMapReturn = response.data["way"];
+//         let canvasReturn = canvasRef.current
+//         contextRef.current = canvasReturn.getContext('2d')
+//         let contextReturn = contextRef.current
+//         context.fillStyle = "#ffffff";
+//         context.fillRect(0, 0, 500, 500);
+//      //   drawWays(context, 0, canvasMapReturn, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
+//        // console.log(canvasMapReturn)
+//         let array = [canvasMapReturn, canvasReturn, contextReturn]
+//         return array
+//     })
+//         .catch(function (error) {
+//             console.log(error);
+//         });
+// }
 
 function Route() {
-    const [startLat, setStartLat] = useState(0); // returns a variable (0 here) into startLat
-    // returns function setStartLat which I later can use to update startLat
-    const [startLon, setStartLon] = useState(0);
-    const [endLat, setEndLat] = useState(0);
-    const [endLon, setEndLon] = useState(0);
-    const [route, setRoute] = useState("");
     const [map, setMap] = useState(""); // updated by drawWays function -- use props to get data
-    const [minBLon, setMinBLon] = useState(0);
-    const [minBLat, setMinBLat] = useState(0);
-    const [maxBLon, setMaxBLon] = useState(0);
-    const [maxBLat, setMaxBLat] = useState(0);
 
     /**
      * Makes an axios request.
@@ -92,9 +82,6 @@ function Route() {
             <AwesomeButton type="primary" onPress={requestInitialMap}>Load Map </AwesomeButton>
             <h2></h2>
             <Maps map={map}/>
-            {/*<h2>Ways: {JSON.stringify(route)}</h2>*/}
-            {/*<TextBox label={"Source latitude"} change={setStartLat} value={startLat}/>*/}
-            {/*<AwesomeButton type="primary" onPress={requestRoute}>Submit</AwesomeButton>*/}
         </div>
     );
 }

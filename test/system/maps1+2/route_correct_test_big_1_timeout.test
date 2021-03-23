@@ -3,5 +3,5 @@ map data/maps/maps.sqlite3
 route 31.9 -120 41.94 -70
 OUTPUT
 map set to data/maps/maps.sqlite3
-/n/4015.7374.527767659 -/- /n/4162.7084.263540998
+/n/4131.7186.201559229 -/- /n/4159.7111.73030516
 END
