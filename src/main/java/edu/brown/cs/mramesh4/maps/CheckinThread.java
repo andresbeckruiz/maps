@@ -54,6 +54,7 @@ public final class CheckinThread extends Thread {
 
             // TODO: write to database
 
+
           }
         }
         lastSec = sec;
