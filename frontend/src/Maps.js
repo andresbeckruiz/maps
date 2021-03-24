@@ -20,10 +20,6 @@ function Maps(props) {
     const [minBoundLon, setMinBoundLon] = useState(-71.40729)
     const [maxBoundLat, setMaxBoundLat] = useState(41.82953)
     const [maxBoundLon, setMaxBoundLon] = useState(-71.39572)
-    // let minBoundLat = 41.82433
-    // let minBoundLon = -71.40729
-    // let maxBoundLat = 41.82953
-    // let maxBoundLon = -71.39572
 
     // const [mouseDown , setMouseDown] = useState([])
     // const [mouseUp, setMouseUp] = useState([])

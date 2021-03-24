@@ -6,7 +6,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +22,7 @@ public final class CheckinThread extends Thread {
   private Map checkins;
   private boolean pause = false;
   static final long MSCONVERSION = 1000;
+  private UserDatabase db = null;
 
   public CheckinThread() {
     checkins = Collections.synchronizedMap(new HashMap<>());
@@ -27,7 +32,7 @@ public final class CheckinThread extends Thread {
    * runs the thread by querying the url for information on user checkins.
    */
   public synchronized void run() {
-    List<List<String>>updates = null;
+    List<List<String>> updates = null;
 
     long lastSec = 0;
 
@@ -53,8 +58,15 @@ public final class CheckinThread extends Thread {
             checkins.put(timestamp, uc);
 
             // TODO: write to database
+<<<<<<< HEAD
 
 
+=======
+            if (db == null) {
+              db = new UserDatabase();
+            }
+            db.add(id, name, timestamp, lat, lon);
+>>>>>>> eb406f42f30f7fe50cf451946e81dd655cdf9757
           }
         }
         lastSec = sec;
