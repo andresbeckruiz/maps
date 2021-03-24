@@ -22,6 +22,7 @@ public final class CheckinThread extends Thread {
   private Map checkins;
   private boolean pause = false;
   static final long MSCONVERSION = 1000;
+  private UserDatabase db = null;
 
   public CheckinThread() {
     checkins = Collections.synchronizedMap(new HashMap<>());
@@ -57,7 +58,10 @@ public final class CheckinThread extends Thread {
             checkins.put(timestamp, uc);
 
             // TODO: write to database
-
+            if (db == null) {
+              db = new UserDatabase();
+            }
+            db.add(id, name, timestamp, lat, lon);
           }
         }
         lastSec = sec;

@@ -1,21 +1,54 @@
+import './App.css';
 import axios from "axios";
-import {useState} from "react/cjs/react.production.min";
+import {useState} from "react";
+import {AwesomeButton} from "react-awesome-button";
+import TextBox from "./TextBox";
 
 function UserCheckin() {
   const [unixTime, setUnixTime] = useState(Date.now())
+  const userDict = {}
 
-  const requestUserData = () => {
-    // GET Request
-    let timestamp = unixTime
-    fetch("http://localhost:8080?last=timestamp")
-        .then(response => {
-            console.log(response.data)
-            return response.json()
+    const updateUserDict = () => {
+        let timestamp = unixTime
+        const toSend = {
+            currentTime : timestamp,
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.post(
+            "http://localhost:4567/userCheckin", // maybe this URL? http://localhost:8080?last=timestamp
+            toSend,
+            config
+        ).then(response => {
+            Object.keys(response.data["newUserCheckins"]).forEach((id) => {
+                const curr = response.data["newUserCheckins"][id]
+                userDict.add(curr)
+                console.log(curr)
+            })
         })
-        .then(data => console.log(data))
-    let newestTime = Date.now()
-    setUnixTime(newestTime)
-  }
+            .catch(function (error) {
+                console.log(error);
+            });
+        let newestTime = Date.now()
+        setUnixTime(newestTime)
+    }
+
+  // const requestUserData = () => {
+  //   // GET Request
+  //
+  //   fetch("http://localhost:8080?last=timestamp")
+  //       .then(response => {
+  //           console.log(response.data)
+  //           return response.json()
+  //       })
+  //       .then(data => console.log(data))
+  //   let newestTime = Date.now()
+  //   setUnixTime(newestTime)
+  // }
 
     function convertToDate(unix_timestamp) {
         let date = new Date(unix_timestamp * 1000);
@@ -30,28 +63,11 @@ function UserCheckin() {
         return formattedTime
     }
 
-    const updateUserList = () => {
-      const toSend = {
-          currentTime : currTime,
-      };
-      let config = {
-          headers: {
-              "Content-Type": "application/json",
-              'Access-Control-Allow-Origin': '*',
-          }
-      }
-      axios.post(
-          "http://localhost:4567/userCheckin",
-          toSend,
-          config
-      ).then(response => {
-          Object.keys(response.data["newUserCheckins"]).forEach((id) => {
-              const curr = response.data["newUserCheckins"][id]
-              console.log("xxx")
-          })
-      })
-          .catch(function (error) {
-              console.log(error);
-          });
-  }
+    return <div>
+        <AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>
+        {/*<h3></h3>*/}
+        <TextBox label={"User Checkins"}/>
+        <h6></h6>
+    </div>
 }
+export default UserCheckin

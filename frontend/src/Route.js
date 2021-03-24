@@ -3,8 +3,9 @@ import './App.css';
 import React, {useEffect, useState} from 'react';
 import {AwesomeButton} from "react-awesome-button"
 import "react-awesome-button/dist/styles.css"
-import axios from "axios";
-import Maps from "./Maps";
+import axios from "axios"
+import Maps from "./Maps"
+import UserCheckin from "./UserCheckin"
 
 // export const requestWayss = (context, canvas, canvasRef, contextRef, minBoundLat, minBoundLon, maxBoundLat, maxBoundLon) => {
 //     const toSend = {
@@ -82,6 +83,7 @@ function Route() {
             <AwesomeButton type="primary" onPress={requestInitialMap}>Load Map </AwesomeButton>
             <h2></h2>
             <Maps map={map}/>
+            <UserCheckin/>
         </div>
     );
 }

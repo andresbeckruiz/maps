@@ -51,6 +51,7 @@ public final class Main {
   private static MapsLogic mapsLogic;
   private static final Gson GSON = new Gson();
   private boolean firstRun;
+  private static CheckinThread thread;
 
   private Main(String[] args) {
     this.args = args;
@@ -80,6 +81,9 @@ public final class Main {
     //loads our Brown map initially
     firstRun = true;
     if (options.has("gui")) {
+      // check this
+      thread = new CheckinThread();
+      thread.start();
       runSparkServer((int) options.valueOf("port"));
     }
     boolean run = true;
@@ -380,14 +384,9 @@ public final class Main {
        * frontend when requested. The packages java.net.URL and
        * java.net.HttpURLConnection may be useful for querying the endpoint.
        */
-      // ^ we need to implement this still
+      // here thread is static, might not be okay
       JSONObject data = new JSONObject(request.body());
-      // time = data.getString("timestamp")
-      HashMap<String, Object> map = new HashMap<>();
-      CheckinThread thread = new CheckinThread();
-      Map<Double, UserCheckin> newUsers = thread.getLatestCheckins();
-      // map.put(TIME, newUsers)
-      Map<String, Object> variables = ImmutableMap.of("newUserCheckins", map);
+      Map<String, Object> variables = ImmutableMap.of("userCheckin", thread.getLatestCheckins());
       // System.out.println(variables);
       return GSON.toJson(variables);
     }
