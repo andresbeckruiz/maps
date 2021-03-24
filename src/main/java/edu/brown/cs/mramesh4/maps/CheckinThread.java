@@ -58,15 +58,10 @@ public final class CheckinThread extends Thread {
             checkins.put(timestamp, uc);
 
             // TODO: write to database
-<<<<<<< HEAD
-
-
-=======
             if (db == null) {
               db = new UserDatabase();
             }
             db.add(id, name, timestamp, lat, lon);
->>>>>>> eb406f42f30f7fe50cf451946e81dd655cdf9757
           }
         }
         lastSec = sec;

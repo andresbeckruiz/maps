@@ -63,6 +63,8 @@ function UserCheckin() {
         return formattedTime
     }
 
+
+
     return <div>
         <AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>
         {/*<h3></h3>*/}
