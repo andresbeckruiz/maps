@@ -7,6 +7,7 @@ import CheckinScroll from "./CheckinScroll"
 
 function UserCheckin() {
   const [unixTime, setUnixTime] = useState(Date.now())
+  const [checkIns, setCheckIns] = useState([])
   const userDict = []
 
     const updateUserDict = () => {
@@ -28,11 +29,24 @@ function UserCheckin() {
         ).then(response => {
             Object.keys(response.data["userCheckin"]).forEach((id) => {
                 const curr = response.data["userCheckin"][id]
-                userDict.push(curr)
-                console.log(curr)
-                let formattedTime = convertToDate(curr[2])
-                console.log(curr[1] + " checked into " + curr[3] + ", " + curr[4] + " at " + formattedTime)
+                //userDict.push(curr)
+                //console.log(curr)
+                let formattedTime = convertToDate(curr["ts"])
+                console.log(curr["name"] + " checked into " + curr["lat"] + ", " + curr["lon"] + " at " + formattedTime)
+                const newCheckin = {
+                    id: curr["id"],
+                    name: curr["name"],
+                    lat: curr["lat"],
+                    lon: curr["lon"],
+                    time: formattedTime
+                }
+                var newArray = checkIns
+                newArray.push(newCheckin)
+                setCheckIns(newArray)
             })
+            // console.log("Checkins length:" + checkIns.length)
+            // console.log("Checkin 0 " + checkIns[0]["id"])
+            // console.log("Checkin 1" + checkIns[1]["id"])
         })
             .catch(function (error) {
                 console.log(error);
@@ -67,20 +81,19 @@ function UserCheckin() {
         return formattedTime
     }
 
-    //this is how we continuously pull from
+    //this is how we continuously pull from the server
     useEffect(() => {
         setInterval(() => {
            updateUserDict()
         }, 3000)
-    })
+    },[])
 
 
     return <div>
-        <AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>
+        {/*<AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>*/}
         {/*<h3></h3>*/}
-        <TextBox label={"User Checkins"}/>
-        <h6></h6>
-        <CheckinScroll/>
+        <h1> User checkins </h1>
+        <CheckinScroll items={checkIns}/>
     </div>
 }
 export default UserCheckin
