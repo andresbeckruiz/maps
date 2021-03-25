@@ -1,6 +1,6 @@
 import './App.css';
 import axios from "axios";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {AwesomeButton} from "react-awesome-button";
 import TextBox from "./TextBox";
 
@@ -19,6 +19,7 @@ function UserCheckin() {
                 'Access-Control-Allow-Origin': '*',
             }
         }
+        //yeah it should be the above URL
         axios.post(
             "http://localhost:4567/userCheckin", // maybe this URL? http://localhost:8080?last=timestamp
             toSend,
@@ -63,6 +64,12 @@ function UserCheckin() {
         return formattedTime
     }
 
+    //this is how we continuously pull from
+    // useEffect(() => {
+    //     setInterval(() => {
+    //        updateUserDict()
+    //     }, 3000)
+    // })
 
 
     return <div>
