@@ -30,8 +30,10 @@ function UserCheckin() {
                 const curr = response.data["userCheckin"][id]
                 userDict.push(curr)
                 console.log(curr)
-                let formattedTime = convertToDate(curr[2])
-                console.log(curr[1] + " checked into " + curr[3] + ", " + curr[4] + " at " + formattedTime)
+                console.log(curr.lat)
+                let formattedTime = convertToDate(curr.ts)
+                console.log(formattedTime)
+                console.log(curr.name + " checked into " + curr.latitude + ", " + curr.longitude + " at " + formattedTime)
             })
         })
             .catch(function (error) {
@@ -79,7 +81,7 @@ function UserCheckin() {
         <AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>
         {/*<h3></h3>*/}
         <TextBox label={"User Checkins"}/>
-        <h6></h6>
+        <h3></h3>
         <CheckinScroll/>
     </div>
 }
