@@ -141,6 +141,7 @@ public final class Main {
     Spark.post("/nearest", new NearestHandler());
     Spark.post("/intersection", new IntersectionHandler());
     Spark.post("/userCheckin", new UserCheckinHandler());
+    Spark.post("/pastCheckins", new PastCheckinsHandler());
   }
 
   /**
@@ -387,8 +388,18 @@ public final class Main {
       // here thread is static, might not be okay
       JSONObject data = new JSONObject(request.body());
       // thread.getLatestCheckins()
-      UserCheckin user =
       Map<String, Object> variables = ImmutableMap.of("userCheckin", thread.getLatestCheckins());
+      // System.out.println(variables);
+      return GSON.toJson(variables);
+    }
+  }
+
+  private static class PastCheckinsHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+      JSONObject data = new JSONObject(request.body());
+      String id = data.getString("id");
+      Map<String, Object> variables = ImmutableMap.of("pastCheckins", thread.getLatestCheckins());
       // System.out.println(variables);
       return GSON.toJson(variables);
     }

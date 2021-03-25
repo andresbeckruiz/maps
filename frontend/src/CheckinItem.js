@@ -1,4 +1,5 @@
 import {useState} from "react";
+import axios from "axios";
 
 function CheckinItem(props) {
 
@@ -7,6 +8,36 @@ function CheckinItem(props) {
     const getUserInfo = () => {
         console.log(props.id)
         setData(props.id)
+        let id = props.id
+        const toSend = {
+            id: id
+        };
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
+        axios.post(
+            "http://localhost:4567/pastCheckins",
+            toSend,
+            config
+        )
+            .then(response => {
+                // response.data["pastCheckins"];
+                // if (cache[tile] != {}) {
+                //     Object.keys(cache[tile]).forEach((id) => {
+                //         const curr = cache[tile][id]
+                //         updatedMap.push(curr)
+                //     })
+                //     canvas = canvasRef.current
+                //     contextRef.current = canvas.getContext('2d')
+                 //   context = contextRef.current
+                    // drawWaysScroll(context, cache[tile], shortestRoute)
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
 
