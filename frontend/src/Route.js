@@ -7,42 +7,6 @@ import axios from "axios"
 import Maps from "./Maps"
 import UserCheckin from "./UserCheckin"
 
-// export const requestWayss = (context, canvas, canvasRef, contextRef, minBoundLat, minBoundLon, maxBoundLat, maxBoundLon) => {
-//     const toSend = {
-//         minLat: minBoundLat,
-//         minLon: minBoundLon,
-//         maxLat: maxBoundLat,
-//         maxLon: maxBoundLon
-//     };
-//     let config = {
-//         headers: {
-//             "Content-Type": "application/json",
-//             'Access-Control-Allow-Origin': '*',
-//         }
-//     }
-//     axios.post(
-//         "http://localhost:4567/way",
-//         toSend,
-//         config
-//     ).then(response => {
-//      //   canvasMap = response.data["way"];
-//         //  console.log("Canvas" + canvasMap)
-//         let canvasMapReturn = response.data["way"];
-//         let canvasReturn = canvasRef.current
-//         contextRef.current = canvasReturn.getContext('2d')
-//         let contextReturn = contextRef.current
-//         context.fillStyle = "#ffffff";
-//         context.fillRect(0, 0, 500, 500);
-//      //   drawWays(context, 0, canvasMapReturn, minBoundLon, minBoundLat,  maxBoundLon, maxBoundLat)
-//        // console.log(canvasMapReturn)
-//         let array = [canvasMapReturn, canvasReturn, contextReturn]
-//         return array
-//     })
-//         .catch(function (error) {
-//             console.log(error);
-//         });
-// }
-
 function Route() {
     const [map, setMap] = useState(""); // updated by drawWays function -- use props to get data
 

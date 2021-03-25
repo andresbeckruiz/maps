@@ -24,8 +24,8 @@ function UserCheckin() {
             toSend,
             config
         ).then(response => {
-            Object.keys(response.data["newUserCheckins"]).forEach((id) => {
-                const curr = response.data["newUserCheckins"][id]
+            Object.keys(response.data["userCheckins"]).forEach((id) => {
+                const curr = response.data["userCheckins"][id]
                 userDict.add(curr)
                 console.log(curr)
             })
