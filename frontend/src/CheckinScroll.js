@@ -22,8 +22,6 @@ function CheckinScroll(props) {
             })}
           </div>
     )
-    // have return here of component
-
 }
 
 export default CheckinScroll
