@@ -3,11 +3,12 @@ import axios from "axios";
 
 function CheckinItem(props) {
 
-    const [data, setData] = useState("")
+    const [data, setData] = useState([])
 
     const getUserInfo = () => {
-        console.log(props.id)
-        setData(props.id)
+       // console.log(props.id)
+       // setData(props.id)
+        let useArray = []
         let id = props.id
         const toSend = {
             id: id
@@ -24,20 +25,19 @@ function CheckinItem(props) {
             config
         )
             .then(response => {
-                // response.data["pastCheckins"];
-                // if (cache[tile] != {}) {
-                //     Object.keys(cache[tile]).forEach((id) => {
-                //         const curr = cache[tile][id]
+                console.log(response.data["pastCheckins"]);
+                Object.keys(response.data["pastCheckins"]).forEach((id) => {
+                    const curr = response.data["pastCheckins"][id]
+               //     console.log(curr[0] + ", " + curr[1])
+                    useArray.push(curr[0] + ", " + curr[1])
                 //         updatedMap.push(curr)
-                //     })
-                //     canvas = canvasRef.current
-                //     contextRef.current = canvas.getContext('2d')
-                 //   context = contextRef.current
-                    // drawWaysScroll(context, cache[tile], shortestRoute)
+                })
             })
             .catch(function (error) {
                 console.log(error);
             });
+        setData(useArray)
+        console.log(useArray)
     }
 
 

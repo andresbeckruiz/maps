@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -398,9 +399,11 @@ public final class Main {
     @Override
     public Object handle(Request request, Response response) throws Exception {
       JSONObject data = new JSONObject(request.body());
-      String id = data.getString("id");
-      Map<String, Object> variables = ImmutableMap.of("pastCheckins", thread.getLatestCheckins());
-      // System.out.println(variables);
+      Integer id = data.getInt("id");
+      //System.out.println(id + " id in Main");
+      ArrayList<Object> checkinsArray = thread.getPastCheckins(id);
+      //System.out.println(checkinsArray + " checkinsArray");
+      Map<String, Object> variables = ImmutableMap.of("pastCheckins", checkinsArray);
       return GSON.toJson(variables);
     }
   }

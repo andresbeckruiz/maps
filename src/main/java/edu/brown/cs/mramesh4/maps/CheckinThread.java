@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +58,6 @@ public final class CheckinThread extends Thread {
             // put in concurrent hashmap
             UserCheckin uc = new UserCheckin(id, name, timestamp, lat, lon);
             checkins.put(timestamp, uc);
-
             // TODO: write to database
             if (db == null) {
               db = new UserDatabase();
@@ -112,4 +113,9 @@ public final class CheckinThread extends Thread {
     pause = false;
     return temp;
   }
+
+  public ArrayList<Object> getPastCheckins(Integer id) {
+    return db.getFromDatabase(id);
+  }
+
 }
