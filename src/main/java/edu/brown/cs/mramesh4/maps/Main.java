@@ -386,6 +386,7 @@ public final class Main {
        */
       // here thread is static, might not be okay
       JSONObject data = new JSONObject(request.body());
+      // thread.getLatestCheckins()
       Map<String, Object> variables = ImmutableMap.of("userCheckin", thread.getLatestCheckins());
       // System.out.println(variables);
       return GSON.toJson(variables);

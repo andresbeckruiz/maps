@@ -3,10 +3,11 @@ import axios from "axios";
 import {useState, useEffect} from "react";
 import {AwesomeButton} from "react-awesome-button";
 import TextBox from "./TextBox";
+import CheckinScroll from "./CheckinScroll"
 
 function UserCheckin() {
   const [unixTime, setUnixTime] = useState(Date.now())
-  const userDict = {}
+  const userDict = []
 
     const updateUserDict = () => {
         let timestamp = unixTime
@@ -25,10 +26,12 @@ function UserCheckin() {
             toSend,
             config
         ).then(response => {
-            Object.keys(response.data["userCheckins"]).forEach((id) => {
-                const curr = response.data["userCheckins"][id]
-                userDict.add(curr)
+            Object.keys(response.data["userCheckin"]).forEach((id) => {
+                const curr = response.data["userCheckin"][id]
+                userDict.push(curr)
                 console.log(curr)
+                let formattedTime = convertToDate(curr[2])
+                console.log(curr[1] + " checked into " + curr[3] + ", " + curr[4] + " at " + formattedTime)
             })
         })
             .catch(function (error) {
@@ -65,11 +68,11 @@ function UserCheckin() {
     }
 
     //this is how we continuously pull from
-    // useEffect(() => {
-    //     setInterval(() => {
-    //        updateUserDict()
-    //     }, 3000)
-    // })
+    useEffect(() => {
+        setInterval(() => {
+           updateUserDict()
+        }, 3000)
+    })
 
 
     return <div>
@@ -77,6 +80,7 @@ function UserCheckin() {
         {/*<h3></h3>*/}
         <TextBox label={"User Checkins"}/>
         <h6></h6>
+        <CheckinScroll/>
     </div>
 }
 export default UserCheckin
