@@ -3,7 +3,7 @@ import Route from "./Route";
 
 function App() {
     return (
-        <div style={{textAlign: "center", backgroundColor: "#ffb6c1"}}>
+        <div style={{textAlign: "center", backgroundColor: "#FFEBCD"}}>
             <Route/>
         </div>
       );
