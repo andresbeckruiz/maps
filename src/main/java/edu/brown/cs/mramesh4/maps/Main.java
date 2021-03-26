@@ -304,7 +304,6 @@ public final class Main {
       sLat = sLat + 1.0;
       Map<String, Double> variables = ImmutableMap.of("route", sLat);
       return GSON.toJson(variables);
-
     }
   }
 
@@ -420,5 +419,4 @@ public final class Main {
       return GSON.toJson(variables);
     }
   }
-
 }

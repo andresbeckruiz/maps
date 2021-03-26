@@ -1,0 +1,23 @@
+Practical Implications of GDPR
+
+Question 1:
+GDPR requires that you specify exactly what you intend to do with each data point. Consider each data point that
+you’re gathering from your users (Name, location, timestamp). Writing to a user, justify why each data point is
+needed in an imaginary final version of your application: what eventual functionality might use the data?
+Consider a more complex application that you’ve interacted with before (Facebook, Steam, MyAnimeList) -
+why might it be difficult to delete all of the data on a user? Consider factors unique to the application you've
+chosen; specifically those other than volume or size of data.
+
+Answer 1:
+It is necessary to get each data point from the user, who may have multiple check-ins, in knowing which exact
+data should be deleted. On a more complex application, such as Facebook, a user interacts with the site in a
+multitude of fashions, and accessing all of their past data (comments, likes, watched videos, etc.) could be
+excessively large and extremely difficult.
+ugggggggg idk
+
+Question 2:
+Consider a more complex application that you’ve interacted with before (Facebook, Steam, MyAnimeList) - why might
+it be difficult to delete all of the data on a user? Consider factors unique to the application you've chosen;
+specifically those other than volume or size of data.
+
+Answer 2:

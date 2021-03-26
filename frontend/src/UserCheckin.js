@@ -1,3 +1,4 @@
+import './App.css';
 import axios from "axios";
 import {useState, useEffect} from "react";
 import {AwesomeButton} from "react-awesome-button";
