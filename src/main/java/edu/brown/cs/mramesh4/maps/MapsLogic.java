@@ -30,6 +30,11 @@ public class MapsLogic implements ActionMethod<String> {
   private WayNodeCache wnc;
   private HashMap<String, WayNodes> wayNodeCache = new HashMap<>();
   private HashMap<String, Object> frontendReturn;
+  private static final int SEVEN = 7;
+  private static final int EIGHT = 8;
+  private static final int TEN = 10;
+  private static final int ELEVEN = 11;
+
 
   /**
    * In the constructor of MapsLogic, we initailize our list instance variable which holds
@@ -292,10 +297,10 @@ public class MapsLogic implements ActionMethod<String> {
           String wayId = rs.getString(1);
           toPrint.add(wayId);
           String[] frontEndInfo = new String[5];
-          frontEndInfo[0] = rs.getString(7);
-          frontEndInfo[1] = rs.getString(8);
-          frontEndInfo[2] = rs.getString(10);
-          frontEndInfo[3] = rs.getString(11);
+          frontEndInfo[0] = rs.getString(SEVEN);
+          frontEndInfo[1] = rs.getString(EIGHT);
+          frontEndInfo[2] = rs.getString(TEN);
+          frontEndInfo[3] = rs.getString(ELEVEN);
           frontEndInfo[4] = rs.getString(3);
           frontendReturn.put(wayId, frontEndInfo);
         }
@@ -578,5 +583,4 @@ public class MapsLogic implements ActionMethod<String> {
     }
     return null;
   }
-
 }

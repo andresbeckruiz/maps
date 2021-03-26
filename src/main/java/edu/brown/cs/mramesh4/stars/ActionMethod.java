@@ -9,10 +9,10 @@ import java.util.HashMap;
  */
 public interface ActionMethod<T> {
   //runs the command and returns a list for the edu.brown.cs.mramesh4.REPL;
-
-  /**.
+  /**
    * Method to run a command.
    * @param command Command to run
+   * @return hashmap storing return of run command
    */
   HashMap<String, Object> run(String[] command);
 }

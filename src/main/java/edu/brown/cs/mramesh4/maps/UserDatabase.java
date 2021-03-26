@@ -8,6 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+/**
+ * Database class to create and store table which holds UserCheckin information.
+ */
 public class UserDatabase {
   private Connection conn;
 
@@ -32,6 +35,14 @@ public class UserDatabase {
     }
   }
 
+  /**
+   * Called to insert a new User checkin into the database.
+   * @param id User id
+   * @param name Name of checked-in user
+   * @param timestamp time of user checkin
+   * @param lat latitude where the user checked in
+   * @param lon longitude where the user checked in
+   */
   public void add(Integer id, String name, Double timestamp, Double lat, Double lon) {
     try {
       PreparedStatement prep;
@@ -49,6 +60,11 @@ public class UserDatabase {
     }
   }
 
+  /**
+   * Returns all past checkins of the passed-in user to be displayed on frontend gui.
+   * @param id id of user to search.
+   * @return List of Double[], each which store a past checkin lat,lon location of passed-in user.
+   */
   public ArrayList<Object> getFromDatabase(Integer id) {
     ArrayList<Object> locationsList = new ArrayList<>();
     try {

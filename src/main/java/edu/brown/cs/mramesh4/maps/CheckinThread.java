@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +24,9 @@ public final class CheckinThread extends Thread {
   static final long MSCONVERSION = 1000;
   private UserDatabase db = null;
 
+  /**
+   * Class to run thread of user checkins and add new checkins to the database.
+   */
   public CheckinThread() {
     checkins = Collections.synchronizedMap(new HashMap<>());
   }
@@ -58,7 +59,7 @@ public final class CheckinThread extends Thread {
             // put in concurrent hashmap
             UserCheckin uc = new UserCheckin(id, name, timestamp, lat, lon);
             checkins.put(timestamp, uc);
-            // TODO: write to database
+            // below: create database if not already created
             if (db == null) {
               db = new UserDatabase();
             }
@@ -114,8 +115,12 @@ public final class CheckinThread extends Thread {
     return temp;
   }
 
+  /**
+   * Calls database method which checks for all past checkins of present user.
+   * @param id Id of which user method should find past checkins for.
+   * @return ArrayList of Double[], each which store different coordinate pair.
+   */
   public ArrayList<Object> getPastCheckins(Integer id) {
     return db.getFromDatabase(id);
   }
-
 }

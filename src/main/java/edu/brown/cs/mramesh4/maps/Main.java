@@ -308,19 +308,17 @@ public final class Main {
     }
   }
 
+  /**
+   * Gets all of the ways and their start/end coordinates within bounding box sent from front end.
+   */
   private static class WayHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-      // request is what is from user
       JSONObject data = new JSONObject(request.body());
       double minLatit = data.getDouble("minLat");
       double minLong = data.getDouble("minLon");
       double maxLatit = data.getDouble("maxLat");
       double maxLong = data.getDouble("maxLon");
-      // call ways method using these variables
-      // BUT we cannot return a list of ways back to frontend!
-      // we want to send back a dictionary of strings (way ID corresponds to start lat, )
-      // make dictionary
       String[] command = {"ways", Double.toString(maxLatit), Double.toString(minLong),
           Double.toString(minLatit), Double.toString(maxLong)};
       HashMap<String, Object> map = mapsLogic.run(command);
@@ -329,14 +327,13 @@ public final class Main {
     }
   }
 
+  /**
+   * Sets the initial map to be displayed on frontend.
+   * Returns hash map of ways corresponding to their start/end coordinates.
+   */
   private static class InitialMapHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-      JSONObject data = new JSONObject(request.body());
-//      minBoundLat : minLat,
-//          minBoundLon : minLon,
-//          maxBoundLat : maxLat,
-//          maxBoundLon : maxLon,
       String[] wayCommand = {"ways", "41.82953", "-71.40729", "41.82433", "-71.39572"};
       HashMap<String, Object> map = mapsLogic.run(wayCommand);
       Map<String, Object> variables = ImmutableMap.of("map", map);
@@ -344,6 +341,9 @@ public final class Main {
     }
   }
 
+  /**
+   * Finds shortest route between two coordinate points on the map.
+   */
   private static class ShortestRouteHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
@@ -360,6 +360,9 @@ public final class Main {
     }
   }
 
+  /**
+   * Finds the intersection lat/lon of two streets.
+   */
   private static class IntersectionHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
@@ -372,44 +375,38 @@ public final class Main {
       HashMap<String, Object> map = new HashMap<>();
       map.put(nodeOne.getId(), nodeOneInfo);
       Map<String, Object> variables = ImmutableMap.of("intersection", map);
-      System.out.println(variables);
       return GSON.toJson(variables);
     }
   }
 
+  /**
+   * Used to store new user data in the database, and sending this data to frontend.
+   */
   private static class UserCheckinHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-      /** IN THIS CLASS:
-       * This thread should be responsible for querying the server every few seconds,
-       * storing the user data in the database, and sending this data to your
-       * frontend when requested. The packages java.net.URL and
-       * java.net.HttpURLConnection may be useful for querying the endpoint.
-       */
-      // here thread is static, might not be okay
       JSONObject data = new JSONObject(request.body());
-      // thread.getLatestCheckins()
       Map<String, Object> variables = ImmutableMap.of("userCheckin", thread.getLatestCheckins());
-      // System.out.println(variables);
       return GSON.toJson(variables);
     }
   }
 
+  /**
+   * Returns all past checkins of a given user.
+   */
   private static class PastCheckinsHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
       JSONObject data = new JSONObject(request.body());
       Integer id = data.getInt("id");
-      //System.out.println(id + " id in Main");
       ArrayList<Object> checkinsArray = thread.getPastCheckins(id);
-      //System.out.println(checkinsArray + " checkinsArray");
       Map<String, Object> variables = ImmutableMap.of("pastCheckins", checkinsArray);
       return GSON.toJson(variables);
     }
   }
 
   /**
-   * Gets nearest neighbors
+   * Gets nearest neighbors.
    */
   private static class NearestHandler implements Route {
     @Override
