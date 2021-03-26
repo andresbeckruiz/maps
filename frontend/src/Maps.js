@@ -200,21 +200,34 @@ function Maps(props) {
         });
     }
 
-    const findIntersection = () => {
+    const findIntersectionOne = () => {
+        findIntersection(1)
+    }
+
+    const findIntersectionTwo = () => {
+        findIntersection(2)
+    }
+
+    function findIntersection(num) {
         let sLon = ""
         let sLat = ""
-        if (intersectionNumber == 1) {
+       // if (intersectionNumber == 1) {
+        if (num == 1) {
             sLon = streetOne
             sLat = streetTwo
+            console.log(sLon + " st 1")
+            console.log(sLat + " st 1")
             // sLon = "Prospect Street"
             // sLat = "George Street"
-            setIntersectionNumber(2)
+         //   setIntersectionNumber(2)
         } else {
             sLon = streetThree
             sLat = streetFour
+            console.log(sLon + " st 2")
+            console.log(sLat + " st 2")
             // sLon = "Thayer Street"
             // sLat = "Waterman Street"
-            setIntersectionNumber(1)
+         //   setIntersectionNumber(1)
         }
         const toSend = {
             startLon: sLon,
@@ -544,13 +557,15 @@ function Maps(props) {
         <TextBox label={"Street 1 Name: "} change={setStreetOne} value={streetOne}/>
         <TextBox label={"Street 2 Name: "} change={setStreetTwo} value={streetTwo}/>
         <br/>
-        <AwesomeButton type="primary" onPress={findIntersection}>Set Intersection One: </AwesomeButton>
+        {/*<AwesomeButton type="primary" change={setIntersectionNumber} value={1} onPress={findIntersection}>Set Intersection One: </AwesomeButton>*/}
+        <AwesomeButton type="primary" onPress={findIntersectionOne}>Set Intersection One: </AwesomeButton>
         <br/>
         <br/>
         <TextBox label={"Street 3 Name: "} change={setStreetThree} value={streetThree}/>
         <TextBox label={"Street 4 Name: "} change={setStreetFour} value={streetFour}/>
         <br/>
-        <AwesomeButton type="primary" onPress={findIntersection}>Set Intersection Two: </AwesomeButton>
+        {/*<AwesomeButton type="primary" change={setIntersectionNumber} value={2} onPress={findIntersection}>Set Intersection Two: </AwesomeButton>*/}
+        <AwesomeButton type="primary" onPress={findIntersectionTwo}>Set Intersection Two: </AwesomeButton>
         <br/>
         <br/>
         <div style={{display: "flex", flexDirection: "row", justifyContent: "space-evenly"}}>
