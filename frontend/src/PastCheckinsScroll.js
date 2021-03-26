@@ -1,4 +1,5 @@
 import {useState, useEffect} from "react";
+import CheckinItem from "./CheckinItem";
 
 function PastCheckinsScroll(props) {
 
@@ -7,10 +8,16 @@ function PastCheckinsScroll(props) {
     useEffect(() => {
         setUserData(props.data)
     },[props.data])
+
     if (props != null) {
         return (
-            <div style={{overflow: "scroll", borderStyle: "solid", height: 100, width: 700, justifyContent: "center"}}>
-                <h6>{props.data}</h6>
+            <div style={{overflow: "scroll", borderStyle: "solid", height: 200, width: 700, justifyContent: "center"}}>
+                <h5>Name: {props.name}, ID: {props.id} </h5>
+                {userData.map(item => {
+                    return (
+                        <h6>{item}</h6>
+                    )
+                })}
             </div>
         )
     }

@@ -527,6 +527,7 @@ function Maps(props) {
 
 
     const zoom = (event) => {
+        event.preventDefault()
         if (!scrolling){
             console.log("Happening!")
             scrolling = true

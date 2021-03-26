@@ -10,7 +10,7 @@ function CheckinScroll(props) {
     },[props.items])
 
     return (
-          <div style = {{overflow: "scroll", borderStyle: "solid", height: 300, width:700, justifyContent: "center"}}>
+          <div style = {{overflow: "scroll", borderStyle: "solid", height: 500, width:700, justifyContent: "center"}}>
             {checkIns.map(item => {
                 // console.log("Item" + item["id"])
                 //console.log("Item" + item["name"])

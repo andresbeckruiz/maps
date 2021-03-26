@@ -32,12 +32,10 @@ function CheckinItem(props) {
                 console.log(response.data["pastCheckins"]);
                 Object.keys(response.data["pastCheckins"]).forEach((id) => {
                     const curr = response.data["pastCheckins"][id]
-               //     console.log(curr[0] + ", " + curr[1])
-                //    useArray.push(curr[0] + ", " + curr[1])
-                    useArray.push(curr[0])
-                    useArray.push(", ")
-                    useArray.push(curr[1])
-                //         updatedMap.push(curr)
+                    let string1 = `${curr[0]}`
+                    let string2 = `${curr[1]}`
+                    let combinedString = string1.concat(", ",string2)
+                    useArray.push(combinedString)
                 })
             })
             .catch(function (error) {
@@ -56,7 +54,7 @@ function CheckinItem(props) {
             </span>
             {(() => {
                 if (pressed != null) {
-                    return <PastCheckinsScroll data={data}/>
+                    return <PastCheckinsScroll name={props.name} id={props.id} data={data}/>
                 }
             })()}
         </div>

@@ -93,7 +93,9 @@ function UserCheckin() {
         {/*<AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>*/}
         {/*<h3></h3>*/}
         <h1> User checkins </h1>
+        <div style = {{display: "flex", alignItems: "center", justifyContent: "center"}}>
         <CheckinScroll items={checkIns}/>
+        </div>
     </div>
 }
 export default UserCheckin
