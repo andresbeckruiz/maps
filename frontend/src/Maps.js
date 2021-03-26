@@ -1,4 +1,3 @@
-import './App.css';
 import {useEffect, useRef} from "react";
 import {useState} from "react";
 import axios from "axios";
@@ -540,6 +539,7 @@ function Maps(props) {
     // useEffect (() => {
     //     canvas = canvasRef.current
     //     canvas.addEventListener("wheel", (event) => {
+    //         event.preventDefault()
     //         if (!scrolling){
     //             console.log("Happening!")
     //             scrolling = true
@@ -675,17 +675,26 @@ function Maps(props) {
     }
 
     return <div>
-        <AwesomeButton type="primary" onPress={requestRoute}>Show Route</AwesomeButton>
-        <h3></h3>
-        <AwesomeButton type="primary" onPress={findIntersection}>Set Intersection One: </AwesomeButton>
         <TextBox label={"Street 1 Name: "} change={setStreetOne} value={streetOne}/>
         <TextBox label={"Street 2 Name: "} change={setStreetTwo} value={streetTwo}/>
-        <AwesomeButton type="primary" onPress={findIntersection}>Set Intersection Two: </AwesomeButton>
+        <br/>
+        <AwesomeButton type="primary" onPress={findIntersection}>Set Intersection One: </AwesomeButton>
+        <br/>
+        <br/>
         <TextBox label={"Street 3 Name: "} change={setStreetThree} value={streetThree}/>
         <TextBox label={"Street 4 Name: "} change={setStreetFour} value={streetFour}/>
+        <br/>
+        <AwesomeButton type="primary" onPress={findIntersection}>Set Intersection Two: </AwesomeButton>
+        <br/>
+        <br/>
+        <div style={{display: "flex", flexDirection: "row", justifyContent: "space-evenly"}}>
+            <AwesomeButton type="primary" onPress={requestRoute}>Show Route</AwesomeButton>
+            <AwesomeButton type="primary" onPress={clear}>Clear</AwesomeButton>
+        </div>
+        <br/>
+        <br/>
         <canvas onClick={click} onMouseDown={down} onMouseUp={up} onWheel={zoom} ref={canvasRef}
                 style={{border:"2px solid black"}} width="500" height="500" />
-        <AwesomeButton type="primary" onPress={clear}>Clear</AwesomeButton>
     </div>
 
 }

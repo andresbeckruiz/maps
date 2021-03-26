@@ -1,5 +1,3 @@
-import TextBox from "./TextBox";
-import './App.css';
 import React, {useEffect, useState} from 'react';
 import {AwesomeButton} from "react-awesome-button"
 import "react-awesome-button/dist/styles.css"

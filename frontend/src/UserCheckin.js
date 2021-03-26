@@ -1,8 +1,6 @@
-import './App.css';
 import axios from "axios";
 import {useState, useEffect} from "react";
 import {AwesomeButton} from "react-awesome-button";
-import TextBox from "./TextBox";
 import CheckinScroll from "./CheckinScroll"
 
 function UserCheckin() {
@@ -92,7 +90,8 @@ function UserCheckin() {
     return <div>
         {/*<AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>*/}
         {/*<h3></h3>*/}
-        <h1> User checkins </h1>
+        <h1> User Checkins </h1>
+        <h4> Click on text to see user's past checkins!</h4>
         <div style = {{display: "flex", alignItems: "center", justifyContent: "center"}}>
         <CheckinScroll items={checkIns}/>
         </div>
