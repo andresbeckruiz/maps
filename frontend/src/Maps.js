@@ -20,9 +20,6 @@ function Maps(props) {
     const [minBoundLon, setMinBoundLon] = useState(-71.40729)
     const [maxBoundLat, setMaxBoundLat] = useState(41.82953)
     const [maxBoundLon, setMaxBoundLon] = useState(-71.39572)
-
-    // const [mouseDown , setMouseDown] = useState([])
-    // const [mouseUp, setMouseUp] = useState([])
     let mouseDown = []
     let mouseUp = []
     const [firstClick, setFirstClick] = useState(0);
@@ -47,11 +44,9 @@ function Maps(props) {
 
     const drawWays = (context, newMap, route) => {
         if (newMap == 1) {
-            //console.log("drawing route")
             info = route;
             context.lineWidth = 4
         } else {
-            //console.log("drawing entire map")
             info = route;
             context.lineWidth = 1
             Object.keys(info).forEach((id) => {
@@ -576,7 +571,6 @@ function Maps(props) {
 
             context.fillStyle = "#ffffff";
             context.fillRect(0, 0, canvasWidth, canvasHeight);
-            // canvasMap = props.map
             setCanvasMap(props.map)
             drawWays(context, 0, props.map)
             console.log("REDRAW!")
@@ -606,7 +600,6 @@ function Maps(props) {
                         const curr = cache[tile][id]
                         updatedMap.push(curr)
                     })
-                    // drawWaysScroll(context, cache[tile], shortestRoute)
                     drawWaysScrollSync(context, cache[tile], shortestRoute, smallLon, bigLon, smallLat, bigLat)
                 } else {
                     const toSend = {
@@ -636,7 +629,6 @@ function Maps(props) {
                                 canvas = canvasRef.current
                                 contextRef.current = canvas.getContext('2d')
                                 context = contextRef.current
-                                // drawWaysScroll(context, cache[tile], shortestRoute)
                                 drawWaysScrollSync(context, cache[tile], shortestRoute, smallLon, bigLon, smallLat, bigLat)
                             }
                         })
@@ -646,7 +638,6 @@ function Maps(props) {
                 }
             }
         }
-       // canvasMap = updatedMap
         setCanvasMap(updatedMap)
     }
 

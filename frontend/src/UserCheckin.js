@@ -2,13 +2,11 @@ import './App.css';
 import axios from "axios";
 import {useState, useEffect} from "react";
 import {AwesomeButton} from "react-awesome-button";
-import TextBox from "./TextBox";
 import CheckinScroll from "./CheckinScroll"
 
 function UserCheckin() {
   const [unixTime, setUnixTime] = useState(Date.now())
   const [checkIns, setCheckIns] = useState([])
-  const userDict = []
 
     const updateUserDict = () => {
         let timestamp = unixTime
@@ -21,9 +19,8 @@ function UserCheckin() {
                 'Access-Control-Allow-Origin': '*',
             }
         }
-        //yeah it should be the above URL
         axios.post(
-            "http://localhost:4567/userCheckin", // maybe this URL? http://localhost:8080?last=timestamp
+            "http://localhost:4567/userCheckin",
             toSend,
             config
         ).then(response => {
@@ -55,19 +52,6 @@ function UserCheckin() {
         setUnixTime(newestTime)
     }
 
-  // const requestUserData = () => {
-  //   // GET Request
-  //
-  //   fetch("http://localhost:8080?last=timestamp")
-  //       .then(response => {
-  //           console.log(response.data)
-  //           return response.json()
-  //       })
-  //       .then(data => console.log(data))
-  //   let newestTime = Date.now()
-  //   setUnixTime(newestTime)
-  // }
-
     function convertToDate(unix_timestamp) {
         let date = new Date(unix_timestamp * 1000);
 // Hours part from the timestamp
@@ -90,8 +74,6 @@ function UserCheckin() {
 
 
     return <div>
-        {/*<AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>*/}
-        {/*<h3></h3>*/}
         <h1> User checkins </h1>
         <div style = {{display: "flex", alignItems: "center", justifyContent: "center"}}>
         <CheckinScroll items={checkIns}/>

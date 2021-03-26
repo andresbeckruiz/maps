@@ -1,5 +1,4 @@
 import {useState, useEffect} from "react";
-import CheckinItem from "./CheckinItem";
 
 function PastCheckinsScroll(props) {
 
