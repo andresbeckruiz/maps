@@ -1,4 +1,3 @@
-import './App.css';
 import axios from "axios";
 import {useState, useEffect} from "react";
 import {AwesomeButton} from "react-awesome-button";
@@ -7,6 +6,7 @@ import CheckinScroll from "./CheckinScroll"
 function UserCheckin() {
   const [unixTime, setUnixTime] = useState(Date.now())
   const [checkIns, setCheckIns] = useState([])
+  const userDict = []
 
     const updateUserDict = () => {
         let timestamp = unixTime
@@ -74,7 +74,10 @@ function UserCheckin() {
 
 
     return <div>
-        <h1> User checkins </h1>
+        {/*<AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>*/}
+        {/*<h3></h3>*/}
+        <h1> User Checkins </h1>
+        <h4> Click on checkin text to see user's past checkins!</h4>
         <div style = {{display: "flex", alignItems: "center", justifyContent: "center"}}>
         <CheckinScroll items={checkIns}/>
         </div>

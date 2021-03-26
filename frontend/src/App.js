@@ -1,10 +1,9 @@
 import Route from "./Route";
-import './App.css';
 
 
 function App() {
     return (
-        <div className="App">
+        <div style={{textAlign: "center", backgroundColor: "#FFEBCD"}}>
             <Route/>
         </div>
       );
