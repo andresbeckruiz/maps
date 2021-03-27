@@ -1,127 +1,136 @@
-## TODO: Update readme with information about your Canvas 1 + 2 project! ##
 
-Canvas 1 and 2 README
-
+Maps 3 and 4 README
 ------------------------------------------------------------------------------------------------------
 
-Property Based Testing Response:
+REPL and Djikstra Used:
 
-Property based testing on this assignment could be useful for comparing our Djikstra's algorithm
-implementation with our A* algorithm implementation. We probably feel more confident about 
-Djikstra's, since A* is Djikstra's with an added hueristic, so if their outputs matched we could
-be confident that both algorithms produce correct outputs. For PBT using the route command, 
-a property we would check for in comparing the routes is total distance of the routes. 
-We could calculate this by adding up the distances of each edge, or Way, in the path, 
-and we could compare these distances for Djikstra's and A* and they should be the same. 
-Since our route command also uses the nearest command to find the nearest neighbor to the target 
-latitude and longitude inputted, we could check the distance of the Node returned from the target 
-as a property for testing our nearest command. 
+We used Andres' Djikstra and Bridget's REPL. For the rest of the maps code, we used Andres'
+code from his Maps 1+2 project.
 
 ------------------------------------------------------------------------------------------------------
 
 Division of Labor:
 
-Andres did most of the work outlining and creating the necessary classes and 
-interfaces for the project, including WayNodes, Ways, Graph, GraphEdge, and GraphNode. Andres also 
-defined the methods in the GraphNode and GraphEdge interfaces needed to run djikstras. Andres also
-made edits to Djikstra's method to create the A* method. Andres also fixed checkstyle errors and 
-commented the code.
+Andres did most of the work implementing zooming and scrolling on the map. Andres also did most of the 
+work updating SQL commands to make them faster for Maps 3+4. Andres also did most of the work displaying
+the checkin data on the front end and coming up with the component design for Maps 4. Andres also did
+debugging work making sure that routes and circles stayed on the map properly when scrolling or zooming
+happened.
 
-Mit did most of the caching implementation, including looking up the proper documentation for 
-GoogleGuavaCache. He also used the DB browser to play with SQl commands until we got 
-the correct queries we wanted. Mit also implemented the nearest and ways commands for MapsLogic, 
-including defining helper methods in MapsLogic that were needed to carry out these commands. 
+Bridget did most of the work creating the function that draws the ways on the canvas. She also created
+the functions that converting lon/lat to pixels and back and figured out the math behind it. Bridget
+also implemented the front end caching. Bridget also made the class and functions that store user checkin
+data. Bridget also did work surrounding finding nodes based on streets inputted. 
 
-We both wrote system and Junit tests to test our implementation. We also both helped write 
-the route and maps command and Djikstra's search method. 
+Both partners worked on commenting the code, fixing checkstyle errors, and doing the README and reflection.
 
 ------------------------------------------------------------------------------------------------------
 
-Known Bugs: None
+Known Bugs: A rare bug, but when scrolling on the map, the canvas will draw multiple ways on top of each other
+or will draw multiple routes on top of each other and it will look messy. It should go away if you just 
+scroll again.
 
-Note on Testing on Department Machines: We could not figure out 
+Another thing is that we did not implement the functionality where if you type in two streets it pans over
+to the intersection, as this was giving us bugs as well. 
+
+Lastly, this is not really a bug, but e.preventDefault wasn't working for us, so when you zoom on the map, 
+the page scrolls as well.
+
+Note on Testing on Department Machines: We could not figure out
 how to test on department machines, due to the fact that the database
-was located in a different directory, so we cannot verify that 
+was located in a different directory, so we cannot verify that
 our code works exactly the same as it does on our local machines
 
 ------------------------------------------------------------------------------------------------------
 
 Design Details:
 
-One significant design choice that we made was creating GraphNode and GraphEdge interfaces 
-that contained methods that are required for any Nodes or Edges in a graph input into 
-the A* algorithm. This allows our A* algorithm to work on a graph with any type of node and edges,
-as long as it implements all the required methods. We also created a custom comparator to compare
-nodes in the graph for the A* algorithm. This custom comparator compares the total weight of the nodes,
-which is the distance it took to get to that node plus the distance left to reach the goal. 
+IMPORTANT DESIGN CHOICES: When a user clicks if there are two circles already there, it will erase those
+two circles and show the new circle. Furthermore, if a route is displayed it will be erased if a user
+clicks on the map. Circles and routes can also be cleared using the "Clear" button on the front end. 
+Another choice is in order to show the route (when there are two circles on the map), you have to click
+the "Show Route" button to show the route (it is not shown automatically). Also, for user checkins, you
+have to click the text of a checkin to get the users' previous checkins to display. 
 
-Another choice we made was creating classes that represented Nodes and Ways in the database, named
-WayNodes and Way, respectively. These classes implemented GraphNode and GraphEdge, respectively, so 
-that they could be used in our A* algorithm. 
+One major design choice we made for Maps 3 was having one component handle loading in the initial ways
+when the database is first loaded in and if any other databases are loaded in (we called this component
+LoadHandler). This LoadHandler contains our Canvas component, which holds all of our Canvas logic. 
+On the front end, we decided to include buttons for Showing the route, clearing the route and circles,
+and a button for loading in a new map. 
 
-In our MapsLogic class, we handle parsing and checking the validity of all the maps commands and
-other Canvas logic, including the definition of the map, ways, and nearest commands. We also handle
-the formatting of strings to print results to the terminal. 
+Some design choices we made for Maps 4 was having lots of different components that contain one another. 
+Our UserCheckin component contains the logic that gets the server checkins and displays them. It contains
+a CheckinScroll component which just represents the scroll box where you can scroll to see checkins. Each
+individual checkin is its own component, called a CheckinItem, so that each checkin can display user 
+information when the text is clicked. When a CheckinItem is clicked, it passes in user data to 
+PastCheckinsScroll, which is another scrollbox that appears right under the checkin containing all of the
+user past checkins. 
 
-In terms of code reuse, Andres used his REPL code from Stars and Mit used his
-KDTree code from Stars. We copied Andres' REPL code into Mit's old Stars repository, and most of it 
-fit pretty well into the repository. All we had to change was that Mit's run method for MapsLogic 
-and StarsLogic took in a String instead of an array of strings, so we just edited Mit's run method 
-to take in an array of Strings and made small changes elsewhere to fix errors that arose from this.
+In terms of fitting our code bases together, there were not many changes we had to make. The only changes
+we had to make was to Bridget's REPL; all we had to do was change her run command and her interface for 
+her REPL slightly to work with my design for MapsLogic. 
 
 ------------------------------------------------------------------------------------------------------
 
 Runtime/Space Optimizations:
 
-To improve the runtime of our route command, we implemented a GraphNodeNeighborsCache. This cache
-maps nodes to a list of their neighbors to reduce the amount of queries we have to make. If
-the node already exists in our cache, we can just get a list of its neighbors. We also
-implemented a WayNodeCache, that maps IDS to their WayNodes. If the ID already exists in our cache, 
-we can just get the WayNode instead of querying the database.
+To improve the runtime of our front end when loading in ways data and drawing it on the canvas, 
+we implemented front end caching in our Canvas.js component. This caching function stores way data as 
+tiles. When we redraw the canvas, we first check to see if the tile already exists in our cache. 
+If it already exists, we don't have to request for the ways needed to draw on the canvas, which 
+significantly improves the runtime of how fast the map loads. 
 
 ------------------------------------------------------------------------------------------------------
 
-Running Tests: To run our Junit tests, just run "mvn package". To run our system tests, run
-./cs32-test test/system/maps1+2/*.test with the flag -t 60 to check for 60 second timeouts. 
+Running Tests: To run our Junit tests for Maps 1+2, just run "mvn package". To run our system tests for 
+Maps 1+2, run ./cs32-test test/system/maps1+2/*.test with the flag -t 60 to check for 60 second timeouts.
 
 We expect our maps database to be under the folder data/maps. This is how our tests are structured
-------------------------------------------------------------------------------------------------------
 
-
-Tests Wrote/Tried by Hand: 
-
-In order to test our route command on the big database, since it was not feasible to find a shortest path
-by hand given the size of the database, we first looked at a map of providence to find 
-routes for the route command that took an intersection and generated a few test examples. 
-We also compared our raw terminal outputs with other students (David Han and Ming-May Hu) to further 
-test our validity.
-
-
-Some of the things we tested for included:
-    Being able to load both maps
-    Being able to load multiple maps and ensuring that caching works
-    Error checking invalid map arguments
-    Testing the validity of our nearest/ways/route method
-    Error checking our nearest/ways/route method
-    Testing that a database was loaded before we ran our nearest/ways/route method
-    We also did extensive testing on route caching to make sure that we could run 
-    multiple large queries
-    We tested for route timeouts by taking our output from terminal (regardless
-    of validity) and checking how long it took. 
-
-We wrote our Junit tests and system tests using the smaller database and
-to check for error catching and edge cases in our implementations. 
-
-IMPORTANT NOTE ABOUT TESTING: 
-We tested our aStar algorithm in the Graph class in GraphTest.java. However, it does not seem
-to increase our Jacoco score for the Graph class (it says that we have not tested the aStar method at
-all). We are not sure why this is happening, but we have tested that aStar produces a correct output. 
+For Maps 3+4, we did not write any system tests or unit tests for our front end because it was not 
+required. We tested our front end using console logs and playing with it on Google Chrome. 
 
 ------------------------------------------------------------------------------------------------------
 
 Building and Running:
 
+IMPORTANT: When running the front end, make sure you load in the maps.sqlite3 database by entering
+"map data/maps/maps.sqlite3" before running npm start (this is not done automatically). 
+To load new databases in, you can use the map command, wait for the database to load, and press the
+"Load Map" button on the front end. 
+
 In order to build our project, you can run "mvn package", and to run it enter "./run".
+
+In order to run our project with the gui, you can run ./run -gui in the root folder,
+and then run npm start in the front end folder. In order to run it with the server, make sure you run 
+python3 ./cs032_maps_location_tracking_py3 8080 5 -s in the root folder before running the gui and 
+starting the front end. 
+
+
+------------------------------------------------------------------------------------------------------
+
+Browser:
+
+We tested our front end on Google Chrome. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
