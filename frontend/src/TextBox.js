@@ -1,3 +1,9 @@
+/**
+ * This component represents a textbox that we can use on our frontend.
+ * @param props
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function TextBox(props) {
     return (
         <div>

@@ -1,6 +1,6 @@
-## TODO: Update readme with information about your Maps 1 + 2 project! ##
+## TODO: Update readme with information about your Canvas 1 + 2 project! ##
 
-Maps 1 and 2 README
+Canvas 1 and 2 README
 
 ------------------------------------------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ WayNodes and Way, respectively. These classes implemented GraphNode and GraphEdg
 that they could be used in our A* algorithm. 
 
 In our MapsLogic class, we handle parsing and checking the validity of all the maps commands and
-other Maps logic, including the definition of the map, ways, and nearest commands. We also handle
+other Canvas logic, including the definition of the map, ways, and nearest commands. We also handle
 the formatting of strings to print results to the terminal. 
 
 In terms of code reuse, Andres used his REPL code from Stars and Mit used his

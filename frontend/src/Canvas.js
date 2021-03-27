@@ -4,9 +4,17 @@ import axios from "axios";
 import TextBox from "./TextBox";
 import {AwesomeButton} from "react-awesome-button";
 
-function Maps(props) {
+/**
+ * This class represents most of the canvas logic, including showing the route,
+ * showing the circles, panning and zooming, and clearing the canvas.
+ * @param props
+ * @returns {JSX.Element}
+ * @constructor
+ */
+function Canvas(props) {
     const canvasRef = useRef();
     const contextRef = useRef();
+    const zoomConstant = 0.0015;
     let canvas = canvasRef.current;
     let context = contextRef.current;
     const canvasWidth = 500;
@@ -19,6 +27,7 @@ function Maps(props) {
     const ROUND_NUM = 0.01
     //what ways we want to display
     const [canvasMap, setCanvasMap] = useState(props.map)
+    //other state variables we need
     const [minBoundLat, setMinBoundLat] = useState(41.82433)
     const [minBoundLon, setMinBoundLon] = useState(-71.40729)
     const [maxBoundLat, setMaxBoundLat] = useState(41.82953)
@@ -37,6 +46,13 @@ function Maps(props) {
     const [streetFour, setStreetFour] = useState("")
     const [cache, setCache] = useState({});
 
+    /**
+     * This function draws the ways when we don't care about the bounds being updated
+     * asynchronously.
+     * @param context
+     * @param newMap representing map to draw.
+     * @param route representing the route to draw.
+     */
     const drawWays = (context, newMap, route) => {
         if (newMap == 1) {
             info = route;
@@ -46,7 +62,7 @@ function Maps(props) {
             context.lineWidth = 1
             Object.keys(info).forEach((id) => {
                 const curr = info[id]
-                //console.log(curr)
+                //setting the color based on type of way
                 if (curr[4] == 'unclassified' || curr[4] == ''){
                     curr.color = "#000000"
                 } else {
@@ -56,7 +72,6 @@ function Maps(props) {
         }
         Object.keys(info).forEach((id) => {
             const curr = info[id]
-            console.log(curr.color)
             context.strokeStyle = curr.color;
             context.beginPath()
             context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
@@ -65,10 +80,20 @@ function Maps(props) {
         })
     }
 
+    /**
+     * This is similar to the above function, except we pass in the bounds of the map
+     * because they get updated asynchronously and we need to access them synchronously.
+     * @param context
+     * @param canvasMap map to display
+     * @param route route to display
+     * @param minLon min lon bound
+     * @param maxLon max lon bound
+     * @param minLat min lat bound
+     * @param maxLat max lat bound
+     */
     const drawWaysScrollSync = (context, canvasMap, route, minLon, maxLon, minLat, maxLat) => {
         Object.keys(canvasMap).forEach((id) => {
             const curr = canvasMap[id]
-            //console.log(curr)
             if (curr[4] == 'unclassified' || curr[4] == ''){
                 curr.color = "#000000"
             } else {
@@ -81,19 +106,23 @@ function Maps(props) {
             const curr = canvasMap[id]
             context.strokeStyle = curr.color;
             context.beginPath()
-            context.moveTo(calcLonPixelsSync(curr[1], minLon, maxLon), calcLatPixelsSync(curr[0], minLat, maxLat));
-            context.lineTo(calcLonPixelsSync(curr[3], minLon, maxLon), calcLatPixelsSync(curr[2], minLat, maxLat));
+            context.moveTo(calcLonPixelsSync(curr[1], minLon, maxLon),
+                calcLatPixelsSync(curr[0], minLat, maxLat));
+            context.lineTo(calcLonPixelsSync(curr[3], minLon, maxLon),
+                calcLatPixelsSync(curr[2], minLat, maxLat));
             context.stroke();
         })
-        //drawing route
+        //drawing route if a route exists
         if (shortestRoute != ""){
             context.lineWidth = 4
             Object.keys(route).forEach((id) => {
                 const curr = route[id]
                 context.strokeStyle = "#be1212";
                 context.beginPath()
-                context.moveTo(calcLonPixelsSync(curr[1], minLon, maxLon), calcLatPixelsSync(curr[0], minLat, maxLat));
-                context.lineTo(calcLonPixelsSync(curr[3], minLon, maxLon), calcLatPixelsSync(curr[2], minLat, maxLat));
+                context.moveTo(calcLonPixelsSync(curr[1], minLon, maxLon),
+                    calcLatPixelsSync(curr[0], minLat, maxLat));
+                context.lineTo(calcLonPixelsSync(curr[3], minLon, maxLon),
+                    calcLatPixelsSync(curr[2], minLat, maxLat));
                 context.stroke();
             })
         }
@@ -104,7 +133,8 @@ function Maps(props) {
             context.beginPath();
             context.lineWidth = 5;
             context.strokeStyle = "#be1212";
-            context.arc(firstLonPixels, firstLatPixels, 10, 0, Math.PI * 4, true);
+            context.arc(firstLonPixels, firstLatPixels, 10, 0,
+                Math.PI * 4, true);
             context.stroke();
         }
         if (firstCircle != [] && secondCircle != [] ){
@@ -115,47 +145,83 @@ function Maps(props) {
             context.beginPath();
             context.lineWidth = 5;
             context.strokeStyle = "#be1212";
-            context.arc(firstLonPixels, firstLatPixels, 10, 0, Math.PI * 4, true);
+            context.arc(firstLonPixels, firstLatPixels, 10, 0,
+                Math.PI * 4, true);
             context.stroke();
             context.beginPath();
-            context.arc(secondLonPixels, secondLatPixels, 10, 0, Math.PI * 4, true);
+            context.arc(secondLonPixels, secondLatPixels, 10, 0,
+                Math.PI * 4, true);
             context.stroke();
         }
     }
 
+    /**
+     * This function converts longitude to pixels.
+     * @param lon
+     * @returns {number} representing pixels
+     */
     function calcLonPixels(lon) {
         const x = canvasHeight * ((lon - minBoundLon) / (maxBoundLon - minBoundLon))
         return x;
     }
 
+    /**
+     * This function converts longitude to pixels when we need the bounds synchronously.
+     * @param lon
+     * @returns {number} representing pixels
+     */
     function calcLonPixelsSync(lon, minLon, maxLon) {
         const x = canvasHeight * ((lon - minLon) / (maxLon - minLon))
         return x;
     }
 
-
+    /**
+     * This function converts latitude to pixels.
+     * @param lat
+     * @returns {number} representing pixels
+     */
     function calcLatPixels(lat) {
         const y = canvasWidth * ((lat - maxBoundLat) / (minBoundLat - maxBoundLat))
         return y;
     }
 
+    /**
+     * This function converts latitude to pixels when we need the bounds synchronously.
+     * @param lon
+     * @returns {number} representing pixels
+     */
     function calcLatPixelsSync(lat, minLat, maxLat) {
         const y = canvasWidth * ((lat - maxLat) / (minLat - maxLat))
         return y;
     }
 
+    /**
+     * This function converts pixels to longitude.
+     * @param canvas
+     * @param xClick x position of click
+     * @returns {number} representing longitude
+     */
     function calcLonCoord(canvas, xClick) {
         let x = xClick - canvas.offsetLeft;
         let ret = ((x*(maxBoundLon - minBoundLon))/canvasHeight) + minBoundLon
         return ret;
     }
 
+    /**
+     * This function converts pixels to latitude.
+     * @param canvas
+     * @param yClick y position of click
+     * @returns {number} representing latitdue
+     */
     function calcLatCoord(canvas, yClick) {
         let y = yClick - canvas.offsetTop;
         let ret = ((y*(minBoundLat - maxBoundLat))/canvasHeight) + maxBoundLat
         return ret;
     }
 
+    /**
+     * This method requests the route from the backend.
+     */
     const requestRoute = () => {
         let sLon = ""
         let sLat = ""
@@ -198,34 +264,33 @@ function Maps(props) {
         });
     }
 
+    /**
+     * Finds intersection of first streets inputted.
+     */
     const findIntersectionOne = () => {
         findIntersection(1)
     }
 
+    /**
+     * Finds intersection of second streets inputted.
+     */
     const findIntersectionTwo = () => {
         findIntersection(2)
     }
 
+    /**
+     * This input finds the node of the intersection of the streets typed in.
+     * @param num representing which street boxes have been inputted.
+     */
     function findIntersection(num) {
         let sLon = ""
         let sLat = ""
-       // if (intersectionNumber == 1) {
         if (num == 1) {
             sLon = streetOne
             sLat = streetTwo
-            console.log(sLon + " st 1")
-            console.log(sLat + " st 1")
-            // sLon = "Prospect Street"
-            // sLat = "George Street"
-         //   setIntersectionNumber(2)
         } else {
             sLon = streetThree
             sLat = streetFour
-            console.log(sLon + " st 2")
-            console.log(sLat + " st 2")
-            // sLon = "Thayer Street"
-            // sLat = "Waterman Street"
-         //   setIntersectionNumber(1)
         }
         const toSend = {
             startLon: sLon,
@@ -244,7 +309,6 @@ function Maps(props) {
     ).then(response => {
         Object.keys(response.data["intersection"]).forEach((id) => {
             const curr = response.data["intersection"][id]
-            console.log(curr[0] + " " + curr[1] + " in intersect")
             getNearestNode(curr[0], curr[1], firstClick)
             setClicks(curr[0], curr[1])
         })
@@ -252,8 +316,14 @@ function Maps(props) {
         .catch(function (error) {
             console.log(error);
         });
-}
+    }
 
+    /**
+     * This function gets the nearest node so that we can draw a circle where the user clicks.
+     * @param nearestLat representing nearest lat
+     * @param nearestLong  representing nearest long
+     * @param clickNum times the mouse has been clicked
+     */
     const getNearestNode = (nearestLat, nearestLong, clickNum) => {
         const toSend = {
             nearLat : nearestLat,
@@ -270,44 +340,44 @@ function Maps(props) {
             toSend,
             config
         ).then(response => {
-            console.log(nearestLat + " " + nearestLong + " xxx")
             let data = response.data["nearest"]
             Object.keys(data).forEach((id) => {
                 currNode = data[id]
             })
             let lonPixels = calcLonPixels(currNode[1])
             let latPixels = calcLatPixels(currNode[0])
+            //want to clear other circles and draw the first circle
             if (clickNum == 2) {
                 setShortestRoute("")
                 setFirstCircle([currNode[0], currNode[1]])
                 setSecondCircle([])
-                // secondCircle = []
                 context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvasWidth, canvasHeight);
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
+                context.arc(lonPixels, latPixels, 10, 0,
+                    Math.PI * 4, true);
                 context.stroke();
                 drawWays(context, 0, canvasMap)
             }
+            //want to draw the second circle now
             else if (clickNum == 1) {
                 setSecondCircle([currNode[0], currNode[1]])
-                // secondCircle = [currNode[0], currNode[1]]
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
+                context.arc(lonPixels, latPixels, 10, 0,
+                    Math.PI * 4, true);
                 context.stroke();
                 //should only happen when first click is registered
             } else {
-                console.log("first click = 0 " + currNode[0] + " " + currNode[1] + " " + lonPixels + " " + latPixels )
                 setFirstCircle([currNode[0], currNode[1]])
-                // firstCircle = [currNode[0], currNode[1]]
                 context.beginPath();
                 context.lineWidth = 5;
                 context.strokeStyle = "#be1212";
-                context.arc(lonPixels, latPixels, 10, 0, Math.PI * 4, true);
+                context.arc(lonPixels, latPixels, 10, 0,
+                    Math.PI * 4, true);
                 context.stroke();
             }
         })
@@ -316,32 +386,39 @@ function Maps(props) {
             });
     }
 
+    /**
+     * Calculates mouse up position.
+     * @param event
+     */
     const up = (event) => {
         canvas = canvasRef.current
         let x = event.pageX - canvas.offsetLeft
         let y = event.pageY - canvas.offsetTop
-    //    setMouseUp(x - [mouseDown[0], y - mouseDown[1]])
         mouseUp = [mouseDown[0] - x, y - mouseDown[1]]
-        // setMouseUp([mouseDown[0] - x, y - mouseDown[1]])
-        // maybe mouseDown[0] - x instead ...
     }
 
+    /**
+     * Calculates mouse down position
+     * @param event
+     */
     const down = (event) => {
         canvas = canvasRef.current
         let x = event.pageX - canvas.offsetLeft
         let y = event.pageY - canvas.offsetTop
-        // setMouseDown([x,y])
         mouseDown = [x,y]
     }
 
+    /**
+     * This function is called when a click is registered on the canvas. If the user
+     * has not moved its mouse, we consider it a click and draw a circle. Else, we
+     * pan the map.
+     * @param event
+     */
     const click = (event) => {
         canvas = canvasRef.current
         contextRef.current = canvas.getContext('2d')
         context = contextRef.current
-        console.log("Mouse up" + mouseUp[0])
-        console.log("Mouse up " + mouseUp[1])
         if (Math.abs(mouseUp[0]) > 5 || Math.abs(mouseUp[1]) > 5 ) {
-            console.log("not a click!")
             //updating bounded box
             let lat1 = calcLatCoord(canvas,mouseUp[1])
             let lat2 = calcLatCoord(canvas,0)
@@ -357,13 +434,9 @@ function Maps(props) {
             setMaxBoundLat(bigLat)
             setMinBoundLon(smallLon)
             setMaxBoundLon(bigLon)
-            console.log("Small lat" + smallLat)
-            console.log("Min bound lat" + minBoundLat)
-            console.log("Big lat" + bigLat)
-            console.log("Max bound lat" + maxBoundLat)
-            //requestWays()
             caching(smallLat, bigLat, smallLon, bigLon)
-        } else { //if its a click
+            //if its a click
+        } else {
             let x = calcLonCoord(canvas, event.pageX)
             let y = calcLatCoord(canvas, event.pageY)
             getNearestNode(y, x, firstClick)
@@ -371,6 +444,12 @@ function Maps(props) {
         }
     }
 
+    /**
+     * This function keeps track of how many times the user has clicked on canvas so that
+     * we can redraw circles as needed.
+     * @param y y pos of cick
+     * @param x x pos of click
+     */
     const setClicks = (y, x) => {
         if (firstClick == 2) {
             setFirstMouseX(x)
@@ -391,16 +470,19 @@ function Maps(props) {
         }
     }
 
-
+    /**
+     * This function updates the bounds of the map when a user zooms.
+     * @param deltaY representing if we should zoom in or out
+     */
     const updateZoomBounds = (deltaY) => {
         let zoomLat = 0.0015
         let zoomLon = 0.0015
         //zoom out
         if (deltaY > 0) {
-            let smallLat = minBoundLat - zoomLat
-            let bigLat = maxBoundLat + zoomLat
-            let smallLon = minBoundLon - zoomLon
-            let bigLon = maxBoundLon + zoomLon
+            let smallLat = minBoundLat - zoomConstant
+            let bigLat = maxBoundLat + zoomConstant
+            let smallLon = minBoundLon - zoomConstant
+            let bigLon = maxBoundLon + zoomConstant
             setMinBoundLat(smallLat)
             setMaxBoundLat(bigLat)
             setMinBoundLon(smallLon)
@@ -409,24 +491,29 @@ function Maps(props) {
         }
         //zoom in
         else if (deltaY < 0) {
-            let smallLat = minBoundLat + zoomLat
-            let bigLat = maxBoundLat - zoomLat
-            let smallLon = minBoundLon + zoomLon
-            let bigLon = maxBoundLon - zoomLon
+            let smallLat = minBoundLat + zoomConstant
+            let bigLat = maxBoundLat - zoomConstant
+            let smallLon = minBoundLon + zoomConstant
+            let bigLon = maxBoundLon - zoomConstant
             setMinBoundLat(smallLat)
             setMaxBoundLat(bigLat)
             setMinBoundLon(smallLon)
             setMaxBoundLon(bigLon)
             caching(smallLat, bigLat, smallLon, bigLon)
         }
+        //this timeout prevents the zoom function from being called continously
         setTimeout(() => {
             scrolling = false
         }, 2000)
     }
 
+    /**
+     * This is our event handler for a wheel event.
+     * @param event
+     */
     const zoom = (event) => {
+        //only want to call this when the user stops wheeling.
         if (!scrolling){
-            console.log("Happening!")
             scrolling = true
             setTimeout(() => {
                 updateZoomBounds(event.deltaY)
@@ -434,34 +521,15 @@ function Maps(props) {
         }
     }
 
-    useEffect(() => {
-            canvas = canvasRef.current
-            contextRef.current = canvas.getContext('2d')
-            context = contextRef.current
-            //resetting state values
-            setFirstClick(0)
-            setFirstMouseX("")
-            setFirstMouseY("")
-            setSecondMouseX("")
-            setSecondMouseY("")
-            setShortestRoute("")
-            setFirstCircle([])
-            setSecondCircle([])
-            setStreetOne("")
-            setStreetTwo("")
-            setStreetThree("")
-            setStreetFour("")
-            setCache({})
-            context.fillStyle = "#ffffff";
-            context.fillRect(0, 0, canvasWidth, canvasHeight);
-            setCanvasMap(props.map)
-            drawWays(context, 0, props.map)
-            console.log("REDRAW!")
-        }, [props.map]
-    )
-
+    /**
+     * This function represents our caching logic
+     * @param smallLat min lat bound
+     * @param bigLat max lat bound
+     * @param smallLon min lon bound
+     * @param bigLon max lon bound
+     */
     function caching(smallLat, bigLat, smallLon, bigLon) {
-        console.log("Caching called!")
+        //represents updated map
         let updatedMap = []
         let minLon = roundDown(smallLon)
         let minLat = roundDown(smallLat)
@@ -475,6 +543,7 @@ function Maps(props) {
         for (let a = minLon; a<=maxLon; a = roundUp(a + ROUND_NUM)) {
             for (let b = minLat; b <= maxLat; b = roundUp(b + ROUND_NUM)) {
                 let tile = a.toString() + b.toString()
+                //if the tile already exists
                 if (tile in cache) {
                     canvas = canvasRef.current
                     contextRef.current = canvas.getContext('2d')
@@ -483,7 +552,10 @@ function Maps(props) {
                         const curr = cache[tile][id]
                         updatedMap.push(curr)
                     })
-                    drawWaysScrollSync(context, cache[tile], shortestRoute, smallLon, bigLon, smallLat, bigLat)
+                    //see method above
+                    drawWaysScrollSync(context, cache[tile], shortestRoute, smallLon,
+                        bigLon, smallLat, bigLat)
+                    //if tile doesn't exist we have to request it
                 } else {
                     const toSend = {
                         minLat: b,
@@ -512,7 +584,8 @@ function Maps(props) {
                                 canvas = canvasRef.current
                                 contextRef.current = canvas.getContext('2d')
                                 context = contextRef.current
-                                drawWaysScrollSync(context, cache[tile], shortestRoute, smallLon, bigLon, smallLat, bigLat)
+                                drawWaysScrollSync(context, cache[tile], shortestRoute, smallLon,
+                                    bigLon, smallLat, bigLat)
                             }
                         })
                         .catch(function (error) {
@@ -524,18 +597,31 @@ function Maps(props) {
         setCanvasMap(updatedMap)
     }
 
+    /**
+     * This function rounds down.
+     * @param value to round
+     * @returns {number} rounded value
+     */
     function roundDown(value) {
         let wholeNum = value/ROUND_NUM
         let rounded = Math.floor(wholeNum)
         return (rounded*ROUND_NUM)
     }
 
+    /**
+     * This method rounds up
+     * @param value to be rounded
+     * @returns {number} rounded value
+     */
     function roundUp(value) {
         let wholeNum = value/ROUND_NUM
         let rounded = Math.ceil(wholeNum)
         return (rounded*ROUND_NUM)
     }
 
+    /**
+     * This method clears the map when the clear button is clicked
+     */
     const clear = () => {
       canvas = canvasRef.current
       contextRef.current = canvas.getContext('2d')
@@ -548,18 +634,42 @@ function Maps(props) {
       drawWays(context, 0, canvasMap)
     }
 
+    //we useEffect here so that we can load in the map and draw it if a new database is loaded
+    useEffect(() => {
+            canvas = canvasRef.current
+            contextRef.current = canvas.getContext('2d')
+            context = contextRef.current
+            //resetting state values
+            setFirstClick(0)
+            setFirstMouseX("")
+            setFirstMouseY("")
+            setSecondMouseX("")
+            setSecondMouseY("")
+            setShortestRoute("")
+            setFirstCircle([])
+            setSecondCircle([])
+            setStreetOne("")
+            setStreetTwo("")
+            setStreetThree("")
+            setStreetFour("")
+            setCache({})
+            context.fillStyle = "#ffffff";
+            context.fillRect(0, 0, canvasWidth, canvasHeight);
+            setCanvasMap(props.map)
+            drawWays(context, 0, props.map)
+        }, [props.map]
+    )
+
     return <div>
         <TextBox label={"Street 1 Name: "} change={setStreetOne} value={streetOne}/>
         <TextBox label={"Street 2 Name: "} change={setStreetTwo} value={streetTwo}/>
         <br/>
-        {/*<AwesomeButton type="primary" change={setIntersectionNumber} value={1} onPress={findIntersection}>Set Intersection One: </AwesomeButton>*/}
         <AwesomeButton type="primary" onPress={findIntersectionOne}>Set Intersection One: </AwesomeButton>
         <br/>
         <br/>
         <TextBox label={"Street 3 Name: "} change={setStreetThree} value={streetThree}/>
         <TextBox label={"Street 4 Name: "} change={setStreetFour} value={streetFour}/>
         <br/>
-        {/*<AwesomeButton type="primary" change={setIntersectionNumber} value={2} onPress={findIntersection}>Set Intersection Two: </AwesomeButton>*/}
         <AwesomeButton type="primary" onPress={findIntersectionTwo}>Set Intersection Two: </AwesomeButton>
         <br/>
         <br/>
@@ -574,4 +684,5 @@ function Maps(props) {
     </div>
 
 }
-export default Maps;
+
+export default Canvas;

@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * This class represents all of the logic we need for Maps 1 + 2. It handles all finding which
+ * This class represents all of the logic we need for Canvas 1 + 2. It handles all finding which
  * command to call, getting a connection to the database, and calling commands and the necessary
  * helper methods to complete them. It also handles parsing the output to print in the terminal.
  */

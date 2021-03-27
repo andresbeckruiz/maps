@@ -3,11 +3,19 @@ import {useState, useEffect} from "react";
 import {AwesomeButton} from "react-awesome-button";
 import CheckinScroll from "./CheckinScroll"
 
+/**
+ * This class contains the UserCheckin logic, including pulling in updates from the server.
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function UserCheckin() {
   const [unixTime, setUnixTime] = useState(Date.now())
   const [checkIns, setCheckIns] = useState([])
-  const userDict = []
 
+    /**
+     * This post request gets the checkins from the server and formats the strings to be
+     * displayed on the front end.
+     */
     const updateUserDict = () => {
         let timestamp = unixTime
         const toSend = {
@@ -29,7 +37,8 @@ function UserCheckin() {
                 //userDict.push(curr)
                 //console.log(curr)
                 let formattedTime = convertToDate(curr["ts"])
-                console.log(curr["name"] + " checked into " + curr["lat"] + ", " + curr["lon"] + " at " + formattedTime)
+                console.log(curr["name"] + " checked into " + curr["lat"] + ", " + curr["lon"]
+                    + " at " + formattedTime)
                 const newCheckin = {
                     id: curr["id"],
                     name: curr["name"],
@@ -37,13 +46,10 @@ function UserCheckin() {
                     lon: curr["lon"],
                     time: formattedTime
                 }
-                var newArray = checkIns
+                let newArray = checkIns
                 newArray.push(newCheckin)
                 setCheckIns(newArray)
             })
-            // console.log("Checkins length:" + checkIns.length)
-            // console.log("Checkin 0 " + checkIns[0]["id"])
-            // console.log("Checkin 1" + checkIns[1]["id"])
         })
             .catch(function (error) {
                 console.log(error);
@@ -52,15 +58,20 @@ function UserCheckin() {
         setUnixTime(newestTime)
     }
 
+    /**
+     * This function converts unix timestamps to a readable time
+     * @param unix_timestamp
+     * @returns {string}
+     */
     function convertToDate(unix_timestamp) {
         let date = new Date(unix_timestamp * 1000);
-// Hours part from the timestamp
+        // Hours part from the timestamp
         let hours = date.getHours();
-// Minutes part from the timestamp
+        // Minutes part from the timestamp
         let minutes = "0" + date.getMinutes();
-// Seconds part from the timestamp
+        // Seconds part from the timestamp
         let seconds = "0" + date.getSeconds();
-// Will display time in 10:30:23 format
+        // Will display time in 10:30:23 format
         let formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
         return formattedTime
     }
@@ -74,8 +85,6 @@ function UserCheckin() {
 
 
     return <div>
-        {/*<AwesomeButton type="primary" onPress={updateUserDict}>Users!</AwesomeButton>*/}
-        {/*<h3></h3>*/}
         <h1> User Checkins </h1>
         <h4> Click on checkin text to see user's past checkins!</h4>
         <div style = {{display: "flex", alignItems: "center", justifyContent: "center"}}>
@@ -83,4 +92,5 @@ function UserCheckin() {
         </div>
     </div>
 }
+
 export default UserCheckin
