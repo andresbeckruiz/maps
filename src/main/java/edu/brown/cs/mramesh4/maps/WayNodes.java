@@ -211,6 +211,7 @@ public class WayNodes implements Dimensional, GraphNode<WayNodes, Way> {
         next.setFrom(edge);
         ret.add(next);
       }
+      rs.close();
       return ret;
     } catch (SQLException e) {
       System.err.println("ERROR: Error querying the database with SQL");

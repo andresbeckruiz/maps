@@ -2,27 +2,19 @@ package edu.brown.cs.mramesh4.maps;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import edu.brown.cs.mramesh4.REPL.Reader;
 import edu.brown.cs.mramesh4.MockPerson.MockPersonMethod;
 import edu.brown.cs.mramesh4.stars.ActionMethod;
-import edu.brown.cs.mramesh4.stars.Star;
 import edu.brown.cs.mramesh4.stars.StarsLogic;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import spark.ExceptionHandler;
-import spark.ModelAndView;
-import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 import spark.Spark;
-import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 import freemarker.template.Configuration;
 import com.google.common.collect.ImmutableMap;
@@ -51,7 +43,6 @@ public final class Main {
   private static StarsLogic db;
   private static MapsLogic mapsLogic;
   private static final Gson GSON = new Gson();
-  private boolean firstRun;
   private static CheckinThread thread;
 
   private Main(String[] args) {
@@ -64,7 +55,7 @@ public final class Main {
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
     parser.accepts("port").withRequiredArg().ofType(Integer.class)
-        .defaultsTo(DEFAULT_PORT);
+            .defaultsTo(DEFAULT_PORT);
     OptionSet options = parser.parse(args);
     MockPersonMethod m = new MockPersonMethod();
     mapsLogic = new MapsLogic();
@@ -79,8 +70,7 @@ public final class Main {
     methods.put("ways", mapsLogic);
     methods.put("nearest", mapsLogic);
     methods.put("route", mapsLogic);
-    //loads our Brown map initially
-    firstRun = true;
+    new FrontendHandlers(db, mapsLogic, thread, GSON);
     if (options.has("gui")) {
       // check this
       thread = new CheckinThread();
@@ -103,7 +93,7 @@ public final class Main {
       config.setDirectoryForTemplateLoading(templates);
     } catch (IOException ioe) {
       System.out.printf("ERROR: Unable use %s for template loading.%n",
-          templates);
+              templates);
       System.exit(1);
     }
     return new FreeMarkerEngine(config);
@@ -128,254 +118,21 @@ public final class Main {
     });
     Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
 
-    Spark.exception(Exception.class, new ExceptionPrinter());
+    Spark.exception(Exception.class, new FrontendHandlers.ExceptionPrinter());
     FreeMarkerEngine freeMarker = createEngine();
 
     // Setup Spark Routes
-    Spark.get("/stars", new FrontHandler(), freeMarker);
-    Spark.post("/radius", new RadiusHandler(), freeMarker);
-    Spark.post("/neighbors", new NeighborsHandler(), freeMarker);
-    Spark.post("/route", new RouteHandler());
-    Spark.post("/way", new WayHandler());
-    Spark.post("/map", new InitialMapHandler());
-    Spark.post("/shortestRoute", new ShortestRouteHandler());
-    Spark.post("/nearest", new NearestHandler());
-    Spark.post("/intersection", new IntersectionHandler());
+    Spark.get("/stars", new FrontendHandlers.FrontHandler(), freeMarker);
+    Spark.post("/radius", new FrontendHandlers.RadiusHandler(), freeMarker);
+    Spark.post("/neighbors", new FrontendHandlers.NeighborsHandler(), freeMarker);
+    Spark.post("/route", new FrontendHandlers.RouteHandler());
+    Spark.post("/way", new FrontendHandlers.WayHandler());
+    Spark.post("/map", new FrontendHandlers.InitialMapHandler());
+    Spark.post("/shortestRoute", new FrontendHandlers.ShortestRouteHandler());
+    Spark.post("/nearest", new FrontendHandlers.NearestHandler());
+    Spark.post("/intersection", new FrontendHandlers.IntersectionHandler());
     Spark.post("/userCheckin", new UserCheckinHandler());
     Spark.post("/pastCheckins", new PastCheckinsHandler());
-  }
-
-  /**
-   * Handle requests to the front page of our Stars website.
-   */
-  private static class FrontHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(Request req, Response res) {
-      String ret = "No results to display";
-      if (db.getStarList().size() == 0) {
-        ret = "Please load a file in the command line";
-      }
-      Map<String, Object> variables = ImmutableMap.of("title",
-          "Stars: Query the database", "results", ret);
-      return new ModelAndView(variables, "query.ftl");
-    }
-  }
-
-  /**
-   * Display an error page when an exception occurs in the server.
-   */
-  private static class ExceptionPrinter implements ExceptionHandler {
-    @Override
-    public void handle(Exception e, Request req, Response res) {
-      res.status(500);
-      StringWriter stacktrace = new StringWriter();
-      try (PrintWriter pw = new PrintWriter(stacktrace)) {
-        pw.println("<pre>");
-        e.printStackTrace(pw);
-        pw.println("</pre>");
-      }
-      res.body(stacktrace.toString());
-    }
-  }
-
-  /**
-   * Handles the radius call on the gui.
-   */
-  private static class RadiusHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(Request req, Response res) {
-      QueryParamsMap qm = req.queryMap();
-      String cmd = qm.value("text2");
-      String ret = "No results to display";
-      if (db.getStarList().size() == 0) {
-        ret = "Please load a file in the command line";
-      } else if (cmd == null || cmd.equals("")) {
-        ret = "Please input a valid answer";
-      } else {
-        String neighbs = qm.value("radius_switched");
-        String start = "naive_radius";
-        if (neighbs != null) {
-          start = "radius";
-        }
-        String cmd2 = start.concat(" ").concat(cmd);
-        String[] coms = cmd2.split(" ");
-        List<Star> stars = db.radiusRet(cmd2, coms);
-
-        if (db.getStarList().size() == 0) {
-          ret = "Please load a file in the command line";
-        }
-        if (coms[0].toUpperCase().equals("NAIVE_NEIGHBORS")
-            || coms[0].toUpperCase().equals("NEIGHBORS")) {
-          ret = "Please use the neighbors box for this action";
-        } else {
-          if (db.getStarList().size() == 0) {
-            ret = "Please load a file in the command line";
-          }
-          if (stars != null && !stars.isEmpty()) {
-            ret = "The stars within the radius: " + coms[1] + " are";
-            ret += "<br> <br>";
-            ret += "<table id=\"table\">"
-                + "<tr> <th> Match # </th> <th> Name </th>"
-                + "<th> ID </th> <th> X </th> <th> Y </th> <th> Z </th> </tr>";
-            for (int i = 0; i < stars.size(); i++) {
-              Star curr = stars.get(i);
-              ret += "<tr><td>" + Integer.toString(i + 1) + "</td>" + "<td>" + curr.getName()
-                  + "</td>" + "<td>" + curr.getStarID() + "</td>"
-                  + "<td>" + curr.getX() + "</td>"
-                  + "<td>" + curr.getY() + "</td>"
-                  + "<td>" + curr.getZ() + "</td>";
-              ret += "</tr>";
-            }
-            ret += "</table>";
-          } else {
-            ret = "No stars found in the search";
-          }
-        }
-      }
-      Map<String, Object> variables = ImmutableMap.of("title",
-          "Stars: Query the database", "results", ret);
-      return new ModelAndView(variables, "query.ftl");
-    }
-  }
-
-  /**
-   * Handles the neighbors call on the GUI.
-   */
-  private static class NeighborsHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(Request req, Response res) {
-      QueryParamsMap qm = req.queryMap();
-      String cmd = qm.value("text");
-      String ret = "No results to display";
-      if (db.getStarList().size() == 0) {
-        ret = "Please load a file in the command line";
-      } else if (cmd == null || cmd.equals("")) {
-        ret = "Please input a valid answer";
-      } else {
-        String neighbs = qm.value("neighbors_switched");
-        String start = "naive_neighbors";
-        if (neighbs != null) {
-          start = "neighbors";
-        }
-        String cmd2 = start.concat(" ").concat(cmd);
-        String[] coms = cmd2.split(" ");
-        List<Star> stars = db.neighborsRet(cmd2, coms);
-        if (coms[0].toUpperCase().equals("NAIVE_RADIUS")
-            || coms[0].toUpperCase().equals("RADIUS")) {
-          ret = "Please use the radius box for this action";
-        } else {
-          if (stars != null && !stars.isEmpty()) {
-            ret = "The " + Integer.toString(stars.size()) + " nearest neighbors are:";
-            //
-            ret += "<br> <br>";
-            ret += "<table id=\"table\">"
-                + "<tr> <th> Match # </th> <th> Name </th>"
-                + "<th> ID </th> <th> X </th> <th> Y </th> <th> Z </th> </tr>";
-            for (int i = 0; i < stars.size(); i++) {
-              Star curr = stars.get(i);
-              ret += "<tr><td>" + Integer.toString(i + 1) + "</td>"
-                  + "<td>" + curr.getName() + "</td>"
-                  + "<td>" + curr.getStarID() + "</td>"
-                  + "<td>" + curr.getX() + "</td>" + "<td>" + curr.getY()
-                  + "</td>" + "<td>" + curr.getZ() + "</td>";
-              ret += "</tr>";
-            }
-            ret += "</table>";
-          } else {
-            ret = "No stars found in the search";
-          }
-        }
-      }
-      Map<String, Object> variables = ImmutableMap.of("title",
-          "Stars: Query the database", "results", ret);
-      return new ModelAndView(variables, "query.ftl");
-    }
-  }
-
-  /**
-   * Handles route call on the GUI.
-   */
-  private static class RouteHandler implements Route {
-    @Override
-    public Object handle(Request request, Response response) throws Exception {
-
-      JSONObject data = new JSONObject(request.body());
-      double sLat = data.getDouble("srclat");
-      sLat = sLat + 1.0;
-      Map<String, Double> variables = ImmutableMap.of("route", sLat);
-      return GSON.toJson(variables);
-    }
-  }
-
-  /**
-   * Gets all of the ways and their start/end coordinates within bounding box sent from front end.
-   */
-  private static class WayHandler implements Route {
-    @Override
-    public Object handle(Request request, Response response) throws Exception {
-      JSONObject data = new JSONObject(request.body());
-      double minLatit = data.getDouble("minLat");
-      double minLong = data.getDouble("minLon");
-      double maxLatit = data.getDouble("maxLat");
-      double maxLong = data.getDouble("maxLon");
-      String[] command = {"ways", Double.toString(maxLatit), Double.toString(minLong),
-          Double.toString(minLatit), Double.toString(maxLong)};
-      HashMap<String, Object> map = mapsLogic.run(command);
-      Map<String, Object> variables = ImmutableMap.of("way", map);
-      return GSON.toJson(variables);
-    }
-  }
-
-  /**
-   * Sets the initial map to be displayed on frontend.
-   * Returns hash map of ways corresponding to their start/end coordinates.
-   */
-  private static class InitialMapHandler implements Route {
-    @Override
-    public Object handle(Request request, Response response) throws Exception {
-      String[] wayCommand = {"ways", "41.82953", "-71.40729", "41.82433", "-71.39572"};
-      HashMap<String, Object> map = mapsLogic.run(wayCommand);
-      Map<String, Object> variables = ImmutableMap.of("map", map);
-      return GSON.toJson(variables);
-    }
-  }
-
-  /**
-   * Finds shortest route between two coordinate points on the map.
-   */
-  private static class ShortestRouteHandler implements Route {
-    @Override
-    public Object handle(Request request, Response response) throws Exception {
-      JSONObject data = new JSONObject(request.body());
-      double startLon = data.getDouble("startLon");
-      double startLat = data.getDouble("startLat");
-      double endLon = data.getDouble("endLon");
-      double endLat = data.getDouble("endLat");
-      String[] command = {"route", Double.toString(startLon), Double.toString(startLat),
-          Double.toString(endLon), Double.toString(endLat)};
-      HashMap<String, Object> map = mapsLogic.run(command);
-      Map<String, Object> variables = ImmutableMap.of("shortestRoute", map);
-      return GSON.toJson(variables);
-    }
-  }
-
-  /**
-   * Finds the intersection lat/lon of two streets.
-   */
-  private static class IntersectionHandler implements Route {
-    @Override
-    public Object handle(Request request, Response response) throws Exception {
-      JSONObject data = new JSONObject(request.body());
-      String startLon = '"' + data.getString("startLon") + '"';
-      String startLat = '"' + data.getString("startLat") + '"';
-      WayNodes nodeOne = mapsLogic.getWayNodesAtIntersection(startLon, startLat);
-      String[] nodeOneInfo = {Double.toString(nodeOne.getCoordinate(0)),
-          Double.toString(nodeOne.getCoordinate(1))};
-      HashMap<String, Object> map = new HashMap<>();
-      map.put(nodeOne.getId(), nodeOneInfo);
-      Map<String, Object> variables = ImmutableMap.of("intersection", map);
-      return GSON.toJson(variables);
-    }
   }
 
   /**
@@ -384,7 +141,6 @@ public final class Main {
   private static class UserCheckinHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-      JSONObject data = new JSONObject(request.body());
       Map<String, Object> variables = ImmutableMap.of("userCheckin", thread.getLatestCheckins());
       return GSON.toJson(variables);
     }
@@ -404,19 +160,4 @@ public final class Main {
     }
   }
 
-  /**
-   * Gets nearest neighbors.
-   */
-  private static class NearestHandler implements Route {
-    @Override
-    public Object handle(Request request, Response response) throws Exception {
-      JSONObject data = new JSONObject(request.body());
-      double nearestLat = data.getDouble("nearLat");
-      double nearestLon = data.getDouble("nearLon");
-      String[] command = {"nearest", Double.toString(nearestLat), Double.toString(nearestLon)};
-      HashMap<String, Object> map = mapsLogic.run(command);
-      Map<String, Object> variables = ImmutableMap.of("nearest", map);
-      return GSON.toJson(variables);
-    }
-  }
 }

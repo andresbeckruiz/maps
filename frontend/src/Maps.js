@@ -9,19 +9,21 @@ function Maps(props) {
     const contextRef = useRef();
     let canvas = canvasRef.current;
     let context = contextRef.current;
-    //what ways we want to display
-    const [canvasMap, setCanvasMap] = useState(props.map)
     const canvasWidth = 500;
     const canvasHeight = 500;
-
+    let mouseDown = []
+    let mouseUp = []
+    let info = ""
+    let currNode = ""
+    let scrolling = false;
+    const ROUND_NUM = 0.01
+    //what ways we want to display
+    const [canvasMap, setCanvasMap] = useState(props.map)
     const [minBoundLat, setMinBoundLat] = useState(41.82433)
     const [minBoundLon, setMinBoundLon] = useState(-71.40729)
     const [maxBoundLat, setMaxBoundLat] = useState(41.82953)
     const [maxBoundLon, setMaxBoundLon] = useState(-71.39572)
-    let mouseDown = []
-    let mouseUp = []
     const [firstClick, setFirstClick] = useState(0);
-    const [intersectionNumber, setIntersectionNumber] = useState(1);
     const [firstMouseX, setFirstMouseX] = useState("");
     const [firstMouseY, setFirstMouseY] = useState("");
     const [secondMouseX, setSecondMouseX] = useState("");
@@ -29,16 +31,11 @@ function Maps(props) {
     const [shortestRoute, setShortestRoute] = useState("");
     const [firstCircle, setFirstCircle, ] = useState([])
     const [secondCircle, setSecondCircle, ] = useState([])
-    const [intersectPoints, setIntersectPoints] = useState("");
     const [streetOne, setStreetOne] = useState("")
     const [streetTwo, setStreetTwo] = useState("")
     const [streetThree, setStreetThree] = useState("")
     const [streetFour, setStreetFour] = useState("")
-    let info = ""
-    let currNode = ""
     const [cache, setCache] = useState({});
-    const ROUND_NUM = 0.01
-    let scrolling = false;
 
     const drawWays = (context, newMap, route) => {
         if (newMap == 1) {
@@ -59,6 +56,7 @@ function Maps(props) {
         }
         Object.keys(info).forEach((id) => {
             const curr = info[id]
+            console.log(curr.color)
             context.strokeStyle = curr.color;
             context.beginPath()
             context.moveTo(calcLonPixels(curr[1]), calcLatPixels(curr[0]));
@@ -244,7 +242,6 @@ function Maps(props) {
         toSend,
         config
     ).then(response => {
-        setIntersectPoints(response.data["intersection"]);
         Object.keys(response.data["intersection"]).forEach((id) => {
             const curr = response.data["intersection"][id]
             console.log(curr[0] + " " + curr[1] + " in intersect")
@@ -398,6 +395,7 @@ function Maps(props) {
     const updateZoomBounds = (deltaY) => {
         let zoomLat = 0.0015
         let zoomLon = 0.0015
+        //zoom out
         if (deltaY > 0) {
             let smallLat = minBoundLat - zoomLat
             let bigLat = maxBoundLat + zoomLat
@@ -409,6 +407,7 @@ function Maps(props) {
             setMaxBoundLon(bigLon)
             caching(smallLat, bigLat, smallLon, bigLon)
         }
+        //zoom in
         else if (deltaY < 0) {
             let smallLat = minBoundLat + zoomLat
             let bigLat = maxBoundLat - zoomLat
@@ -439,11 +438,7 @@ function Maps(props) {
             canvas = canvasRef.current
             contextRef.current = canvas.getContext('2d')
             context = contextRef.current
-            //restting state values
-            // setMinBoundLat(41.82433)
-            // setMaxBoundLat(-71.40729)
-            // setMinBoundLon(41.82953)
-            // setMaxBoundLon(-71.39572)
+            //resetting state values
             setFirstClick(0)
             setFirstMouseX("")
             setFirstMouseY("")

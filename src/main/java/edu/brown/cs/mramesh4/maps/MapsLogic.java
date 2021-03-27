@@ -236,47 +236,6 @@ public class MapsLogic implements ActionMethod<String> {
           return;
         }
         PreparedStatement prep;
-//        prep = conn.prepareStatement("SELECT w.id, w.start, w.end FROM node AS n JOIN way "
-//                + "AS w WHERE ( (n.id = w.end) OR (n.id = w.start) ) AND (n.latitude >= ?) AND "
-//                + "(n.latitude <= ?) AND (n.longitude >= ?) AND (n.longitude <= ?) "
-//                + "ORDER BY w.id");
-//        // group by -- or distinct
-//        prep.setDouble(1, latMin);
-//        prep.setDouble(2, latMax);
-//        prep.setDouble(3, lonMin);
-//        prep.setDouble(4, lonMax);
-//        ResultSet rs = prep.executeQuery();
-//        LinkedHashSet<String> toPrint = new LinkedHashSet<>();
-//        //HashMap<String, String> newValue;
-//        while (rs.next()) {
-//          String wayId = rs.getString(1);
-//          String startId = rs.getString(2);
-//          String endId = rs.getString(3);
-//          toPrint.add(wayId);
-//        //  newValue = new HashMap<>();
-//          String[] newValue = new String[4];
-//
-//          PreparedStatement startPrep = conn.prepareStatement(
-//                  "SELECT node.latitude, node.longitude FROM node JOIN way "
-//                  + "WHERE node.id = ?");
-//          startPrep.setString(1, startId);
-//          ResultSet startRs = startPrep.executeQuery();
-//        //  newValue.add("sLat", startRs.getString(1));
-//          newValue[0] = startRs.getString(1);
-//        //  newValue.put("sLot", startRs.getString(2));
-//          newValue[1] = startRs.getString(2);
-//          PreparedStatement endPrep = conn.prepareStatement(
-//                  "SELECT node.latitude, node.longitude FROM node JOIN way "
-//                  + "WHERE node.id = ?");
-//          endPrep.setString(1, endId);
-//          ResultSet endRs = endPrep.executeQuery();
-//          // newValue.put("eLat", endRs.getString(1));
-//          newValue[2] = endRs.getString(1);
-//          //newValue.put("eLot", endRs.getString(2));
-//          newValue[3] = endRs.getString(2);
-//          frontendReturn.put(wayId, newValue);
-//        }
-//        rs.close();
         prep = conn.prepareStatement("WITH startN AS (SELECT id AS startId, latitude AS "
             + "startLat, longitude AS startLong FROM node), endN AS (SELECT id AS "
             + "endId, latitude AS endLat, longitude AS endLong FROM node), "
@@ -545,6 +504,7 @@ public class MapsLogic implements ActionMethod<String> {
                 answer1.getDouble(2), answer1.getDouble(3), conn);
             wayNodeCache.put(ws.getId(), ws);
           }
+          answer1.close();
           return ws;
         }
       } catch (SQLException e) {

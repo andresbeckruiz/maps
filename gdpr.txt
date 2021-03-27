@@ -13,7 +13,7 @@ It is necessary to get each data point from the user, who may have multiple chec
 data should be deleted. On a more complex application, such as Facebook, a user interacts with the site in a
 multitude of fashions, and accessing all of their past data (comments, likes, watched videos, etc.) could be
 excessively large and extremely difficult.
-ugggggggg idk
+
 
 Question 2:
 Consider a more complex application that you’ve interacted with before (Facebook, Steam, MyAnimeList) - why might
@@ -21,3 +21,5 @@ it be difficult to delete all of the data on a user? Consider factors unique to 
 specifically those other than volume or size of data.
 
 Answer 2:
+
+

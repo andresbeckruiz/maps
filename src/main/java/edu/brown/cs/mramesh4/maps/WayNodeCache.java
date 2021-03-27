@@ -36,6 +36,7 @@ public class WayNodeCache {
             ws = new edu.brown.cs.mramesh4.maps.WayNodes(answer1.getString(1),
                     answer1.getDouble(2), answer1.getDouble(3), conn);
           }
+          answer1.close();
           return ws;
         }
       });
