@@ -1,25 +1,31 @@
 Practical Implications of GDPR
 
-Question 1:
-GDPR requires that you specify exactly what you intend to do with each data point. Consider each data point that
-you’re gathering from your users (Name, location, timestamp). Writing to a user, justify why each data point is
-needed in an imaginary final version of your application: what eventual functionality might use the data?
-Consider a more complex application that you’ve interacted with before (Facebook, Steam, MyAnimeList) -
-why might it be difficult to delete all of the data on a user? Consider factors unique to the application you've
-chosen; specifically those other than volume or size of data.
+1)
 
-Answer 1:
-It is necessary to get each data point from the user, who may have multiple check-ins, in knowing which exact
-data should be deleted. On a more complex application, such as Facebook, a user interacts with the site in a
-multitude of fashions, and accessing all of their past data (comments, likes, watched videos, etc.) could be
-excessively large and extremely difficult.
+Name is needed for some final version of our application because it might be used to build a profile for a
+user where they can see all the past locations they have checked in. Also, we need a user's name because
+we need it to display live checkin information; it wouldn't make sense to have the checkin information of a
+user without their name. ID is needed for our application because we need a way to find a user's past checkins
+in our database. Without this unique data point, we wont be able to find it; searching by name would not work
+because we cannot assume all of our users have unique names. Location is needed as well because in some
+final version of the application we might want to show the spots on our map of where a user checked in.
+Finally, timestamp is needed because we might use it in some functionality of our final application where we
+can find users that have checked in during a certain time frame.
 
 
-Question 2:
-Consider a more complex application that you’ve interacted with before (Facebook, Steam, MyAnimeList) - why might
-it be difficult to delete all of the data on a user? Consider factors unique to the application you've chosen;
-specifically those other than volume or size of data.
+2)
 
-Answer 2:
+On Facebook, it might be difficult to delete all of the data on a user because it is intertwined with other
+users' data. For example, you will have to delete this user's data from other peoples' Friends list,
+since the deleted user will have friends that are still active on Facebook, and update the Friend count for
+all of the other users. Another example is if a user's post has comments of the deleted user on their post;
+by deleting the user's data, the comment count and comment need to be updated on the active user's post as
+well. Another factor that might make it difficult to delete all of the data on a user is that Facebook might
+want to use some of the user's data for their own statistics. For example, Facebook might want to keep track
+of how many posts on average people are making for their own research purposes. However, Facebook needs to
+get rid of this data if a user requests to delete their profile. Therefore, it might be difficult to
+convince the user to let them keep some data about their usage for their own purposes, and they will
+definitely have to let the user know about what they are using.
+
 
 
