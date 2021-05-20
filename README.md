@@ -5,8 +5,11 @@ Maps 3 and 4 README
 Project Specifications:
 
 Maps 1: https://cs.brown.edu/courses/cs0320/projects/maps-part-one.html
+
 Maps 2: https://cs.brown.edu/courses/cs0320/projects/maps-part-two.html
+
 Maps 3: https://cs.brown.edu/courses/cs0320/projects/maps-part-three.html
+
 Maps 4: https://cs.brown.edu/courses/cs0320/projects/maps-part-four.html
 
 
